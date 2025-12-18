@@ -1,0 +1,19 @@
+@"
+# Empêcher Maven de compiler dans le répertoire racine
+target/
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# System
+.DS_Store
+Thumbs.db
+"@ | Out-File ".gitignore" -Encoding UTF8
