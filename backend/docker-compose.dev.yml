@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: cremelogic-db
+    env_file:
+      - .env.dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - cremelogic-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U creme_user -d cremelogic_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    image: cremelogic:dev
+    container_name: cremelogic-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.dev
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cremelogic-network
+
+networks:
+  cremelogic-network:
+    driver: bridge
+
+volumes:
+  db_data:

@@ -1,3 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    mime-types: text/html,text/css,text/javascript,application/json
+
 spring:
   application:
-    name: CremeLogic.ma
+    name: CremeLogic
+    version: 1.0.0
+  mvc:
+    servlet:
+      path: /api
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Africa/Casablanca
+
+logging:
+  level:
+    root: INFO
+    com.cremelogic: DEBUG
+    org.springframework: INFO
+    org.hibernate: WARN
