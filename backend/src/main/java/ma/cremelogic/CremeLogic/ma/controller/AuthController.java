@@ -1,7 +1,7 @@
 package ma.cremelogic.CremeLogic.ma.controller;
 
 import ma.cremelogic.CremeLogic.ma.config.JwtService;
-import ma.cremelogic.CremeLogic.ma.LoginRequest;
+import ma.cremelogic.CremeLogic.ma.dto.request.LoginRequest;
 import ma.cremelogic.CremeLogic.ma.dto.response.AuthResponse;
 import ma.cremelogic.CremeLogic.ma.entity.Utilisateur;
 import jakarta.validation.Valid;
