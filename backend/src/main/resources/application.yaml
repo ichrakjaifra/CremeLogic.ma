@@ -10,9 +10,7 @@ spring:
   application:
     name: CremeLogic
     version: 1.0.0
-  mvc:
-    servlet:
-      path: /api
+
   profiles:
     active: ${ACTIVE_PROFILE:dev}
   jackson:
