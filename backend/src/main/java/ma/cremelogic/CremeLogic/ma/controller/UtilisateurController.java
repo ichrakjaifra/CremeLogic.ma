@@ -56,4 +56,11 @@ public class UtilisateurController {
         utilisateurService.toggleActif(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Récupère un utilisateur par email")
+    public ResponseEntity<UtilisateurResponse> getUtilisateurByEmail(@PathVariable String email) {
+        return ResponseEntity.ok().build();
+    }
 }
