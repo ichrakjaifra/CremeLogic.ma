@@ -43,7 +43,11 @@ public class ProfilServiceImpl implements ProfilService {
     @Override
     @Transactional
     public UtilisateurResponse updateProfile(UpdateProfileRequest request) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new UnauthorizedException("Session expirée ou invalide", "SESSION_EXPIRED");
+        }
+        String email = auth.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
 
@@ -70,7 +74,11 @@ public class ProfilServiceImpl implements ProfilService {
     @Override
     @Transactional
     public void changePassword(ChangePasswordRequest request) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new UnauthorizedException("Session expirée ou invalide", "SESSION_EXPIRED");
+        }
+        String email = auth.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
 
@@ -97,7 +105,11 @@ public class ProfilServiceImpl implements ProfilService {
 
     @Override
     public Page<HistoriqueActiviteResponse> getHistoriqueActivite(Pageable pageable) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new UnauthorizedException("Session expirée ou invalide", "SESSION_EXPIRED");
+        }
+        String email = auth.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
 
@@ -109,8 +121,9 @@ public class ProfilServiceImpl implements ProfilService {
     @Override
     @Transactional
     public void logActivite(String action, String description, String ipAddress, String userAgent) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = (auth != null) ? auth.getName() : null;
+        Utilisateur utilisateur = (email != null) ? utilisateurRepository.findByEmail(email).orElse(null) : null;
 
         if (utilisateur != null) {
             HistoriqueActivite historique = HistoriqueActivite.builder()

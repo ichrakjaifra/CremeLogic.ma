@@ -12,9 +12,6 @@ import ma.cremelogic.CremeLogic.ma.exception.UnauthorizedException;
 import ma.cremelogic.CremeLogic.ma.repository.UtilisateurRepository;
 import ma.cremelogic.CremeLogic.ma.service.interfaces.UtilisateurService;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +20,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsService {
+public class UtilisateurServiceImpl implements UtilisateurService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec l'email: " + email));
-    }
 
     @Override
     public List<UtilisateurResponse> getAllUtilisateurs() {
@@ -109,7 +100,8 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
                 .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
 
         // Empêcher la suppression de son propre compte
-        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = (auth != null) ? auth.getName() : null;
         if (utilisateur.getEmail().equals(currentEmail)) {
             throw new UnauthorizedException("Vous ne pouvez pas supprimer votre propre compte");
         }
@@ -124,7 +116,8 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
                 .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
 
         // Empêcher la désactivation de son propre compte
-        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = (auth != null) ? auth.getName() : null;
         if (utilisateur.getEmail().equals(currentEmail)) {
             throw new UnauthorizedException("Vous ne pouvez pas désactiver votre propre compte");
         }
@@ -145,8 +138,13 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
 
     @Override
     public UtilisateurResponse getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Utilisateur utilisateur = (Utilisateur) loadUserByUsername(email);
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new UnauthorizedException("Session expirée ou invalide", "SESSION_EXPIRED");
+        }
+        String email = auth.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
         return mapToResponse(utilisateur);
     }
 

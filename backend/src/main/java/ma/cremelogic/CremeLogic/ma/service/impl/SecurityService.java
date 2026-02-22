@@ -17,7 +17,11 @@ public class SecurityService {
     }
 
     public boolean isSelf(Long userId) {
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return false;
+        }
+        String currentUserEmail = auth.getName();
         return utilisateurRepository.findByEmail(currentUserEmail)
                 .map(user -> user.getId().equals(userId))
                 .orElse(false);
