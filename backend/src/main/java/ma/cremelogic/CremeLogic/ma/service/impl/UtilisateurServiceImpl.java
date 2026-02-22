@@ -1,15 +1,21 @@
 package ma.cremelogic.CremeLogic.ma.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import ma.cremelogic.CremeLogic.ma.dto.request.CreateUtilisateurRequest;
+import ma.cremelogic.CremeLogic.ma.dto.request.UpdateUtilisateurRequest;
+import ma.cremelogic.CremeLogic.ma.dto.request.ResetPasswordRequest;
 import ma.cremelogic.CremeLogic.ma.dto.response.UtilisateurResponse;
 import ma.cremelogic.CremeLogic.ma.entity.Utilisateur;
+import ma.cremelogic.CremeLogic.ma.enums.Role;
 import ma.cremelogic.CremeLogic.ma.exception.ResourceNotFoundException;
+import ma.cremelogic.CremeLogic.ma.exception.UnauthorizedException;
 import ma.cremelogic.CremeLogic.ma.repository.UtilisateurRepository;
 import ma.cremelogic.CremeLogic.ma.service.interfaces.UtilisateurService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +26,7 @@ import java.util.List;
 public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsService {
 
     private final UtilisateurRepository utilisateurRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -37,8 +44,103 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
     @Override
     public UtilisateurResponse getUtilisateurById(Long id) {
         Utilisateur utilisateur = utilisateurRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "id", id));
+                .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
         return mapToResponse(utilisateur);
+    }
+
+    @Override
+    public UtilisateurResponse getUtilisateurByEmail(String email) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> ResourceNotFoundException.forUtilisateurByEmail(email));
+        return mapToResponse(utilisateur);
+    }
+
+    @Override
+    @Transactional
+    public UtilisateurResponse createUtilisateur(CreateUtilisateurRequest request) {
+        // Vérifier si l'email existe déjà
+        if (utilisateurRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Un utilisateur avec cet email existe déjà");
+        }
+
+        Utilisateur utilisateur = Utilisateur.builder()
+                .nom(request.getNom())
+                .prenom(request.getPrenom())
+                .email(request.getEmail())
+                .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
+                .telephone(request.getTelephone())
+                .role(request.getRole())
+                .actif(true)
+                .build();
+
+        Utilisateur saved = utilisateurRepository.save(utilisateur);
+        return mapToResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public UtilisateurResponse updateUtilisateur(Long id, UpdateUtilisateurRequest request) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
+
+        // Vérifier si l'email est déjà utilisé par un autre utilisateur
+        if (!utilisateur.getEmail().equals(request.getEmail()) &&
+                utilisateurRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Cet email est déjà utilisé");
+        }
+
+        utilisateur.setNom(request.getNom());
+        utilisateur.setPrenom(request.getPrenom());
+        utilisateur.setEmail(request.getEmail());
+        utilisateur.setTelephone(request.getTelephone());
+
+        if (request.getRole() != null) {
+            utilisateur.setRole(request.getRole());
+        }
+
+        Utilisateur saved = utilisateurRepository.save(utilisateur);
+        return mapToResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUtilisateur(Long id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
+
+        // Empêcher la suppression de son propre compte
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (utilisateur.getEmail().equals(currentEmail)) {
+            throw new UnauthorizedException("Vous ne pouvez pas supprimer votre propre compte");
+        }
+
+        utilisateurRepository.delete(utilisateur);
+    }
+
+    @Override
+    @Transactional
+    public void toggleActif(Long id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
+
+        // Empêcher la désactivation de son propre compte
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (utilisateur.getEmail().equals(currentEmail)) {
+            throw new UnauthorizedException("Vous ne pouvez pas désactiver votre propre compte");
+        }
+
+        utilisateur.setActif(!utilisateur.isActif());
+        utilisateurRepository.save(utilisateur);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(Long id, ResetPasswordRequest request) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
+
+        utilisateur.setMotDePasse(passwordEncoder.encode(request.getNewPassword()));
+        utilisateurRepository.save(utilisateur);
     }
 
     @Override
@@ -49,22 +151,18 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
     }
 
     @Override
-    @Transactional
-    public void deleteUtilisateur(Long id) {
-        if (!utilisateurRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Utilisateur", "id", id);
-        }
-        utilisateurRepository.deleteById(id);
+    public long getTotalUtilisateurs() {
+        return utilisateurRepository.count();
     }
 
     @Override
-    @Transactional
-    public void toggleActif(Long id) {
-        Utilisateur utilisateur = utilisateurRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "id", id));
-
-        utilisateur.setActif(!utilisateur.isActif());
-        utilisateurRepository.save(utilisateur);
+    public long getCountByRole(String role) {
+        try {
+            Role roleEnum = Role.valueOf(role.toUpperCase());
+            return utilisateurRepository.findByRole(roleEnum).size();
+        } catch (IllegalArgumentException e) {
+            return 0;
+        }
     }
 
     private UtilisateurResponse mapToResponse(Utilisateur utilisateur) {

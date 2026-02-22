@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("JpaAttributeTypeInspection")
 public class HistoriqueActivite {
 
     @Id
