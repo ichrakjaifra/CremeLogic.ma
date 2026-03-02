@@ -4,6 +4,7 @@ import ma.cremelogic.CremeLogic.ma.dto.request.CommandeAchatRequest;
 import ma.cremelogic.CremeLogic.ma.dto.response.CommandeAchatResponse;
 import java.time.LocalDate;
 import java.util.List;
+import java.math.BigDecimal;
 
 public interface CommandeAchatService {
     CommandeAchatResponse createCommande(CommandeAchatRequest request);
