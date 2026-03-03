@@ -2,6 +2,7 @@ package ma.cremelogic.CremeLogic.ma.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,16 +25,4 @@ public class RecetteResponse {
     private LocalDateTime dateModification;
 
     private List<LigneRecetteResponse> lignesRecette;
-}
-
-@Data
-@Builder
-class LigneRecetteResponse {
-    private Long id;
-    private Long ingredientId;
-    private String ingredientNom;
-    private UniteMesure uniteMesure;
-    private BigDecimal quantite;
-    private String instructionsSpecifiques;
-    private BigDecimal coutIngredient;
 }
