@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/ventes")
+@RequestMapping("/ventes")
 @RequiredArgsConstructor
 @Tag(name = "Ventes", description = "Gestion des ventes")
 @SecurityRequirement(name = "Bearer Authentication")

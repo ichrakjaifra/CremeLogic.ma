@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/produits")
+@RequestMapping("/produits")
 @RequiredArgsConstructor
 @Tag(name = "Produits", description = "Gestion des produits finis")
 public class ProduitController {

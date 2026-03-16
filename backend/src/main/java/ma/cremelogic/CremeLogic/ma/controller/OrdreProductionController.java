@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ordres-production")
+@RequestMapping("/ordres-production")
 @RequiredArgsConstructor
 @Tag(name = "Ordres de Production", description = "Gestion des ordres de production")
 @SecurityRequirement(name = "Bearer Authentication")

@@ -69,6 +69,7 @@ public class CommandeAchatServiceImpl implements CommandeAchatService {
                                         .quantiteCommandee(ligneRequest.getQuantiteCommandee())
                                         .quantiteRecue(BigDecimal.ZERO)
                                         .prixUnitaire(ligneRequest.getPrixUnitaire())
+                                        .montantTotal(ligneRequest.getQuantiteCommandee().multiply(ligneRequest.getPrixUnitaire()))
                                         .build();
 
                         commande.getLignesCommande().add(ligne);
@@ -118,6 +119,7 @@ public class CommandeAchatServiceImpl implements CommandeAchatService {
                                         .quantiteCommandee(ligneRequest.getQuantiteCommandee())
                                         .quantiteRecue(BigDecimal.ZERO)
                                         .prixUnitaire(ligneRequest.getPrixUnitaire())
+                                        .montantTotal(ligneRequest.getQuantiteCommandee().multiply(ligneRequest.getPrixUnitaire()))
                                         .build();
 
                         commande.getLignesCommande().add(ligne);
@@ -327,6 +329,7 @@ public class CommandeAchatServiceImpl implements CommandeAchatService {
                                         .quantiteCommandee(ligneOriginale.getQuantiteCommandee())
                                         .quantiteRecue(BigDecimal.ZERO)
                                         .prixUnitaire(ligneOriginale.getPrixUnitaire())
+                                        .montantTotal(ligneOriginale.getQuantiteCommandee().multiply(ligneOriginale.getPrixUnitaire()))
                                         .build();
 
                         nouvelleCommande.getLignesCommande().add(ligne);

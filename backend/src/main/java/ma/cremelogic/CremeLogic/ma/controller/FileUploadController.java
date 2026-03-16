@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/upload")
+@RequestMapping("/upload")
 @RequiredArgsConstructor
 @Tag(name = "Upload", description = "Gestion des uploads de fichiers")
 public class FileUploadController {

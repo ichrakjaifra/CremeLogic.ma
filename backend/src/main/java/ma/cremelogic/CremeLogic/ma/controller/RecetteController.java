@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/recettes")
+@RequestMapping("/recettes")
 @RequiredArgsConstructor
 @Tag(name = "Recettes", description = "Gestion des recettes de pâtisserie")
 public class RecetteController {

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/fournisseurs")
+@RequestMapping("/fournisseurs")
 @RequiredArgsConstructor
 @Tag(name = "Fournisseurs", description = "Gestion des fournisseurs")
 public class FournisseurController {
