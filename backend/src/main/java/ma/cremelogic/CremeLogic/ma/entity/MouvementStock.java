@@ -46,6 +46,7 @@ public class MouvementStock {
     @Column(precision = 10, scale = 2)
     private BigDecimal montantTotal;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
     private Utilisateur utilisateur;

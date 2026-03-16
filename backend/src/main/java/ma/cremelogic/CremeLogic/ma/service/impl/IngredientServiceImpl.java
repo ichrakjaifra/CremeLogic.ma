@@ -10,8 +10,8 @@ import ma.cremelogic.CremeLogic.ma.exception.ValidationException;
 import ma.cremelogic.CremeLogic.ma.repository.IngredientRepository;
 import ma.cremelogic.CremeLogic.ma.repository.FournisseurRepository;
 import ma.cremelogic.CremeLogic.ma.repository.MouvementStockRepository;
-import ma.cremelogic.CremeLogic.ma.service.IngredientService;
-import ma.cremelogic.CremeLogic.ma.service.AlerteService;
+import ma.cremelogic.CremeLogic.ma.service.interfaces.IngredientService;
+import ma.cremelogic.CremeLogic.ma.service.interfaces.AlerteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -64,7 +64,8 @@ public class IngredientServiceImpl implements IngredientService {
         // Lier le fournisseur si fourni
         if (request.getFournisseurPrincipalId() != null) {
             Fournisseur fournisseur = fournisseurRepository.findById(request.getFournisseurPrincipalId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Fournisseur", "id", request.getFournisseurPrincipalId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Fournisseur", "id",
+                            request.getFournisseurPrincipalId()));
             ingredient.setFournisseurPrincipal(fournisseur);
         }
 
@@ -106,7 +107,8 @@ public class IngredientServiceImpl implements IngredientService {
         // Mettre à jour le fournisseur si fourni
         if (request.getFournisseurPrincipalId() != null) {
             Fournisseur fournisseur = fournisseurRepository.findById(request.getFournisseurPrincipalId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Fournisseur", "id", request.getFournisseurPrincipalId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Fournisseur", "id",
+                            request.getFournisseurPrincipalId()));
             ingredient.setFournisseurPrincipal(fournisseur);
         } else if (ingredient.getFournisseurPrincipal() != null) {
             ingredient.setFournisseurPrincipal(null);
@@ -179,7 +181,8 @@ public class IngredientServiceImpl implements IngredientService {
         }
 
         ingredientRepository.delete(ingredient);
-        historiqueService.enregistrerSuppression("INGREDIENT", id, "Suppression de l'ingrédient: " + ingredient.getNom());
+        historiqueService.enregistrerSuppression("INGREDIENT", id,
+                "Suppression de l'ingrédient: " + ingredient.getNom());
         log.info("Ingrédient supprimé: {}", ingredient.getCodeIngredient());
     }
 
@@ -211,11 +214,12 @@ public class IngredientServiceImpl implements IngredientService {
                 createMouvementStock(ingredient, "SORTIE", quantite, raison);
             }
             case "AJUSTEMENT" -> {
-                ingredient.setQuantiteStock(quantite);
+                nouvelleQuantite = quantite;
+                ingredient.setQuantiteStock(nouvelleQuantite);
 
                 // Créer un mouvement de stock
                 createMouvementStock(ingredient, "AJUSTEMENT",
-                        quantite.subtract(ancienneQuantite), raison);
+                        nouvelleQuantite.subtract(ancienneQuantite), raison);
             }
             case "PERDU", "DETRUIT" -> {
                 if (quantite.compareTo(ancienneQuantite) > 0) {
@@ -320,17 +324,20 @@ public class IngredientServiceImpl implements IngredientService {
                 .prixUnitaire(ingredient.getPrixUnitaire())
                 .perissable(ingredient.isPerissable())
                 .dateExpiration(ingredient.getDateExpiration())
-                .fournisseurPrincipalId(ingredient.getFournisseurPrincipal() != null ?
-                        ingredient.getFournisseurPrincipal().getId() : null)
-                .fournisseurNom(ingredient.getFournisseurPrincipal() != null ?
-                        ingredient.getFournisseurPrincipal().getNom() : null)
+                .fournisseurPrincipalId(
+                        ingredient.getFournisseurPrincipal() != null ? ingredient.getFournisseurPrincipal().getId()
+                                : null)
+                .fournisseurNom(
+                        ingredient.getFournisseurPrincipal() != null ? ingredient.getFournisseurPrincipal().getNom()
+                                : null)
                 .dateCreation(ingredient.getDateCreation())
                 .dateModification(ingredient.getDateModification())
                 .stockFaible(ingredient.estStockFaible())
                 .enRupture(ingredient.estEnRupture())
                 .expire(ingredient.estExpire())
-                .valeurStock(ingredient.getPrixUnitaire() != null && ingredient.getQuantiteStock() != null ?
-                        ingredient.getPrixUnitaire().multiply(ingredient.getQuantiteStock()) : BigDecimal.ZERO)
+                .valeurStock(ingredient.getPrixUnitaire() != null && ingredient.getQuantiteStock() != null
+                        ? ingredient.getPrixUnitaire().multiply(ingredient.getQuantiteStock())
+                        : BigDecimal.ZERO)
                 .consommationMoyenne(getConsommationMoyenne(ingredient.getId(), 30))
                 .build();
     }

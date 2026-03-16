@@ -12,9 +12,13 @@ import java.util.Optional;
 
 @Repository
 public interface VenteRepository extends JpaRepository<Vente, Long> {
-    Optional<Vente> findByNumeroVente(String numeroVente);
-    List<Vente> findByCaissierId(Long caissierId);
-    List<Vente> findByModePaiement(ModePaiement modePaiement);
+    List<Vente> findAllByOrderByDateVenteDesc();
+
+    List<Vente> findByDateVenteBetweenOrderByDateVenteDesc(LocalDateTime debut, LocalDateTime fin);
+
+    List<Vente> findByCaissierIdOrderByDateVenteDesc(Long caissierId);
+
+    List<Vente> findByNomClientContainingIgnoreCaseOrTelephoneClientContainingIgnoreCase(String nom, String telephone);
 
     @Query("SELECT v FROM Vente v WHERE v.dateVente BETWEEN :startDate AND :endDate")
     List<Vente> findByDateVenteBetween(LocalDateTime startDate, LocalDateTime endDate);
@@ -24,9 +28,6 @@ public interface VenteRepository extends JpaRepository<Vente, Long> {
 
     @Query("SELECT COUNT(v) FROM Vente v WHERE v.dateVente BETWEEN :startDate AND :endDate")
     Long getNombreVentesPeriode(LocalDateTime startDate, LocalDateTime endDate);
-
-    @Query("SELECT v FROM Vente v WHERE v.nomClient LIKE %:nomClient% OR v.telephoneClient LIKE %:telephoneClient%")
-    List<Vente> findByClient(String nomClient, String telephoneClient);
 
     @Query("SELECT v FROM Vente v ORDER BY v.dateVente DESC")
     List<Vente> findRecentVentes(int limit);

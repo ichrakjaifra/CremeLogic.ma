@@ -13,9 +13,18 @@ import java.util.Optional;
 @Repository
 public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Long> {
     Optional<CommandeAchat> findByNumeroCommande(String numeroCommande);
+
     List<CommandeAchat> findByFournisseurId(Long fournisseurId);
+
     List<CommandeAchat> findByStatut(StatutCommande statut);
+
     List<CommandeAchat> findByCreateurId(Long createurId);
+
+    List<CommandeAchat> findAllByOrderByDateCreationDesc();
+
+    List<CommandeAchat> findByFournisseurIdOrderByDateCreationDesc(Long fournisseurId);
+
+    List<CommandeAchat> findByStatutOrderByDateCreationDesc(StatutCommande statut);
 
     @Query("SELECT c FROM CommandeAchat c WHERE c.dateCommande BETWEEN :startDate AND :endDate")
     List<CommandeAchat> findByDateCommandeBetween(LocalDate startDate, LocalDate endDate);

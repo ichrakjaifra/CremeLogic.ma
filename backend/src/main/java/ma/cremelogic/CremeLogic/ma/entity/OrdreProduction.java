@@ -53,10 +53,12 @@ public class OrdreProduction {
     @Column(length = 1000)
     private String notes;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "createur_id")
     private Utilisateur createur;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "responsable_id")
     private Utilisateur responsable;

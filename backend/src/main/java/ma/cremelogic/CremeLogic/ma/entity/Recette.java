@@ -49,6 +49,7 @@ public class Recette {
     @OneToMany(mappedBy = "recette", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LigneRecette> lignesRecette = new ArrayList<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "createur_id")
     private Utilisateur createur;

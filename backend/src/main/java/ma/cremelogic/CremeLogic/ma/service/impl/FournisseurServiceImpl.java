@@ -7,7 +7,7 @@ import ma.cremelogic.CremeLogic.ma.exception.ResourceNotFoundException;
 import ma.cremelogic.CremeLogic.ma.exception.ValidationException;
 import ma.cremelogic.CremeLogic.ma.repository.FournisseurRepository;
 import ma.cremelogic.CremeLogic.ma.repository.CommandeAchatRepository;
-import ma.cremelogic.CremeLogic.ma.service.FournisseurService;
+import ma.cremelogic.CremeLogic.ma.service.interfaces.FournisseurService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

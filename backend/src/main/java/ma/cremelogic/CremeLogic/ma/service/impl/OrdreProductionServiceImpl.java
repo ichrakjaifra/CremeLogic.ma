@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class OrdreProductionServiceImpl implements OrdreProductionService {
 
     private final OrdreProductionRepository ordreProductionRepository;
@@ -68,7 +71,6 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
         ordre.calculerCouts();
         OrdreProduction saved = ordreProductionRepository.save(ordre);
 
-        // Vérifier la disponibilité des ingrédients
         verifierDisponibiliteIngredients(ordre);
 
         historiqueService.enregistrerCreation("ORDRE_PRODUCTION", saved.getId(),
@@ -95,7 +97,6 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
         ordre.setProduit(produit);
         ordre.setQuantite(request.getQuantite());
         ordre.setDateDebutPrevue(request.getDateDebutPrevue());
-        ordre.setDateFinPrevue(request.getDateFinPrevue());
         ordre.setNotes(request.getNotes());
 
         if (request.getResponsableId() != null) {
@@ -107,9 +108,7 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
         ordre.calculerCouts();
         OrdreProduction updated = ordreProductionRepository.save(ordre);
 
-        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id,
-                "Mise à jour de l'ordre de production");
-
+        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id, "Mise à jour de l'ordre de production");
         return mapToResponse(updated);
     }
 
@@ -123,15 +122,13 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
     @Override
     public List<OrdreProductionResponse> getAllOrdres() {
         return ordreProductionRepository.findAllByOrderByDateCreationDesc().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<OrdreProductionResponse> getOrdresByProduit(Long produitId) {
         return ordreProductionRepository.findByProduitIdOrderByDateCreationDesc(produitId).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -139,8 +136,7 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
         try {
             StatutProduction statutEnum = StatutProduction.valueOf(statut.toUpperCase());
             return ordreProductionRepository.findByStatutOrderByDateCreationDesc(statutEnum).stream()
-                    .map(this::mapToResponse)
-                    .collect(Collectors.toList());
+                    .map(this::mapToResponse).collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Statut invalide: " + statut);
         }
@@ -167,22 +163,15 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
         OrdreProduction ordre = ordreProductionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ordre de production", "id", id));
 
-        StatutProduction ancienStatut = ordre.getStatut();
-        StatutProduction nouveauStatut;
-
         try {
-            nouveauStatut = StatutProduction.valueOf(statut.toUpperCase());
+            StatutProduction nouveauStatut = StatutProduction.valueOf(statut.toUpperCase());
+            ordre.setStatut(nouveauStatut);
+            OrdreProduction updated = ordreProductionRepository.save(ordre);
+            historiqueService.enregistrerModification("ORDRE_PRODUCTION", id, "Changement statut -> " + nouveauStatut);
+            return mapToResponse(updated);
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Statut invalide: " + statut);
         }
-
-        ordre.setStatut(nouveauStatut);
-        OrdreProduction updated = ordreProductionRepository.save(ordre);
-
-        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id,
-                String.format("Changement statut: %s -> %s", ancienStatut, nouveauStatut));
-
-        return mapToResponse(updated);
     }
 
     @Override
@@ -195,22 +184,14 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
             throw new ValidationException("Seuls les ordres planifiés peuvent être démarrés");
         }
 
-        // Vérifier la disponibilité des ingrédients
         verifierDisponibiliteIngredients(ordre);
-
         ordre.setDateDebutReelle(request.getDateDebutReelle());
         ordre.setStatut(StatutProduction.EN_COURS);
-
-        if (request.getNotes() != null && !request.getNotes().isEmpty()) {
+        if (request.getNotes() != null)
             ordre.setNotes(ordre.getNotes() + "\n" + request.getNotes());
-        }
 
         OrdreProduction updated = ordreProductionRepository.save(ordre);
-
-        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id,
-                "Démarrage de la production");
-
-        log.info("Production démarrée: {}", ordre.getNumeroOrdre());
+        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id, "Démarrage de la production");
         return mapToResponse(updated);
     }
 
@@ -224,28 +205,18 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
             throw new ValidationException("Seuls les ordres en cours peuvent être terminés");
         }
 
-        // Consommer les ingrédients
         consommerIngredients(ordre);
-
-        ordre.setDateFinReelle(request.getDateDebutReelle()); // Utiliser dateDebutReelle comme date de fin
+        ordre.setDateFinReelle(request.getDateDebutReelle());
         ordre.setStatut(StatutProduction.TERMINEE);
-
-        if (request.getNotes() != null && !request.getNotes().isEmpty()) {
+        if (request.getNotes() != null)
             ordre.setNotes(ordre.getNotes() + "\nTERMINÉ: " + request.getNotes());
-        }
 
-        // Mettre à jour le stock du produit
         Produit produit = ordre.getProduit();
         produit.setStockDisponible(produit.getStockDisponible() + ordre.getQuantite());
         produitRepository.save(produit);
 
         OrdreProduction updated = ordreProductionRepository.save(ordre);
-
-        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id,
-                "Production terminée - Quantité: " + ordre.getQuantite());
-
-        log.info("Production terminée: {} - {} unités produites",
-                ordre.getNumeroOrdre(), ordre.getQuantite());
+        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id, "Production terminée");
         return mapToResponse(updated);
     }
 
@@ -261,24 +232,16 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
 
         ordre.setStatut(StatutProduction.ANNULEE);
         ordre.setNotes(ordre.getNotes() + "\nANNULATION: " + raison);
-
         OrdreProduction updated = ordreProductionRepository.save(ordre);
-
-        // Créer une alerte
         alerteService.creerAlerteProductionAnnulee(ordre, raison);
-
-        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id,
-                "Annulation de la production: " + raison);
-
-        log.info("Production annulée: {} - Raison: {}", ordre.getNumeroOrdre(), raison);
+        historiqueService.enregistrerModification("ORDRE_PRODUCTION", id, "Annulation de la production");
         return mapToResponse(updated);
     }
 
     @Override
     public List<OrdreProductionResponse> getOrdresEnRetard() {
         return ordreProductionRepository.findOrdresEnRetard().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -289,7 +252,8 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
 
     @Override
     public Integer getQuantiteProduite(Long produitId, LocalDate debut, LocalDate fin) {
-        return ordreProductionRepository.getQuantiteProduitePeriode(produitId, debut, fin);
+        return ordreProductionRepository.getQuantiteProduitePeriode(produitId, debut.atStartOfDay(),
+                fin.atTime(23, 59, 59));
     }
 
     @Override
@@ -298,25 +262,15 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
         OrdreProduction ordreOriginal = ordreProductionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ordre de production", "id", id));
 
-        Utilisateur createur = getCurrentUser();
-
         OrdreProduction nouvelOrdre = OrdreProduction.builder()
-                .produit(ordreOriginal.getProduit())
-                .quantite(ordreOriginal.getQuantite())
-                .dateDebutPrevue(ordreOriginal.getDateDebutPrevue())
-                .dateFinPrevue(ordreOriginal.getDateFinPrevue())
-                .notes("DUPLICATA de " + ordreOriginal.getNumeroOrdre() + "\n" + ordreOriginal.getNotes())
-                .createur(createur)
-                .responsable(ordreOriginal.getResponsable())
-                .statut(StatutProduction.PLANIFIEE)
-                .build();
+                .produit(ordreOriginal.getProduit()).quantite(ordreOriginal.getQuantite())
+                .dateDebutPrevue(ordreOriginal.getDateDebutPrevue()).dateFinPrevue(ordreOriginal.getDateFinPrevue())
+                .notes("DUPLICATA de " + ordreOriginal.getNumeroOrdre()).createur(getCurrentUser())
+                .responsable(ordreOriginal.getResponsable()).statut(StatutProduction.PLANIFIEE).build();
 
         nouvelOrdre.calculerCouts();
         OrdreProduction saved = ordreProductionRepository.save(nouvelOrdre);
-
-        historiqueService.enregistrerCreation("ORDRE_PRODUCTION", saved.getId(),
-                "Duplication de l'ordre: " + ordreOriginal.getNumeroOrdre());
-
+        historiqueService.enregistrerCreation("ORDRE_PRODUCTION", saved.getId(), "Duplication de l'ordre");
         return mapToResponse(saved);
     }
 
@@ -325,50 +279,40 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
     public void consommerIngredients(Long ordreProductionId) {
         OrdreProduction ordre = ordreProductionRepository.findById(ordreProductionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ordre de production", "id", ordreProductionId));
-
         consommerIngredients(ordre);
     }
 
     private void consommerIngredients(OrdreProduction ordre) {
         Recette recette = ordre.getProduit().getRecette();
-        if (recette == null) {
+        if (recette == null)
             throw new ValidationException("Le produit n'a pas de recette associée");
-        }
 
         Map<Long, BigDecimal> consommations = new HashMap<>();
         BigDecimal facteurMultiplicateur = BigDecimal.valueOf(ordre.getQuantite())
-                .divide(BigDecimal.valueOf(recette.getNombrePortions()), 4, BigDecimal.ROUND_HALF_UP);
+                .divide(BigDecimal.valueOf(recette.getNombrePortions()), 4, RoundingMode.HALF_UP);
 
         for (LigneRecette ligne : recette.getLignesRecette()) {
-            BigDecimal quantiteNecessaire = ligne.getQuantite().multiply(facteurMultiplicateur);
-            consommations.put(ligne.getIngredient().getId(), quantiteNecessaire);
+            consommations.put(ligne.getIngredient().getId(), ligne.getQuantite().multiply(facteurMultiplicateur));
         }
 
         mouvementStockService.deduireConsommationProduction(ordre.getId(), consommations);
-
-        log.info("Ingrédients consommés pour l'ordre de production {}", ordre.getNumeroOrdre());
     }
 
     private void verifierDisponibiliteIngredients(OrdreProduction ordre) {
         Recette recette = ordre.getProduit().getRecette();
-        if (recette == null) return;
+        if (recette == null)
+            return;
 
         BigDecimal facteurMultiplicateur = BigDecimal.valueOf(ordre.getQuantite())
-                .divide(BigDecimal.valueOf(recette.getNombrePortions()), 4, BigDecimal.ROUND_HALF_UP);
+                .divide(BigDecimal.valueOf(recette.getNombrePortions()), 4, RoundingMode.HALF_UP);
 
         List<String> manquants = recette.getLignesRecette().stream()
-                .filter(ligne -> {
-                    BigDecimal quantiteNecessaire = ligne.getQuantite().multiply(facteurMultiplicateur);
-                    return ligne.getIngredient().getQuantiteStock().compareTo(quantiteNecessaire) < 0;
-                })
-                .map(ligne -> ligne.getIngredient().getNom())
-                .collect(Collectors.toList());
+                .filter(l -> l.getIngredient().getQuantiteStock()
+                        .compareTo(l.getQuantite().multiply(facteurMultiplicateur)) < 0)
+                .map(l -> l.getIngredient().getNom()).toList();
 
-        if (!manquants.isEmpty()) {
-            log.warn("Ingrédients insuffisants pour {}: {}", ordre.getNumeroOrdre(), manquants);
-            // Optionnel: créer une alerte
+        if (!manquants.isEmpty())
             alerteService.creerAlerteIngredientsInsuffisants(ordre, manquants);
-        }
     }
 
     private Utilisateur getCurrentUser() {
@@ -379,28 +323,16 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
 
     private OrdreProductionResponse mapToResponse(OrdreProduction ordre) {
         return OrdreProductionResponse.builder()
-                .id(ordre.getId())
-                .numeroOrdre(ordre.getNumeroOrdre())
-                .produitId(ordre.getProduit().getId())
-                .produitNom(ordre.getProduit().getNom())
-                .quantite(ordre.getQuantite())
-                .dateDebutPrevue(ordre.getDateDebutPrevue())
-                .dateFinPrevue(ordre.getDateFinPrevue())
-                .dateDebutReelle(ordre.getDateDebutReelle())
-                .dateFinReelle(ordre.getDateFinReelle())
-                .statut(ordre.getStatut())
-                .coutTotal(ordre.getCoutTotal())
-                .coutUnitaire(ordre.getCoutUnitaire())
-                .notes(ordre.getNotes())
-                .createurId(ordre.getCreateur() != null ? ordre.getCreateur().getId() : null)
-                .createurNom(ordre.getCreateur() != null ?
-                        ordre.getCreateur().getNom() + " " + ordre.getCreateur().getPrenom() : null)
+                .id(ordre.getId()).numeroOrdre(ordre.getNumeroOrdre()).produitId(ordre.getProduit().getId())
+                .produitNom(ordre.getProduit().getNom()).quantite(ordre.getQuantite())
+                .dateDebutPrevue(ordre.getDateDebutPrevue()).dateFinPrevue(ordre.getDateFinPrevue())
+                .dateDebutReelle(ordre.getDateDebutReelle()).dateFinReelle(ordre.getDateFinReelle())
+                .statut(ordre.getStatut()).coutTotal(ordre.getCoutTotal()).coutUnitaire(ordre.getCoutUnitaire())
+                .notes(ordre.getNotes()).createurId(ordre.getCreateur() != null ? ordre.getCreateur().getId() : null)
+                .createurNom(ordre.getCreateur() != null ? ordre.getCreateur().getNom() : null)
                 .responsableId(ordre.getResponsable() != null ? ordre.getResponsable().getId() : null)
-                .responsableNom(ordre.getResponsable() != null ?
-                        ordre.getResponsable().getNom() + " " + ordre.getResponsable().getPrenom() : null)
-                .dateCreation(ordre.getDateCreation())
-                .dateModification(ordre.getDateModification())
-                .enRetard(ordre.estEnRetard())
-                .build();
+                .responsableNom(ordre.getResponsable() != null ? ordre.getResponsable().getNom() : null)
+                .dateCreation(ordre.getDateCreation()).dateModification(ordre.getDateModification())
+                .enRetard(ordre.estEnRetard()).build();
     }
 }

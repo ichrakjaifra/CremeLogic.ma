@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class HistoriqueService {
 
     private final HistoriqueActiviteRepository historiqueRepository;
@@ -42,32 +43,32 @@ public class HistoriqueService {
     }
 
     private void enregistrer(String typeAction, String entite, Long entiteId, String description,
-                             String ancienneValeur, String nouvelleValeur) {
+            String ancienneValeur, String nouvelleValeur) {
         try {
             // Récupérer l'utilisateur connecté
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
 
-            if (utilisateur == null) {
+            if (utilisateur == null && !"LOGIN".equals(typeAction) && !"LOGOUT".equals(typeAction)) {
                 log.warn("Utilisateur non trouvé pour l'historique: {}", email);
                 return;
             }
 
             HistoriqueActivite historique = HistoriqueActivite.builder()
-                    .dateActivite(LocalDateTime.now())
-                    .typeAction(typeAction)
+                    .dateAction(LocalDateTime.now())
+                    .action(typeAction)
                     .entite(entite)
                     .entiteId(entiteId)
                     .description(description)
                     .ancienneValeur(ancienneValeur)
                     .nouvelleValeur(nouvelleValeur)
                     .utilisateur(utilisateur)
-                    .ipAdresse(getClientIp())
+                    .ipAddress(getClientIp())
                     .userAgent(request.getHeader("User-Agent"))
                     .build();
 
             historiqueRepository.save(historique);
-            log.debug("Historique enregistré: {} {} par {}", typeAction, entite, utilisateur.getEmail());
+            log.debug("Historique enregistré: {} {} par {}", typeAction, entite, email);
 
         } catch (Exception e) {
             log.error("Erreur lors de l'enregistrement de l'historique", e);

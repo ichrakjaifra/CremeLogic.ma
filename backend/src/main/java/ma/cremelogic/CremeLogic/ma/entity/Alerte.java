@@ -56,9 +56,14 @@ public class Alerte {
     @JoinColumn(name = "ordre_production_id")
     private OrdreProduction ordreProduction;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
     private Utilisateur utilisateur;
+
+    @ManyToOne
+    @JoinColumn(name = "vente_id")
+    private Vente vente;
 
     @PrePersist
     protected void onCreate() {

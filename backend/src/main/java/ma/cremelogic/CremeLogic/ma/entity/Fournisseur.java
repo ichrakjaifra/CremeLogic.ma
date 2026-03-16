@@ -3,6 +3,7 @@ package ma.cremelogic.CremeLogic.ma.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

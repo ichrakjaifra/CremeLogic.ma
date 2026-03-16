@@ -14,22 +14,31 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings("JpaAttributeTypeInspection")
 public class HistoriqueActivite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "utilisateur_id", nullable = false)
     private Utilisateur utilisateur;
 
     @Column(nullable = false)
-    private String action;
+    private String action; // CREATE, UPDATE, DELETE, LOGIN, etc.
 
-    @Column(nullable = false)
+    private String entite;
+    private Long entiteId;
+
+    @Column(nullable = false, length = 1000)
     private String description;
+
+    @Column(length = 1000)
+    private String ancienneValeur;
+
+    @Column(length = 1000)
+    private String nouvelleValeur;
 
     @Column(name = "ip_address")
     private String ipAddress;
@@ -43,6 +52,8 @@ public class HistoriqueActivite {
 
     @PrePersist
     protected void onCreate() {
-        dateAction = LocalDateTime.now();
+        if (dateAction == null) {
+            dateAction = LocalDateTime.now();
+        }
     }
 }

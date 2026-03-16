@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class MouvementStockServiceImpl implements MouvementStockService {
 
     private final MouvementStockRepository mouvementStockRepository;
@@ -36,7 +37,8 @@ public class MouvementStockServiceImpl implements MouvementStockService {
 
     @Override
     @Transactional
-    public MouvementStockResponse enregistrerEntree(Long ingredientId, BigDecimal quantite, BigDecimal coutUnitaire, String raison, Long commandeId) {
+    public MouvementStockResponse enregistrerEntree(Long ingredientId, BigDecimal quantite, BigDecimal coutUnitaire,
+            String raison, Long commandeId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingrédient", "id", ingredientId));
 
@@ -44,25 +46,16 @@ public class MouvementStockServiceImpl implements MouvementStockService {
         BigDecimal ancienneQuantite = ingredient.getQuantiteStock();
         BigDecimal nouvelleQuantite = ancienneQuantite.add(quantite);
 
-        // Mettre à jour le stock
         ingredient.setQuantiteStock(nouvelleQuantite);
-        if (coutUnitaire != null) {
+        if (coutUnitaire != null)
             ingredient.setPrixUnitaire(coutUnitaire);
-        }
         ingredientRepository.save(ingredient);
 
-        // Créer le mouvement
         MouvementStock mouvement = MouvementStock.builder()
-                .ingredient(ingredient)
-                .type(TypeMouvement.ENTREE)
-                .quantite(quantite)
-                .quantiteAvant(ancienneQuantite)
-                .quantiteApres(nouvelleQuantite)
-                .coutUnitaire(coutUnitaire)
+                .ingredient(ingredient).type(TypeMouvement.ENTREE).quantite(quantite)
+                .quantiteAvant(ancienneQuantite).quantiteApres(nouvelleQuantite).coutUnitaire(coutUnitaire)
                 .montantTotal(coutUnitaire != null ? coutUnitaire.multiply(quantite) : null)
-                .utilisateur(utilisateur)
-                .raison(raison)
-                .build();
+                .utilisateur(utilisateur).raison(raison).build();
 
         if (commandeId != null) {
             CommandeAchat commande = commandeAchatRepository.findById(commandeId)
@@ -71,49 +64,35 @@ public class MouvementStockServiceImpl implements MouvementStockService {
         }
 
         MouvementStock saved = mouvementStockRepository.save(mouvement);
-
-        // Historique
         historiqueService.enregistrerModification("INGREDIENT", ingredientId,
                 String.format("Entrée stock: %s %s", quantite, ingredient.getUniteMesure().getSymbole()));
-
-        // Vérifier les alertes
         alerteService.verifierAlertesIngredient(ingredientId);
-
-        log.info("Entrée stock enregistrée: {} {} pour {}", quantite, ingredient.getUniteMesure(), ingredient.getNom());
         return mapToResponse(saved);
     }
 
     @Override
     @Transactional
-    public MouvementStockResponse enregistrerSortie(Long ingredientId, BigDecimal quantite, String raison, Long ordreProductionId) {
+    public MouvementStockResponse enregistrerSortie(Long ingredientId, BigDecimal quantite, String raison,
+            Long ordreProductionId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingrédient", "id", ingredientId));
 
         if (ingredient.getQuantiteStock().compareTo(quantite) < 0) {
-            throw new ValidationException("Stock insuffisant. Disponible: " + ingredient.getQuantiteStock() +
-                    " " + ingredient.getUniteMesure().getSymbole());
+            throw new ValidationException("Stock insuffisant. Disponible: " + ingredient.getQuantiteStock());
         }
 
-        Utilisateur utilisateur = getCurrentUser();
         BigDecimal ancienneQuantite = ingredient.getQuantiteStock();
         BigDecimal nouvelleQuantite = ancienneQuantite.subtract(quantite);
-
-        // Mettre à jour le stock
         ingredient.setQuantiteStock(nouvelleQuantite);
         ingredientRepository.save(ingredient);
 
-        // Créer le mouvement
         MouvementStock mouvement = MouvementStock.builder()
-                .ingredient(ingredient)
-                .type(TypeMouvement.SORTIE)
-                .quantite(quantite)
-                .quantiteAvant(ancienneQuantite)
-                .quantiteApres(nouvelleQuantite)
+                .ingredient(ingredient).type(TypeMouvement.SORTIE).quantite(quantite)
+                .quantiteAvant(ancienneQuantite).quantiteApres(nouvelleQuantite)
                 .coutUnitaire(ingredient.getPrixUnitaire())
-                .montantTotal(ingredient.getPrixUnitaire() != null ? ingredient.getPrixUnitaire().multiply(quantite) : null)
-                .utilisateur(utilisateur)
-                .raison(raison)
-                .build();
+                .montantTotal(
+                        ingredient.getPrixUnitaire() != null ? ingredient.getPrixUnitaire().multiply(quantite) : null)
+                .utilisateur(getCurrentUser()).raison(raison).build();
 
         if (ordreProductionId != null) {
             OrdreProduction ordre = ordreProductionRepository.findById(ordreProductionId)
@@ -122,15 +101,8 @@ public class MouvementStockServiceImpl implements MouvementStockService {
         }
 
         MouvementStock saved = mouvementStockRepository.save(mouvement);
-
-        // Historique
-        historiqueService.enregistrerModification("INGREDIENT", ingredientId,
-                String.format("Sortie stock: %s %s", quantite, ingredient.getUniteMesure().getSymbole()));
-
-        // Vérifier les alertes
+        historiqueService.enregistrerModification("INGREDIENT", ingredientId, "Sortie stock: " + quantite);
         alerteService.verifierAlertesIngredient(ingredientId);
-
-        log.info("Sortie stock enregistrée: {} {} pour {}", quantite, ingredient.getUniteMesure(), ingredient.getNom());
         return mapToResponse(saved);
     }
 
@@ -140,35 +112,24 @@ public class MouvementStockServiceImpl implements MouvementStockService {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingrédient", "id", ingredientId));
 
-        if (ingredient.getQuantiteStock().compareTo(quantite) < 0) {
-            quantite = ingredient.getQuantiteStock(); // Ne peut pas perdre plus que le stock disponible
-        }
+        if (ingredient.getQuantiteStock().compareTo(quantite) < 0)
+            quantite = ingredient.getQuantiteStock();
 
-        Utilisateur utilisateur = getCurrentUser();
         BigDecimal ancienneQuantite = ingredient.getQuantiteStock();
         BigDecimal nouvelleQuantite = ancienneQuantite.subtract(quantite);
-
         ingredient.setQuantiteStock(nouvelleQuantite);
         ingredientRepository.save(ingredient);
 
         MouvementStock mouvement = MouvementStock.builder()
-                .ingredient(ingredient)
-                .type(TypeMouvement.PERDU)
-                .quantite(quantite)
-                .quantiteAvant(ancienneQuantite)
-                .quantiteApres(nouvelleQuantite)
+                .ingredient(ingredient).type(TypeMouvement.PERDU).quantite(quantite)
+                .quantiteAvant(ancienneQuantite).quantiteApres(nouvelleQuantite)
                 .coutUnitaire(ingredient.getPrixUnitaire())
-                .montantTotal(ingredient.getPrixUnitaire() != null ? ingredient.getPrixUnitaire().multiply(quantite) : null)
-                .utilisateur(utilisateur)
-                .raison(raison != null ? raison : "Perte non spécifiée")
-                .build();
+                .montantTotal(
+                        ingredient.getPrixUnitaire() != null ? ingredient.getPrixUnitaire().multiply(quantite) : null)
+                .utilisateur(getCurrentUser()).raison(raison).build();
 
         MouvementStock saved = mouvementStockRepository.save(mouvement);
-
-        // Créer une alerte pour la perte
         alerteService.creerAlertePerteStock(ingredient, quantite, raison);
-
-        log.warn("Perte enregistrée: {} {} pour {} - Raison: {}", quantite, ingredient.getUniteMesure(), ingredient.getNom(), raison);
         return mapToResponse(saved);
     }
 
@@ -178,65 +139,44 @@ public class MouvementStockServiceImpl implements MouvementStockService {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingrédient", "id", ingredientId));
 
-        Utilisateur utilisateur = getCurrentUser();
         BigDecimal ancienneQuantite = ingredient.getQuantiteStock();
-        BigDecimal difference = nouvelleQuantite.subtract(ancienneQuantite);
-
         ingredient.setQuantiteStock(nouvelleQuantite);
         ingredientRepository.save(ingredient);
 
         MouvementStock mouvement = MouvementStock.builder()
-                .ingredient(ingredient)
-                .type(TypeMouvement.AJUSTEMENT)
-                .quantite(difference)
-                .quantiteAvant(ancienneQuantite)
-                .quantiteApres(nouvelleQuantite)
-                .coutUnitaire(ingredient.getPrixUnitaire())
-                .utilisateur(utilisateur)
-                .raison(raison != null ? raison : "Ajustement de stock")
-                .build();
+                .ingredient(ingredient).type(TypeMouvement.AJUSTEMENT)
+                .quantite(nouvelleQuantite.subtract(ancienneQuantite))
+                .quantiteAvant(ancienneQuantite).quantiteApres(nouvelleQuantite)
+                .coutUnitaire(ingredient.getPrixUnitaire()).utilisateur(getCurrentUser()).raison(raison).build();
 
         MouvementStock saved = mouvementStockRepository.save(mouvement);
-
-        // Historique
-        historiqueService.enregistrerModification("INGREDIENT", ingredientId,
-                String.format("Ajustement stock: %s %s -> %s %s (Diff: %s)",
-                        ancienneQuantite, ingredient.getUniteMesure().getSymbole(),
-                        nouvelleQuantite, ingredient.getUniteMesure().getSymbole(),
-                        difference));
-
-        // Vérifier les alertes
+        historiqueService.enregistrerModification("INGREDIENT", ingredientId, "Ajustement stock: " + nouvelleQuantite);
         alerteService.verifierAlertesIngredient(ingredientId);
-
-        log.info("Ajustement stock: {} -> {} pour {}", ancienneQuantite, nouvelleQuantite, ingredient.getNom());
         return mapToResponse(saved);
     }
 
     @Override
     public List<MouvementStockResponse> getMouvementsParIngredient(Long ingredientId) {
         return mouvementStockRepository.findByIngredientIdOrderByDateMouvementDesc(ingredientId).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MouvementStockResponse> getMouvementsParPeriode(LocalDateTime debut, LocalDateTime fin) {
         return mouvementStockRepository.findByDateMouvementBetweenOrderByDateMouvementDesc(debut, fin).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MouvementStockResponse> getMouvementsParType(TypeMouvement type) {
         return mouvementStockRepository.findByTypeOrderByDateMouvementDesc(type).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
-    public Map<String, BigDecimal> getStatistiquesConsommation(Long ingredientId, LocalDateTime debut, LocalDateTime fin) {
+    public Map<String, BigDecimal> getStatistiquesConsommation(Long ingredientId, LocalDateTime debut,
+            LocalDateTime fin) {
         Map<String, BigDecimal> stats = new HashMap<>();
-
         Double totalEntrees = mouvementStockRepository.getTotalEntrees(ingredientId, debut, fin);
         Double totalSorties = mouvementStockRepository.getTotalSorties(ingredientId, debut, fin);
         Double totalPertes = mouvementStockRepository.getTotalPertes(ingredientId, debut, fin);
@@ -245,68 +185,46 @@ public class MouvementStockServiceImpl implements MouvementStockService {
         stats.put("totalSorties", totalSorties != null ? BigDecimal.valueOf(totalSorties) : BigDecimal.ZERO);
         stats.put("totalPertes", totalPertes != null ? BigDecimal.valueOf(totalPertes) : BigDecimal.ZERO);
 
-        // Consommation moyenne par jour
         long jours = java.time.Duration.between(debut, fin).toDays();
-        if (jours > 0 && totalSorties != null) {
+        if (jours > 0 && totalSorties != null)
             stats.put("consommationMoyenneJour", BigDecimal.valueOf(totalSorties / jours));
-        }
-
         return stats;
     }
 
     @Override
     public Map<String, Object> getHistoriqueComplet(Long ingredientId, LocalDateTime debut, LocalDateTime fin) {
         Map<String, Object> result = new HashMap<>();
-
         List<MouvementStock> mouvements = mouvementStockRepository
                 .findByIngredientIdAndDateMouvementBetweenOrderByDateMouvementDesc(ingredientId, debut, fin);
-
         result.put("mouvements", mouvements.stream().map(this::mapToResponse).collect(Collectors.toList()));
         result.put("statistiques", getStatistiquesConsommation(ingredientId, debut, fin));
 
-        Ingredient ingredient = ingredientRepository.findById(ingredientId).orElse(null);
-        if (ingredient != null) {
-            result.put("stockActuel", ingredient.getQuantiteStock());
-            result.put("stockMinimum", ingredient.getQuantiteMinimum());
-            result.put("stockMaximum", ingredient.getQuantiteMaximum());
-        }
-
+        ingredientRepository.findById(ingredientId).ifPresent(i -> {
+            result.put("stockActuel", i.getQuantiteStock());
+            result.put("stockMinimum", i.getQuantiteMinimum());
+            result.put("stockMaximum", i.getQuantiteMaximum());
+        });
         return result;
     }
 
     @Override
     @Transactional
     public void verifierEtCreerAlertes() {
-        List<Ingredient> ingredients = ingredientRepository.findAll();
-
-        for (Ingredient ingredient : ingredients) {
-            // Vérifier stock faible
-            if (ingredient.estStockFaible()) {
-                alerteService.creerAlerteStockFaible(ingredient);
-            }
-
-            // Vérifier expiration
-            if (ingredient.estExpire()) {
-                alerteService.creerAlerteExpiration(ingredient);
-            }
-        }
-
-        log.info("Vérification automatique des alertes terminée");
+        ingredientRepository.findAll().forEach(i -> {
+            if (i.estStockFaible())
+                alerteService.creerAlerteStockFaible(i);
+            if (i.estExpire())
+                alerteService.creerAlerteExpiration(i);
+        });
     }
 
     @Override
     @Transactional
     public void deduireConsommationProduction(Long ordreProductionId, Map<Long, BigDecimal> consommations) {
-        OrdreProduction ordre = ordreProductionRepository.findById(ordreProductionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Ordre de production", "id", ordreProductionId));
-
-        String raison = "Consommation pour production: " + ordre.getNumeroOrdre();
-
-        for (Map.Entry<Long, BigDecimal> consommation : consommations.entrySet()) {
-            enregistrerSortie(consommation.getKey(), consommation.getValue(), raison, ordreProductionId);
-        }
-
-        log.info("Consommations déduites pour l'ordre de production {}", ordre.getNumeroOrdre());
+        ordreProductionRepository.findById(ordreProductionId).ifPresent(o -> {
+            String raison = "Consommation pour production: " + o.getNumeroOrdre();
+            consommations.forEach((id, qte) -> enregistrerSortie(id, qte, raison, ordreProductionId));
+        });
     }
 
     private Utilisateur getCurrentUser() {
@@ -317,24 +235,17 @@ public class MouvementStockServiceImpl implements MouvementStockService {
 
     private MouvementStockResponse mapToResponse(MouvementStock mouvement) {
         return MouvementStockResponse.builder()
-                .id(mouvement.getId())
-                .dateMouvement(mouvement.getDateMouvement())
-                .ingredientId(mouvement.getIngredient().getId())
-                .ingredientNom(mouvement.getIngredient().getNom())
-                .type(mouvement.getType())
-                .quantite(mouvement.getQuantite())
-                .quantiteAvant(mouvement.getQuantiteAvant())
-                .quantiteApres(mouvement.getQuantiteApres())
-                .coutUnitaire(mouvement.getCoutUnitaire())
-                .montantTotal(mouvement.getMontantTotal())
+                .id(mouvement.getId()).dateMouvement(mouvement.getDateMouvement())
+                .ingredientId(mouvement.getIngredient().getId()).ingredientNom(mouvement.getIngredient().getNom())
+                .type(mouvement.getType()).quantite(mouvement.getQuantite())
+                .quantiteAvant(mouvement.getQuantiteAvant()).quantiteApres(mouvement.getQuantiteApres())
+                .coutUnitaire(mouvement.getCoutUnitaire()).montantTotal(mouvement.getMontantTotal())
                 .utilisateurId(mouvement.getUtilisateur() != null ? mouvement.getUtilisateur().getId() : null)
-                .utilisateurNom(mouvement.getUtilisateur() != null ?
-                        mouvement.getUtilisateur().getNom() + " " + mouvement.getUtilisateur().getPrenom() : null)
+                .utilisateurNom(mouvement.getUtilisateur() != null ? mouvement.getUtilisateur().getNom() : null)
                 .commandeId(mouvement.getCommande() != null ? mouvement.getCommande().getId() : null)
-                .ordreProductionId(mouvement.getOrdreProduction() != null ? mouvement.getOrdreProduction().getId() : null)
+                .ordreProductionId(
+                        mouvement.getOrdreProduction() != null ? mouvement.getOrdreProduction().getId() : null)
                 .venteId(mouvement.getVente() != null ? mouvement.getVente().getId() : null)
-                .raison(mouvement.getRaison())
-                .synchronise(mouvement.isSynchronise())
-                .build();
+                .raison(mouvement.getRaison()).synchronise(mouvement.isSynchronise()).build();
     }
 }

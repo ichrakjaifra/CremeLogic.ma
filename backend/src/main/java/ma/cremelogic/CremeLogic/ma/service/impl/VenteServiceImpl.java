@@ -1,6 +1,5 @@
 package ma.cremelogic.CremeLogic.ma.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.cremelogic.CremeLogic.ma.dto.request.LigneVenteRequest;
 import ma.cremelogic.CremeLogic.ma.dto.request.VenteRequest;
@@ -11,10 +10,13 @@ import ma.cremelogic.CremeLogic.ma.entity.*;
 import ma.cremelogic.CremeLogic.ma.enums.ModePaiement;
 import ma.cremelogic.CremeLogic.ma.exception.ResourceNotFoundException;
 import ma.cremelogic.CremeLogic.ma.exception.ValidationException;
-import ma.cremelogic.CremeLogic.ma.repository.*;
+import ma.cremelogic.CremeLogic.ma.repository.VenteRepository;
+import ma.cremelogic.CremeLogic.ma.repository.ProduitRepository;
+import ma.cremelogic.CremeLogic.ma.repository.UtilisateurRepository;
 import ma.cremelogic.CremeLogic.ma.service.interfaces.AlerteService;
 import ma.cremelogic.CremeLogic.ma.service.interfaces.MouvementStockService;
 import ma.cremelogic.CremeLogic.ma.service.interfaces.VenteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +29,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class VenteServiceImpl implements VenteService {
 
     private final VenteRepository venteRepository;
@@ -37,6 +39,21 @@ public class VenteServiceImpl implements VenteService {
     private final MouvementStockService mouvementStockService;
     private final AlerteService alerteService;
     private final HistoriqueService historiqueService;
+
+    @Autowired
+    public VenteServiceImpl(VenteRepository venteRepository,
+            ProduitRepository produitRepository,
+            UtilisateurRepository utilisateurRepository,
+            MouvementStockService mouvementStockService,
+            AlerteService alerteService,
+            HistoriqueService historiqueService) {
+        this.venteRepository = venteRepository;
+        this.produitRepository = produitRepository;
+        this.utilisateurRepository = utilisateurRepository;
+        this.mouvementStockService = mouvementStockService;
+        this.alerteService = alerteService;
+        this.historiqueService = historiqueService;
+    }
 
     @Override
     @Transactional
@@ -53,15 +70,12 @@ public class VenteServiceImpl implements VenteService {
                 .caissier(caissier)
                 .build();
 
-        // Ajouter les lignes de vente
         for (LigneVenteRequest ligneRequest : request.getLignesVente()) {
             Produit produit = produitRepository.findById(ligneRequest.getProduitId())
                     .orElseThrow(() -> new ResourceNotFoundException("Produit", "id", ligneRequest.getProduitId()));
 
-            // Vérifier le stock
             if (produit.getStockDisponible() < ligneRequest.getQuantite()) {
-                throw new ValidationException("Stock insuffisant pour le produit: " + produit.getNom() +
-                        " (Disponible: " + produit.getStockDisponible() + ")");
+                throw new ValidationException("Stock insuffisant for product: " + produit.getNom());
             }
 
             LigneVente ligne = LigneVente.builder()
@@ -73,8 +87,6 @@ public class VenteServiceImpl implements VenteService {
                     .build();
 
             vente.getLignesVente().add(ligne);
-
-            // Mettre à jour le stock
             produit.setStockDisponible(produit.getStockDisponible() - ligneRequest.getQuantite());
             produitRepository.save(produit);
         }
@@ -84,96 +96,65 @@ public class VenteServiceImpl implements VenteService {
 
         Vente saved = venteRepository.save(vente);
 
-        // Créer des mouvements de stock pour les sorties
-        for (LigneVente ligne : saved.getLignesVente()) {
-            // Cette partie serait implémentée dans MouvementStockService
-            log.info("Déduction stock pour produit {}: -{}", ligne.getProduit().getNom(), ligne.getQuantite());
-        }
-
-        historiqueService.enregistrerCreation("VENTE", saved.getId(),
-                "Vente enregistrée: " + saved.getNumeroVente() +
-                        " - Montant: " + saved.getMontantTotal());
-
-        log.info("Vente enregistrée: {} - Montant: {}", saved.getNumeroVente(), saved.getMontantTotal());
+        historiqueService.enregistrerCreation("VENTE", saved.getId(), "Vente " + saved.getNumeroVente());
+        log.info("Vente enregistrée: {}", saved.getNumeroVente());
         return mapToResponse(saved);
     }
 
     @Override
     public VenteResponse getVente(Long id) {
-        Vente vente = venteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vente", "id", id));
-        return mapToResponse(vente);
+        return mapToResponse(
+                venteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Vente", "id", id)));
     }
 
     @Override
     public List<VenteResponse> getAllVentes() {
-        return venteRepository.findAllByOrderByDateVenteDesc().stream()
-                .map(this::mapToResponse)
+        return venteRepository.findAllByOrderByDateVenteDesc().stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<VenteResponse> getVentesByDate(LocalDateTime debut, LocalDateTime fin) {
-        return venteRepository.findByDateVenteBetweenOrderByDateVenteDesc(debut, fin).stream()
-                .map(this::mapToResponse)
+        return venteRepository.findByDateVenteBetweenOrderByDateVenteDesc(debut, fin).stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<VenteResponse> getVentesByCaissier(Long caissierId) {
-        return venteRepository.findByCaissierIdOrderByDateVenteDesc(caissierId).stream()
-                .map(this::mapToResponse)
+        return venteRepository.findByCaissierIdOrderByDateVenteDesc(caissierId).stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<VenteResponse> searchVentesByClient(String recherche) {
-        return venteRepository.findByNomClientContainingIgnoreCaseOrTelephoneClientContainingIgnoreCase(recherche, recherche).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return venteRepository
+                .findByNomClientContainingIgnoreCaseOrTelephoneClientContainingIgnoreCase(recherche, recherche).stream()
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public void annulerVente(Long id, String raison) {
-        Vente vente = venteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vente", "id", id));
+        Vente vente = venteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Vente", "id", id));
+        if (vente.getDateVente().isBefore(LocalDateTime.now().minusDays(1)))
+            throw new ValidationException("Délai d'annulation dépassé");
 
-        if (vente.getDateVente().isBefore(LocalDateTime.now().minusDays(1))) {
-            throw new ValidationException("Impossible d'annuler une vente de plus d'un jour");
-        }
-
-        // Remettre les produits en stock
         for (LigneVente ligne : vente.getLignesVente()) {
-            Produit produit = ligne.getProduit();
-            produit.setStockDisponible(produit.getStockDisponible() + ligne.getQuantite());
-            produitRepository.save(produit);
+            Produit p = ligne.getProduit();
+            p.setStockDisponible(p.getStockDisponible() + ligne.getQuantite());
+            produitRepository.save(p);
         }
 
-        // Marquer la vente comme annulée (on pourrait ajouter un statut)
-        vente.setNotes((vente.getNotes() != null ? vente.getNotes() : "") +
-                "\nANNULÉE: " + raison);
-
+        vente.setNotes((vente.getNotes() != null ? vente.getNotes() : "") + "\nANNULÉE: " + raison);
         venteRepository.save(vente);
-
-        // Créer une alerte
         alerteService.creerAlerteVenteAnnulee(vente, raison);
-
-        historiqueService.enregistrerSuppression("VENTE", id,
-                "Annulation de la vente: " + vente.getNumeroVente() + " - Raison: " + raison);
-
-        log.info("Vente annulée: {} - Raison: {}", vente.getNumeroVente(), raison);
+        historiqueService.enregistrerSuppression("VENTE", id, "Annulation vente " + vente.getNumeroVente());
     }
 
     @Override
     public VenteResponse genererFacture(Long id) {
-        Vente vente = venteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vente", "id", id));
-
-        // Ici on générerait un PDF ou autre format de facture
-        log.info("Facture générée pour la vente: {}", vente.getNumeroVente());
-
-        return mapToResponse(vente);
+        return mapToResponse(
+                venteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Vente", "id", id)));
     }
 
     @Override
@@ -189,46 +170,29 @@ public class VenteServiceImpl implements VenteService {
 
     @Override
     public List<VenteResponse> getVentesRecent(int limit) {
-        return venteRepository.findRecentVentes(limit).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return venteRepository.findRecentVentes(limit).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     public Map<String, BigDecimal> getVentesParCategorie(LocalDateTime debut, LocalDateTime fin) {
-        List<Vente> ventes = venteRepository.findByDateVenteBetween(debut, fin);
         Map<String, BigDecimal> result = new HashMap<>();
-
-        for (Vente vente : ventes) {
-            for (LigneVente ligne : vente.getLignesVente()) {
-                String categorie = ligne.getProduit().getCategorie().toString();
-                result.merge(categorie, ligne.getMontantTotal(), BigDecimal::add);
-            }
-        }
-
+        venteRepository.findByDateVenteBetween(debut, fin).forEach(v -> v.getLignesVente().forEach(l -> {
+            result.merge(l.getProduit().getCategorie().toString(), l.getMontantTotal(), BigDecimal::add);
+        }));
         return result;
     }
 
     @Override
     public List<ProduitResponse> getProduitsPlusVendus(LocalDateTime debut, LocalDateTime fin, int limit) {
-        List<Vente> ventes = venteRepository.findByDateVenteBetween(debut, fin);
-        Map<Long, Long> quantitesVendues = new HashMap<>();
-
-        for (Vente vente : ventes) {
-            for (LigneVente ligne : vente.getLignesVente()) {
-                quantitesVendues.merge(ligne.getProduit().getId(),
-                        ligne.getQuantite().longValue(), Long::sum);
-            }
-        }
-
-        return quantitesVendues.entrySet().stream()
+        Map<Long, Long> counts = new HashMap<>();
+        venteRepository.findByDateVenteBetween(debut, fin).forEach(v -> v.getLignesVente().forEach(l -> {
+            counts.merge(l.getProduit().getId(), l.getQuantite().longValue(), Long::sum);
+        }));
+        return counts.entrySet().stream()
                 .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
                 .limit(limit)
-                .map(entry -> {
-                    Produit produit = produitRepository.findById(entry.getKey()).orElse(null);
-                    return produit != null ? mapProduitToResponse(produit) : null;
-                })
-                .filter(p -> p != null)
+                .map(e -> produitRepository.findById(e.getKey()).map(this::mapProduitToResponse).orElse(null))
+                .filter(java.util.Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -240,49 +204,25 @@ public class VenteServiceImpl implements VenteService {
 
     private VenteResponse mapToResponse(Vente vente) {
         List<LigneVenteResponse> lignes = vente.getLignesVente().stream()
-                .map(l -> LigneVenteResponse.builder()
-                        .id(l.getId())
-                        .venteId(vente.getId())
-                        .produitId(l.getProduit().getId())
-                        .produitNom(l.getProduit().getNom())
-                        .produitCode(l.getProduit().getCodeProduit())
-                        .quantite(l.getQuantite())
-                        .prixUnitaire(l.getPrixUnitaire())
-                        .remise(l.getRemise())
-                        .montantTotal(l.getMontantTotal())
-                        .build())
+                .map(l -> LigneVenteResponse.builder().id(l.getId()).produitId(l.getProduit().getId())
+                        .produitNom(l.getProduit().getNom()).quantite(l.getQuantite()).prixUnitaire(l.getPrixUnitaire())
+                        .remise(l.getRemise()).montantTotal(l.getMontantTotal()).build())
                 .collect(Collectors.toList());
-
         return VenteResponse.builder()
-                .id(vente.getId())
-                .numeroVente(vente.getNumeroVente())
-                .dateVente(vente.getDateVente())
-                .modePaiement(vente.getModePaiement())
-                .montantTotal(vente.getMontantTotal())
-                .montantPaye(vente.getMontantPaye())
-                .montantRendu(vente.getMontantRendu())
-                .montantDu(vente.getMontantDu())
-                .estPayee(vente.estPayee())
-                .nomClient(vente.getNomClient())
-                .telephoneClient(vente.getTelephoneClient())
-                .emailClient(vente.getEmailClient())
-                .notes(vente.getNotes())
+                .id(vente.getId()).numeroVente(vente.getNumeroVente()).dateVente(vente.getDateVente())
+                .modePaiement(vente.getModePaiement()).montantTotal(vente.getMontantTotal())
+                .montantPaye(vente.getMontantPaye()).montantRendu(vente.getMontantRendu())
+                .montantDu(vente.getMontantDu()).estPayee(vente.estPayee())
+                .nomClient(vente.getNomClient()).telephoneClient(vente.getTelephoneClient())
+                .emailClient(vente.getEmailClient()).notes(vente.getNotes())
                 .caissierId(vente.getCaissier() != null ? vente.getCaissier().getId() : null)
-                .caissierNom(vente.getCaissier() != null ?
-                        vente.getCaissier().getNom() + " " + vente.getCaissier().getPrenom() : null)
-                .dateCreation(vente.getDateCreation())
-                .lignesVente(lignes)
-                .build();
+                .caissierNom(vente.getCaissier() != null ? vente.getCaissier().getNom() : null)
+                .lignesVente(lignes).build();
     }
 
-    private ProduitResponse mapProduitToResponse(Produit produit) {
-        return ProduitResponse.builder()
-                .id(produit.getId())
-                .codeProduit(produit.getCodeProduit())
-                .nom(produit.getNom())
-                .categorie(produit.getCategorie())
-                .prixVente(produit.getPrixVente())
-                .stockDisponible(produit.getStockDisponible())
+    private ProduitResponse mapProduitToResponse(Produit p) {
+        return ProduitResponse.builder().id(p.getId()).codeProduit(p.getCodeProduit()).nom(p.getNom())
+                .categorie(p.getCategorie()).prixVente(p.getPrixVente()).stockDisponible(p.getStockDisponible())
                 .build();
     }
 }

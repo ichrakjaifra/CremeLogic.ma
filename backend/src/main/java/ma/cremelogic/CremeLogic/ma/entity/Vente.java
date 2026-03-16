@@ -48,6 +48,7 @@ public class Vente {
     @Column(length = 1000)
     private String notes;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
     private Utilisateur caissier;
@@ -101,6 +102,6 @@ public class Vente {
     }
 
     public boolean estPayee() {
-        return montantDu.compareTo(BigDecimal.ZERO) <= 0;
+        return getMontantDu().compareTo(BigDecimal.ZERO) <= 0;
     }
 }
