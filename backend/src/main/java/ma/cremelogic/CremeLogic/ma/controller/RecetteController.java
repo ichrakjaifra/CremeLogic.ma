@@ -1,4 +1,4 @@
-package ma.cremelogic.CremeLogic.ma.service.impl;
+package ma.cremelogic.CremeLogic.ma.controller;
 
 import ma.cremelogic.CremeLogic.ma.dto.request.RecetteRequest;
 import ma.cremelogic.CremeLogic.ma.dto.response.ApiResponse;

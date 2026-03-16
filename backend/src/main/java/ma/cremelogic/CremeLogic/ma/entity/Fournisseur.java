@@ -40,7 +40,7 @@ public class Fournisseur {
     @Column(length = 1000)
     private String notes;
 
-    @Column(precision = 3, scale = 2)
+    @Column(precision = 3)
     private Double noteEvaluation; // 0-5
 
     private boolean actif;
