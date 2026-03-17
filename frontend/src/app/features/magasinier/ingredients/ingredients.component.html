@@ -1,0 +1,128 @@
+<div class="ingredients-page p-2 animate-fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+    <div>
+      <h2 class="fw-bold color-marron mb-0 font-montserrat">Gestion des Ingrédients</h2>
+      <p class="text-muted small mb-0">Suivez vos stocks de matières premières en temps réel.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-custom px-4 py-2 shadow-sm" (click)="openMouvementModal()" *ngIf="canEdit()">
+        <i class="fas fa-exchange-alt me-2"></i> Mouvement Stock
+      </button>
+      <button class="btn btn-primary-custom px-4 py-2 shadow-sm" (click)="openIngredientModal()" *ngIf="canEdit()">
+        <i class="fas fa-plus me-2"></i> Nouvel Ingrédient
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="glass-card mb-4 p-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label extra-small fw-bold text-uppercase color-marron opacity-75">Rechercher</label>
+        <div class="input-group search-box">
+          <span class="input-group-text bg-white border-0 ps-3 text-muted"><i class="fas fa-search"></i></span>
+          <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" 
+                 class="form-control border-0 py-2 shadow-none" placeholder="Nom de l'ingrédient, code...">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label extra-small fw-bold text-uppercase color-marron opacity-75">État du Stock</label>
+        <div class="btn-group w-100 shadow-sm rounded-4 overflow-hidden">
+          <input type="radio" class="btn-check" name="stockFilter" id="all" [(ngModel)]="filterAlerte" value="ALL" (change)="applyFilters()">
+          <label class="btn btn-outline-custom border-0 py-2 extra-small fw-bold" for="all">TOUS</label>
+          
+          <input type="radio" class="btn-check" name="stockFilter" id="low" [(ngModel)]="filterAlerte" value="BAS" (change)="applyFilters()">
+          <label class="btn btn-outline-custom border-0 py-2 extra-small fw-bold" for="low">FAIBLE</label>
+          
+          <input type="radio" class="btn-check" name="stockFilter" id="out" [(ngModel)]="filterAlerte" value="RUPTURE" (change)="applyFilters()">
+          <label class="btn btn-outline-custom border-0 py-2 extra-small fw-bold" for="out">RUPTURE</label>
+        </div>
+      </div>
+      <div class="col-md-3 text-end">
+        <div class="text-muted small fw-bold mb-2">
+          Affichage: {{ filteredIngredients.length }} / {{ ingredients.length }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ingredients List -->
+  <div class="glass-card p-0 overflow-hidden shadow-lg border-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0 custom-table">
+        <thead>
+          <tr>
+            <th class="ps-4">Ingrédient</th>
+            <th>Catégorie</th>
+            <th>Prix Unitaire</th>
+            <th>Stock Actuel</th>
+            <th>Statut</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ing of filteredIngredients | paginate: { itemsPerPage: 10, currentPage: p }">
+            <td class="ps-4">
+              <div class="d-flex align-items-center">
+                <div class="p-2 bg-chocolate-light rounded-3 me-3 text-center" style="width: 45px;">
+                  <i class="fas fa-seedling color-marron"></i>
+                </div>
+                <div>
+                  <div class="fw-bold text-dark">{{ ing.nom }}</div>
+                  <div class="extra-small text-muted">{{ ing.codeIngredient }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge bg-light text-secondary border px-3 py-2 small">{{ ing.categorie || 'Matière Première' }}</span>
+            </td>
+            <td>
+              <div class="fw-bold color-marron">{{ ing.prixUnitaire | formatPrice }} / {{ ing.uniteMesure }}</div>
+            </td>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="fw-bold text-dark me-2">{{ ing.quantiteStock }} {{ ing.uniteMesure }}</div>
+                <div class="progress" style="height: 4px; width: 60px;">
+                  <div class="progress-bar" [ngClass]="ing.quantiteStock <= ing.quantiteMinimum ? 'bg-danger' : 'bg-success'" 
+                       [style.width.%]="(ing.quantiteStock / (ing.quantiteMaximum || (ing.quantiteMinimum * 5))) * 100">
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge px-3 py-2 rounded-pill fw-bold" 
+                    [ngClass]="{
+                      'bg-danger bg-opacity-10 text-danger': ing.quantiteStock <= 0,
+                      'bg-warning bg-opacity-10 text-warning': ing.quantiteStock > 0 && ing.quantiteStock <= ing.quantiteMinimum,
+                      'bg-success bg-opacity-10 text-success': ing.quantiteStock > ing.quantiteMinimum
+                    }">
+                {{ ing.quantiteStock | stockStatus:ing.quantiteMinimum }}
+              </span>
+            </td>
+            <td class="text-end pe-4">
+              <div class="d-flex justify-content-end gap-2">
+                <button class="btn-action edit" (click)="editIngredient(ing)" title="Modifier">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action key" (click)="viewHistory(ing)" title="Historique">
+                  <i class="fas fa-history"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredIngredients.length === 0">
+            <td colspan="6" class="py-5">
+              <app-empty-state title="Aucun ingrédient trouvé" 
+                              description="Ajustez vos filtres ou ajoutez une nouvelle matière première."
+                              icon="fas fa-box-open">
+              </app-empty-state>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="p-3 d-flex justify-content-center border-top bg-light bg-opacity-10" *ngIf="filteredIngredients.length > 0">
+      <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""></pagination-controls>
+    </div>
+  </div>
+</div>

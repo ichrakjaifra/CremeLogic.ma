@@ -1,0 +1,159 @@
+<div class="commandes-page p-2 animate-fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+    <div>
+      <h2 class="fw-bold color-marron mb-0 font-montserrat">Commandes d'Achat</h2>
+      <p class="text-muted small mb-0">Gérez vos approvisionnements et réceptions de marchandises.</p>
+    </div>
+    <button class="btn btn-primary-custom shadow-sm px-4 py-2 rounded-pill" (click)="openModal()">
+      <i class="fas fa-plus me-2"></i> Nouvelle Commande
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="glass-card mb-4 p-3 d-flex flex-wrap align-items-center gap-3 shadow-sm border-0">
+    <div class="input-group search-box" style="max-width: 300px;">
+      <span class="input-group-text bg-white border-0 ps-3 text-muted"><i class="fas fa-search"></i></span>
+      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" 
+             class="form-control border-0 py-2 shadow-none" placeholder="Rechercher fournisseur...">
+    </div>
+    <select class="form-select border-0 shadow-none bg-light rounded-pill px-4" style="width: auto;" 
+            [(ngModel)]="filterStatut" (change)="applyFilters()">
+      <option value="ALL">Tous les statuts</option>
+      <option value="EN_ATTENTE">En attente</option>
+      <option value="VALIDEE">Validée</option>
+      <option value="RECUE">Reçue</option>
+      <option value="ANNULEE">Annulée</option>
+    </select>
+  </div>
+
+  <!-- List -->
+  <div class="row g-3 px-2">
+    <div class="col-12" *ngFor="let c of filteredCommandes | paginate: { itemsPerPage: 10, currentPage: p }">
+      <div class="glass-card commande-card p-3 shadow-sm bg-white" [ngClass]="'statut-' + c.statut.toLowerCase()">
+        <div class="row align-items-center">
+          <div class="col-md-3">
+            <div class="fw-bold color-marron">{{ c.nomFournisseur }}</div>
+            <div class="extra-small text-muted">Créée le {{ c.dateCommande | date:'dd/MM/yyyy' }}</div>
+          </div>
+          <div class="col-md-2 text-center">
+            <div class="extra-small text-muted mb-1">Articles</div>
+            <div class="fw-bold">{{ c.lignesCommande.length }} réf.</div>
+          </div>
+          <div class="col-md-2 text-center">
+            <div class="extra-small text-muted mb-1">Total</div>
+            <div class="fw-bold color-dore">{{ c.montantTotal | formatPrice }}</div>
+          </div>
+          <div class="col-md-2 text-center">
+            <span class="badge rounded-pill px-3 py-2 extra-small"
+                  [ngClass]="{
+                    'bg-warning text-dark': c.statut === 'EN_ATTENTE',
+                    'bg-info': c.statut === 'VALIDEE',
+                    'bg-success': c.statut === 'RECUE',
+                    'bg-danger': c.statut === 'ANNULEE'
+                  }">{{ c.statut }}</span>
+          </div>
+          <div class="col-md-3 text-end">
+            <button *ngIf="c.statut === 'VALIDEE' || c.statut === 'EN_ATTENTE'" 
+                    class="btn btn-sm btn-success rounded-pill px-3 me-2" (click)="recevoirCommande(c.id)">
+              <i class="fas fa-check me-1"></i> RÉCEPTIONNER
+            </button>
+            <button class="btn btn-sm btn-light border-0 rounded-circle me-2" (click)="openModal(c)">
+              <i class="fas fa-edit text-muted"></i>
+            </button>
+            <button class="btn btn-sm btn-light border-0 rounded-circle text-danger" (click)="deleteCommande(c.id)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredCommandes.length === 0" class="col-12 py-5 text-center">
+      <app-empty-state title="Aucune commande d'achat" description="Gérez vos approvisionnements ici." icon="fas fa-truck-loading"></app-empty-state>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center mt-4">
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal d-block" *ngIf="showModal" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content glass-card border-0 shadow-2xl p-0 overflow-hidden">
+        <div class="modal-header border-0 p-4 pb-0">
+          <h4 class="fw-bold color-marron mb-0">{{ isEditing ? 'Modifier la Commande' : 'Nouvelle Commande d\'Achat' }}</h4>
+          <button class="btn-close shadow-none" (click)="showModal = false"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form [formGroup]="commandeForm" (ngSubmit)="saveCommande()">
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label class="form-label extra-small fw-bold text-muted text-uppercase">Fournisseur</label>
+                <select formControlName="fournisseurId" class="form-select border-0 bg-light rounded-3 shadow-none">
+                  <option [ngValue]="null">Sélectionner un fournisseur...</option>
+                  <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label extra-small fw-bold text-muted text-uppercase">Date de Réception Prévue</label>
+                <input type="date" formControlName="dateReceptionPrevue" class="form-control border-0 bg-light rounded-3 shadow-none">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0">Articles commandés</h6>
+                <button type="button" class="btn btn-sm btn-outline-custom rounded-pill" (click)="addLigne()">
+                  <i class="fas fa-plus me-1"></i> Ajouter un ingrédient
+                </button>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-borderless align-middle">
+                  <thead class="text-muted extra-small">
+                    <tr>
+                      <th style="width: 40%;">INGRÉDIENT</th>
+                      <th>QUANTITÉ</th>
+                      <th>PRIX UNITAIRE</th>
+                      <th class="text-end">TOTAL</th>
+                      <th style="width: 50px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody formArrayName="lignes">
+                    <tr *ngFor="let ligne of lignes.controls; let i=index" [formGroupName]="i">
+                      <td>
+                        <select formControlName="ingredientId" class="form-select border-0 bg-light rounded-3 shadow-none">
+                          <option *ngFor="let ing of ingredients" [value]="ing.id">{{ ing.nom }} ({{ ing.uniteMesure }})</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input type="number" formControlName="quantite" class="form-control border-0 bg-light rounded-3 shadow-none">
+                      </td>
+                      <td>
+                        <input type="number" formControlName="prixUnitaire" class="form-control border-0 bg-light rounded-3 shadow-none">
+                      </td>
+                      <td class="text-end fw-bold">
+                        {{ (ligne.get('quantite')?.value * ligne.get('prixUnitaire')?.value) | formatPrice }}
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-sm text-danger" (click)="removeLigne(i)"><i class="fas fa-times"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3 pt-4 border-top">
+              <button type="button" class="btn btn-light flex-grow-1 py-3 rounded-4 fw-bold" (click)="showModal = false">ANNULER</button>
+              <button type="submit" class="btn btn-primary-custom flex-grow-2 py-3 rounded-4 fw-bold shadow-lg" [disabled]="commandeForm.invalid || loading">
+                {{ isEditing ? 'ENREGISTRER LES MODIFICATIONS' : 'VALIDER LA COMMANDE' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

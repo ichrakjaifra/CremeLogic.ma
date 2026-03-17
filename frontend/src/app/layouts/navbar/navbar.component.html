@@ -1,0 +1,49 @@
+<nav class="navbar navbar-expand-lg border-bottom animate-fade-in">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center">
+      <h4 class="welcome-text mb-0" *ngIf="currentUser">
+        Bienvenue, <span class="role-text">{{ currentUser.prenom }}!</span>
+      </h4>
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <!-- Notifications -->
+      <div class="dropdown">
+        <button class="nav-icon-btn d-flex align-items-center justify-content-center" id="notifDropdown" data-bs-toggle="dropdown">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end glass-card border-0 mt-3 p-2 shadow-lg" aria-labelledby="notifDropdown">
+          <li><h6 class="dropdown-header font-montserrat fw-bold text-dark">Notifications</h6></li>
+          <li><hr class="dropdown-divider"></li>
+          <li class="p-1"><a class="dropdown-item rounded-3 small py-2" href="#">Stock de Farine faible !</a></li>
+          <li class="p-1"><a class="dropdown-item rounded-3 small py-2" href="#">Nouvel ordre de production</a></li>
+          <li class="p-1"><a class="dropdown-item rounded-3 small py-2" href="#">Vente réussie (120 MAD)</a></li>
+        </ul>
+      </div>
+
+      <!-- User Profile -->
+      <div class="dropdown" *ngIf="currentUser">
+        <button class="user-profile-btn d-flex align-items-center gap-3 border-0 text-decoration-none dropdown-toggle no-caret" id="userMenu" data-bs-toggle="dropdown">
+          <div class="text-end d-none d-md-block">
+            <div class="small fw-bold text-dark mb-0">{{ currentUser.prenom }} {{ currentUser.nom }}</div>
+            <div class="text-muted" style="font-size: 0.75rem;">{{ currentUser.role | roleLabel }}</div>
+          </div>
+          <img [src]="currentUser.photoUrl || 'assets/images/default-avatar.png'" alt="avatar" class="avatar-img">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end glass-card border-0 mt-3 p-2 shadow-lg" aria-labelledby="userMenu">
+          <li class="p-1"><a class="dropdown-item rounded-3 py-2" routerLink="/profil">
+            <i class="fas fa-user-circle me-3 text-muted"></i> Mon Profil
+          </a></li>
+          <li class="p-1"><a class="dropdown-item rounded-3 py-2" routerLink="/profil" [queryParams]="{ tab: 'settings' }">
+            <i class="fas fa-cog me-3 text-muted"></i> Paramètres
+          </a></li>
+          <li><hr class="dropdown-divider mx-2"></li>
+          <li class="p-1"><a class="dropdown-item rounded-3 py-2 text-danger" href="javascript:void(0)" (click)="logout()">
+            <i class="fas fa-sign-out-alt me-3"></i> Déconnexion
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

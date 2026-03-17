@@ -1,0 +1,80 @@
+<div class="tasks-page p-2 animate-fade-in">
+  <!-- Progress Header -->
+  <div class="progress-header mb-5 p-4 shadow-sm">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h2 class="fw-bold color-marron mb-1 font-montserrat">Ma Journée</h2>
+        <p class="text-muted small mb-0">Complétez vos missions pour garantir l'excellence CrèmeLogic.</p>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="small fw-bold color-marron">Objectif quotidien</span>
+          <span class="small fw-bold">{{ tasks.length }} tâches • {{ completedTasksCount }} terminées</span>
+        </div>
+        <div class="progress" style="height: 10px; border-radius: 10px;">
+          <div class="progress-bar bg-chocolate shadow-sm" [style.width.%]="(completedTasksCount / tasks.length) * 100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+    <div class="btn-group shadow-sm rounded-pill overflow-hidden bg-white border">
+      <button class="btn btn-sm px-4 py-2 border-0 fw-bold transition-all" 
+              [ngClass]="filterStatus === 'ALL' ? 'btn-primary-custom' : 'text-muted'"
+              (click)="filterStatus = 'ALL'">TOUTES</button>
+      <button class="btn btn-sm px-4 py-2 border-0 fw-bold transition-all" 
+              [ngClass]="filterStatus === 'PENDING' ? 'btn-primary-custom' : 'text-muted'"
+              (click)="filterStatus = 'PENDING'">À FAIRE</button>
+      <button class="btn btn-sm px-4 py-2 border-0 fw-bold transition-all" 
+              [ngClass]="filterStatus === 'DONE' ? 'btn-primary-custom' : 'text-muted'"
+              (click)="filterStatus = 'DONE'">TERMINÉES</button>
+    </div>
+  </div>
+
+  <!-- Task List -->
+  <div class="row g-3 px-2">
+    <div class="col-12" *ngFor="let task of filteredTasks">
+      <div class="glass-card task-card p-3 rounded-4 shadow-sm border-0 d-flex align-items-center"
+           [ngClass]="{'completed': task.done}" (click)="toggleTask(task)">
+        
+        <!-- Checkbox -->
+        <div class="custom-checkbox me-4" [ngClass]="{'checked': task.done}">
+          <i class="fas fa-check small" *ngIf="task.done"></i>
+        </div>
+
+        <!-- Info -->
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-center mb-1">
+            <span class="badge category-tag px-2 py-1 rounded-3 me-2" 
+                  [ngClass]="{
+                    'bg-warning bg-opacity-10 text-warning': task.category === 'Production',
+                    'bg-info bg-opacity-10 text-info': task.category === 'Hygiène',
+                    'bg-danger bg-opacity-10 text-danger': task.category === 'Maintenance',
+                    'bg-chocolate-light color-marron': task.category === 'Stock'
+                  }">
+              {{ task.category | uppercase }}
+            </span>
+            <span class="extra-small text-muted fw-bold"><i class="far fa-clock me-1"></i> {{ task.deadline }}</span>
+          </div>
+          <div class="fw-bold task-title color-marron">{{ task.title }}</div>
+        </div>
+
+        <!-- Status Indicator -->
+        <div class="ms-3 text-end">
+          <i class="fas" [ngClass]="task.done ? 'fa-check-circle text-success' : 'fa-circle-notch fa-spin text-muted opacity-50'"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="col-12" *ngIf="filteredTasks.length === 0">
+      <div class="py-5 text-center">
+        <app-empty-state title="Rien à signaler" 
+                        description="Toutes vos missions pour cette section sont à jour."
+                        icon="fas fa-calendar-check">
+        </app-empty-state>
+      </div>
+    </div>
+  </div>
+</div>

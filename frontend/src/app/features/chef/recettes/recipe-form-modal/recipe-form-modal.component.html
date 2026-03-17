@@ -1,0 +1,128 @@
+<div class="modal fade" [ngClass]="{'show d-block': isOpen}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content glass-modal shadow-2xl overflow-hidden">
+      <!-- Header -->
+      <div class="modal-header border-0 bg-chocolate-light p-4">
+        <h5 class="modal-title fw-bold color-marron font-montserrat">
+          <i class="fas" [ngClass]="isEditMode ? 'fa-edit' : 'fa-plus-circle'"></i>
+          <span class="ms-3">{{ isEditMode ? 'Modifier la Recette' : 'Nouvelle Création' }}</span>
+        </h5>
+        <button type="button" class="btn-close opacity-50" (click)="close()"></button>
+      </div>
+
+      <div class="modal-body p-4 p-lg-5">
+        <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+          <div class="row g-4">
+            <!-- Information Générale -->
+            <div class="col-lg-7">
+              <div class="glass-card p-4 h-100 border-0 shadow-sm">
+                <h6 class="fw-bold color-marron mb-4 font-montserrat opacity-75">INFORMATIONS GÉNÉRALES</h6>
+                
+                <div class="form-floating mb-3">
+                  <input type="text" formControlName="nom" class="form-control border-0 bg-light" id="recNom" placeholder="Nom">
+                  <label for="recNom">NOM DE LA RECETTE</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <textarea formControlName="description" class="form-control border-0 bg-light" id="recDesc" style="height: 100px" placeholder="Desc"></textarea>
+                  <label for="recDesc">DESCRIPTION / HISTOIRE</label>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="form-floating">
+                      <input type="number" formControlName="tempsPreparation" class="form-control border-0 bg-light" id="recPrep" placeholder="Prep">
+                      <label for="recPrep">PREP (MIN)</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-floating">
+                      <input type="number" formControlName="tempsCuisson" class="form-control border-0 bg-light" id="recCuis" placeholder="Cuis">
+                      <label for="recCuis">CUISSON (MIN)</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-floating">
+                      <input type="number" formControlName="nombrePortions" class="form-control border-0 bg-light" id="recPort" placeholder="Port">
+                      <label for="recPort">PORTIONS</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <label class="form-label small fw-bold color-marron opacity-75">INSTRUCTIONS DE PRÉPARATION</label>
+                  <textarea formControlName="instructions" class="form-control border-0 bg-light" style="height: 150px" placeholder="Étape 1..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ingrédients & Coût -->
+            <div class="col-lg-5">
+              <div class="glass-card p-4 h-100 border-0 shadow-sm d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <h6 class="fw-bold color-marron mb-0 font-montserrat opacity-75">INGRÉDIENTS</h6>
+                  <button type="button" class="btn btn-sm btn-outline-custom rounded-pill px-3" (click)="addLigne()">
+                    <i class="fas fa-plus me-1"></i> Ajouter
+                  </button>
+                </div>
+
+                <div class="flex-grow-1 overflow-auto pe-2" style="max-height: 400px;" formArrayName="lignesRecette">
+                  <div *ngFor="let ligne of lignesRecette.controls; let i=index" [formGroupName]="i" 
+                       class="ligne-item p-3 mb-3 border border-light shadow-sm">
+                    <div class="row g-2 align-items-center">
+                      <div class="col-7">
+                        <select formControlName="ingredientId" class="form-select border-0 bg-transparent fw-bold small">
+                          <option value="" disabled>Sélectionner...</option>
+                          <option *ngFor="let ing of ingredients" [value]="ing.id">{{ ing.nom }}</option>
+                        </select>
+                      </div>
+                      <div class="col-4">
+                        <div class="input-group input-group-sm">
+                          <input type="number" formControlName="quantite" class="form-control border-0 bg-transparent text-end fw-bold" placeholder="Qté">
+                          <span class="input-group-text border-0 bg-transparent extra-small opacity-50">
+                            {{ getIngredientUnite(ligne.get('ingredientId')?.value) }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="col-1 text-end">
+                        <button type="button" class="btn btn-link text-danger p-0 border-0" (click)="removeLigne(i)">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div *ngIf="lignesRecette.length === 0" class="text-center py-5 opacity-50">
+                    <i class="fas fa-mortar-pestle fa-2x mb-2"></i>
+                    <p class="small">Aucun ingrédient ajouté.</p>
+                  </div>
+                </div>
+
+                <!-- Récapitulatif Coût -->
+                <div class="mt-4 pt-4 border-top">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Coût Total Estimé</span>
+                    <span class="h5 fw-bold mb-0 color-marron">{{ calculateTotalCost | formatPrice }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">Coût par Portion</span>
+                    <span class="fw-bold text-dark">{{ (calculateTotalCost / (recipeForm.get('nombrePortions')?.value || 1)) | formatPrice }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end mt-5">
+            <button type="button" class="btn btn-link text-decoration-none color-marron opacity-75 fw-bold" (click)="close()">ANNULER</button>
+            <button type="submit" class="btn btn-primary-custom px-5 py-3 rounded-4 fw-bold shadow-lg" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isEditMode ? 'ENREGISTRER LES MODIFICATIONS' : 'FINALISER LA RECETTE' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [ngClass]="{'show d-block': isOpen}" *ngIf="isOpen"></div>

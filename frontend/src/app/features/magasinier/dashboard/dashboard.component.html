@@ -1,0 +1,110 @@
+<div class="magasinier-dashboard p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold color-marron mb-0">Gestion des Stocks</h2>
+      <p class="text-muted small mb-0">Contrôlez les arrivages et maintenez les niveaux de stock optimaux.</p>
+    </div>
+    <div class="text-muted small">Inventaire : {{ today | date:'dd MMMM yyyy' }}</div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-3">
+      <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4 alert-danger-soft border-0">
+        <div class="kpi-icon bg-danger-soft text-danger mb-3">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="text-muted small text-uppercase fw-bold mb-1">Stock Critique</div>
+        <div class="h3 fw-bold mb-0 text-danger">{{ stats?.ingredientsStockBas }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
+        <div class="kpi-icon bg-info-soft text-info mb-3">
+          <i class="fas fa-truck-loading"></i>
+        </div>
+        <div class="text-muted small text-uppercase fw-bold mb-1">Commandes en Cours</div>
+        <div class="h3 fw-bold mb-0">{{ stats?.commandesAchatEnAttente }}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
+        <div class="kpi-icon bg-success-soft text-success mb-3">
+          <i class="fas fa-box-open"></i>
+        </div>
+        <div class="text-muted small text-uppercase fw-bold mb-1">Livraisons du Jour</div>
+        <div class="h3 fw-bold mb-0">3</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
+        <div class="kpi-icon bg-beige mb-3">
+          <i class="fas fa-users-cog color-marron"></i>
+        </div>
+        <div class="text-muted small text-uppercase fw-bold mb-1">Fournisseurs Actifs</div>
+        <div class="h3 fw-bold mb-0">12</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Critical Ingredients List -->
+    <div class="col-lg-7">
+      <div class="card-custom p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0">Ingrédients à Réapprovisionner</h5>
+          <button class="btn btn-primary-custom btn-sm" routerLink="../ingredients">
+            Gérer le Stock
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="text-muted small bg-light">
+              <tr>
+                <th class="ps-3 border-0">INGRÉDIENT</th>
+                <th class="border-0">ACTUEL</th>
+                <th class="border-0">MINIMUM</th>
+                <th class="border-0 text-center">STATUT</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of ingredientsCritiques">
+                <td class="ps-3 fw-medium text-secondary">{{ item.nom }}</td>
+                <td>{{ item.quantiteStock }} {{ item.uniteMesure }}</td>
+                <td>{{ item.quantiteMinimum }} {{ item.uniteMesure }}</td>
+                <td class="text-center">
+                  <span class="badge px-3 py-2" [ngClass]="item.quantiteStock <= 0 ? 'bg-danger-soft text-danger' : 'bg-warning-soft text-warning'">
+                    {{ item.quantiteStock <= 0 ? 'RUPTURE' : 'BAS' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Purchases -->
+    <div class="col-lg-5">
+      <div class="card-custom p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0">Commandes d'Achat Récentes</h5>
+          <button class="btn btn-secondary-custom btn-sm" routerLink="../fournisseurs">
+            <i class="fas fa-plus me-1"></i> Commander
+          </button>
+        </div>
+        <div class="list-group list-group-flush">
+          <div class="list-group-item px-0 py-3 bg-transparent" *ngFor="let cmd of commandesAchat">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-bold text-secondary">#{{ cmd.id }} - {{ cmd.fournisseurNom }}</div>
+                <div class="extra-small text-muted">Créée le : {{ cmd.dateCommande | date:'dd/MM/yyyy' }}</div>
+              </div>
+              <span class="badge border bg-light text-dark px-2 py-1">{{ cmd.statut }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

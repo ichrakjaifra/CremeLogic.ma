@@ -1,0 +1,90 @@
+<div class="modal fade" id="userFormModal" tabindex="-1" aria-hidden="true" [ngClass]="{'show d-block': isOpen}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card shadow-2xl border-0 rounded-5 overflow-hidden">
+      <div class="modal-header border-0 bg-chocolate-light p-4">
+        <h5 class="modal-title fw-bold color-marron font-montserrat">
+          <i class="fas" [ngClass]="isEditMode ? 'fa-user-edit' : 'fa-user-plus'"></i>
+          <span class="ms-3">{{ isEditMode ? 'Modifier les Accès' : 'Nouveau Compte' }}</span>
+        </h5>
+        <button type="button" class="btn-close opacity-50" (click)="close()"></button>
+      </div>
+      
+      <div class="modal-body p-4 pt-5">
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+          <div class="row g-4">
+            <!-- Names -->
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <input type="text" formControlName="prenom" class="form-control bg-light border-0" id="floatPrenom" placeholder="Prénom"
+                       [ngClass]="{'is-invalid': (submitted || f['prenom'].touched) && f['prenom'].errors}">
+                <label for="floatPrenom" class="text-muted small fw-bold">PRÉNOM</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <input type="text" formControlName="nom" class="form-control bg-light border-0" id="floatNom" placeholder="Nom"
+                       [ngClass]="{'is-invalid': (submitted || f['nom'].touched) && f['nom'].errors}">
+                <label for="floatNom" class="text-muted small fw-bold">NOM DE FAMILLE</label>
+              </div>
+            </div>
+
+            <!-- Identifiers -->
+            <div class="col-md-12">
+              <div class="form-floating mb-1">
+                <input type="email" formControlName="email" class="form-control bg-light border-0" id="floatEmail" placeholder="Email"
+                       [ngClass]="{'is-invalid': (submitted || f['email'].touched) && f['email'].errors}">
+                <label for="floatEmail" class="text-muted small fw-bold">ADRESSE E-MAIL</label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-floating mb-1">
+                <input type="tel" formControlName="telephone" class="form-control bg-light border-0" id="floatTel" placeholder="Mobile"
+                       [ngClass]="{'is-invalid': (submitted || f['telephone'].touched) && f['telephone'].errors}">
+                <label for="floatTel" class="text-muted small fw-bold">TÉLÉPHONE (Optionnel)</label>
+              </div>
+            </div>
+
+            <!-- Role -->
+            <div class="col-md-7">
+              <div class="form-floating mb-1">
+                <select formControlName="role" class="form-select bg-light border-0" id="floatRole">
+                  <option value="ADMIN">Administrateur</option>
+                  <option value="CHEF">Chef Pâtissier</option>
+                  <option value="MAGASINIER">Magasinier</option>
+                  <option value="EMPLOYE">Vendeur / Employé</option>
+                </select>
+                <label for="floatRole" class="text-muted small fw-bold">RÔLE SYSTÈME</label>
+              </div>
+            </div>
+            <div class="col-md-5 d-flex align-items-center">
+              <div class="form-check form-switch ms-2 bg-light p-3 rounded-4 w-100 d-flex justify-content-between align-items-center">
+                <label class="form-check-label small fw-bold" for="userActif">ACTIF</label>
+                <input class="form-check-input custom-switch ms-0" type="checkbox" formControlName="actif" id="userActif">
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="col-md-12" *ngIf="!isEditMode">
+              <div class="form-floating mb-1">
+                <input type="password" formControlName="password" class="form-control bg-light border-0" id="floatPass" placeholder="Secret">
+                <label for="floatPass" class="text-muted small fw-bold">MOT DE PASSE PAR DÉFAUT</label>
+              </div>
+              <div class="extra-small text-muted mt-1 px-2 italic">
+                <i class="fas fa-info-circle me-1"></i> L'utilisateur pourra le modifier après sa première connexion.
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end mt-5 pt-4">
+            <button type="button" class="btn btn-link text-decoration-none color-marron opacity-75 fw-bold" (click)="close()">ANNULER</button>
+            <button type="submit" class="btn btn-primary-custom px-5 py-3 rounded-4 fw-bold shadow-lg" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isEditMode ? 'METTRE À JOUR' : 'CRÉER LE COMPTE' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [ngClass]="{'show d-block': isOpen}" *ngIf="isOpen"></div>

@@ -1,0 +1,148 @@
+<div class="produits-page p-2 animate-fade-in">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+    <div>
+      <h2 class="fw-bold color-marron mb-0 font-montserrat">Gestion de la Vitrine</h2>
+      <p class="text-muted small mb-0">Gérez vos produits finis, prix et stocks de vente.</p>
+    </div>
+    <button class="btn btn-primary-custom shadow-sm px-4 py-2 rounded-pill" (click)="openModal()">
+      <i class="fas fa-plus me-2"></i> Ajouter un Produit
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="glass-card mb-4 p-3 d-flex flex-wrap align-items-center gap-3 shadow-sm border-0">
+    <div class="input-group search-box" style="max-width: 300px;">
+      <span class="input-group-text bg-white border-0 ps-3 text-muted"><i class="fas fa-search"></i></span>
+      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" 
+             class="form-control border-0 py-2 shadow-none" placeholder="Rechercher...">
+    </div>
+    <div class="d-flex gap-2">
+      <button *ngFor="let cat of categories" 
+              class="btn btn-sm px-3 py-2 rounded-pill fw-bold border-0 transition-all font-montserrat"
+              [ngClass]="selectedCategorie === cat ? 'btn-primary-custom' : 'btn-light text-muted'"
+              (click)="selectedCategorie = cat; applyFilters()">
+        {{ cat }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="row g-4 px-2">
+    <div class="col-md-4 col-lg-3" *ngFor="let p of filteredProduits">
+      <div class="glass-card product-card p-3 h-100 border-0 shadow-sm bg-white position-relative">
+        <div class="product-img-container mb-3 shadow-inner">
+          <img [src]="p.photoUrl || 'assets/images/default-product.png'" class="img-preview" alt="Produit">
+          <span class="badge status-badge rounded-pill shadow-sm"
+                [ngClass]="p.actif ? 'bg-success' : 'bg-danger'">
+            {{ p.actif ? 'ACTIF' : 'INACTIF' }}
+          </span>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <div class="extra-small text-muted text-uppercase fw-bold">{{ p.categorie }}</div>
+            <h6 class="fw-bold color-marron mb-0">{{ p.nom }}</h6>
+          </div>
+          <div class="price-badge fw-bold color-dore">{{ p.prixVente | formatPrice }}</div>
+        </div>
+
+        <div class="stock-info d-flex justify-content-between align-items-center mb-3">
+          <div class="extra-small">
+            <span class="text-muted">Stock: </span>
+            <span class="fw-bold" [ngClass]="p.stockDisponible <= p.stockSeuil ? 'text-danger' : 'text-success'">
+              {{ p.stockDisponible }}
+            </span>
+          </div>
+          <div class="extra-small text-muted">Seuil: {{ p.stockSeuil }}</div>
+        </div>
+
+        <div class="d-flex gap-2 pt-2 border-top">
+          <button class="btn btn-sm btn-light flex-grow-1 border-0 rounded-3 color-marron fw-bold" (click)="openModal(p)">
+            <i class="fas fa-edit me-1"></i> MODIFIER
+          </button>
+          <button class="btn btn-sm btn-light border-0 rounded-3 text-danger" (click)="deleteProduit(p.id!)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredProduits.length === 0" class="col-12 py-5 text-center">
+      <app-empty-state title="Aucun produit" description="Commencez par ajouter votre premier délice à la vitrine." icon="fas fa-cookie-bite"></app-empty-state>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal d-block" *ngIf="showModal" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content glass-card border-0 rounded-4 shadow-2xl overflow-hidden p-0">
+        <div class="modal-header border-0 p-4 pb-0 d-flex justify-content-between">
+          <h4 class="fw-bold color-marron mb-0 font-montserrat">{{ isEditing ? 'Modifier le Produit' : 'Nouveau Produit' }}</h4>
+          <button class="btn-close shadow-none" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form [formGroup]="produitForm" (ngSubmit)="saveProduit()">
+            <div class="row g-4">
+              <!-- Image Upload Side -->
+              <div class="col-md-4 text-center">
+                <div class="product-img-container mb-3 mx-auto" style="width: 200px; height: 200px; cursor: pointer;" (click)="fileInput.click()">
+                  <img [src]="imagePreview || 'assets/images/default-product.png'" class="img-preview" alt="Preview">
+                  <div class="upload-overlay d-flex align-items-center justify-content-center position-absolute w-100 h-100 bg-dark bg-opacity-25 text-white opacity-0 transition-all hover-opacity-100">
+                    <i class="fas fa-camera fa-2x"></i>
+                  </div>
+                </div>
+                <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" class="d-none">
+                <p class="extra-small text-muted mt-2">Cliquez pour ajouter une image</p>
+              </div>
+
+              <!-- Info Side -->
+              <div class="col-md-8">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label extra-small fw-bold text-muted text-uppercase">Nom du Produit</label>
+                    <input type="text" formControlName="nom" class="form-control rounded-3 bg-light border-0 shadow-none">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label extra-small fw-bold text-muted text-uppercase">Catégorie</label>
+                    <select formControlName="categorie" class="form-select rounded-3 bg-light border-0 shadow-none">
+                      <option *ngFor="let cat of categories.slice(1)" [value]="cat">{{ cat }}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label extra-small fw-bold text-muted text-uppercase">Prix de Vente (DH)</label>
+                    <input type="number" formControlName="prixVente" class="form-control rounded-3 bg-light border-0 shadow-none">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label extra-small fw-bold text-muted text-uppercase">Stock Actuel</label>
+                    <input type="number" formControlName="stockDisponible" class="form-control rounded-3 bg-light border-0 shadow-none">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label extra-small fw-bold text-muted text-uppercase">Seuil d'Alerte</label>
+                    <input type="number" formControlName="stockSeuil" class="form-control rounded-3 bg-light border-0 shadow-none">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label extra-small fw-bold text-muted text-uppercase">Associer une Recette</label>
+                    <select formControlName="recetteId" class="form-select rounded-3 bg-light border-0 shadow-none">
+                      <option [ngValue]="null">Aucune (achat-revente)</option>
+                      <option *ngFor="let r of recettes" [value]="r.id">{{ r.nom }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3 mt-5">
+              <button type="button" class="btn btn-light flex-grow-1 py-3 rounded-4 fw-bold" (click)="closeModal()">ANNULER</button>
+              <button type="submit" class="btn btn-primary-custom flex-grow-2 py-3 rounded-4 fw-bold shadow-lg" [disabled]="produitForm.invalid || loading">
+                <i class="fas fa-spinner fa-spin me-2" *ngIf="loading"></i>
+                {{ isEditing ? 'ENREGISTRER LES MODIFICATIONS' : 'CRÉER LE PRODUIT' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

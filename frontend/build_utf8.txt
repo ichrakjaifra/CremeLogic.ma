@@ -1,0 +1,100 @@
+﻿'. [plugin 
+angular-compiler]
+
+    src/app/features/ch
+ef/dashboard/dashboard.
+component.html:92:25:
+      92 Ôöé           
+    <tr *ngIf="ordresR├
+®cents.length === 0">
+         ÔòÁ           
+               ~~~~~~~
+
+  Error occurs in the 
+template of component 
+ChefDashboardComponent.
+
+    src/app/features/ch
+ef/dashboard/dashboard.
+component.ts:12:15:
+      12 Ôöé   
+templateUrl: './dashboa
+rd.component.html',
+         ÔòÁ           
+     ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+
+
+X [ERROR] NG9: 
+Property 
+'noteEvaluation' does 
+not exist on type 
+'Fournisseur'. [plugin 
+angular-compiler]
+
+    src/app/features/ma
+gasinier/fournisseurs/f
+ournisseurs.component.h
+tml:52:50:
+      52 Ôöé           
+<div class="mt-2 
+text-warning" *ngIf="s.
+noteEvaluation">
+         ÔòÁ           
+                       
+                 
+~~~~~~~~~~~~~~
+
+  Error occurs in the 
+template of component 
+FournisseursComponent.
+
+    src/app/features/ma
+gasinier/fournisseurs/f
+ournisseurs.component.t
+s:15:15:
+      15 Ôöé   
+templateUrl: './fournis
+seurs.component.html',
+         ÔòÁ           
+     ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+
+
+X [ERROR] NG9: 
+Property 
+'noteEvaluation' does 
+not exist on type 
+'Fournisseur'. [plugin 
+angular-compiler]
+
+    src/app/features/ma
+gasinier/fournisseurs/f
+ournisseurs.component.h
+tml:54:48:
+      54 Ôöé ...     
+<span class="ms-1 
+text-muted">({{ 
+s.noteEvaluation 
+}})</span>
+         ÔòÁ           
+                       
+           
+~~~~~~~~~~~~~~
+
+  Error occurs in the 
+template of component 
+FournisseursComponent.
+
+    src/app/features/ma
+gasinier/fournisseurs/f
+ournisseurs.component.t
+s:15:15:
+      15 Ôöé   
+templateUrl: './fournis
+seurs.component.html',
+         ÔòÁ           
+     ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+
+

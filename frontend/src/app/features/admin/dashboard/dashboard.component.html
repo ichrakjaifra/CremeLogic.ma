@@ -1,0 +1,232 @@
+<div class="admin-dashboard p-2 animate-fade-in">
+  <!-- KPI Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="glass-card kpi-card p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="kpi-icon bg-gold-light me-3">
+            <i class="fas fa-shopping-basket"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">Ventes Jour</div>
+            <div class="h3 fw-bold mb-0 text-dark">{{ stats?.ventesJour || 0 | formatPrice }}</div>
+          </div>
+        </div>
+        <div class="progress mt-2" style="height: 4px;">
+          <div class="progress-bar bg-gold" role="progressbar" style="width: 75%"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="glass-card kpi-card p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="kpi-icon bg-pink-light me-3">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">Stock Faible</div>
+            <div class="h3 fw-bold mb-0 text-danger">{{ stats?.stockFaibleAlertes || 0 }} <span class="small opacity-75" style="font-size: 0.8rem;">ALERTES</span></div>
+          </div>
+        </div>
+        <div class="progress mt-2" style="height: 4px;">
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 40%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="glass-card kpi-card p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="kpi-icon bg-chocolate-light me-3">
+            <i class="fas fa-birthday-cake"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">Total Produits</div>
+            <div class="h3 fw-bold mb-0 text-dark">{{ stats?.produitsTotal || 0 }} <span class="small opacity-75" style="font-size: 0.8rem;">OBJETS</span></div>
+          </div>
+        </div>
+        <div class="progress mt-2" style="height: 4px;">
+          <div class="progress-bar bg-chocolate" role="progressbar" style="width: 60%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="glass-card kpi-card p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="kpi-icon bg-gold-light me-3">
+            <i class="fas fa-users"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">Utilisateurs</div>
+            <div class="h3 fw-bold mb-0 text-dark">12 <span class="small opacity-75" style="font-size: 0.8rem;">ACTIFS</span></div>
+          </div>
+        </div>
+        <div class="progress mt-2" style="height: 4px;">
+          <div class="progress-bar bg-gold" role="progressbar" style="width: 90%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <!-- Chart Section -->
+    <div class="col-lg-8">
+      <div class="glass-card p-4 h-100 chart-box">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h5 class="fw-bold color-marron mb-1 font-montserrat">Ventes & Bénéfices</h5>
+            <p class="text-muted small mb-0">Aperçu mensuel de la performance</p>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-sm glass-card border-0 px-3 py-2 dropdown-toggle" data-bs-toggle="dropdown">
+              Cette Année
+            </button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="ventesChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panels -->
+    <div class="col-lg-4">
+      <div class="d-flex flex-column gap-4 h-100">
+        <!-- Stock Alerts List -->
+        <div class="glass-card p-4 flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold color-marron mb-0 font-montserrat">Alertes Stock</h5>
+            <div class="text-muted cursor-pointer"><i class="fas fa-ellipsis-v"></i></div>
+          </div>
+          <div class="alert-list">
+            <div class="alert-item d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center">
+                <div class="dot bg-danger me-3"></div>
+                <span class="text-secondary fw-600">Farine de Blé</span>
+              </div>
+              <span class="text-danger small fw-bold">2.5 kg</span>
+            </div>
+            <div class="alert-item d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center">
+                <div class="dot bg-warning me-3"></div>
+                <span class="text-secondary fw-600">Chocolat Noir</span>
+              </div>
+              <span class="text-warning small fw-bold">1.2 kg</span>
+            </div>
+            <div class="alert-item d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <div class="dot bg-danger me-3"></div>
+                <span class="text-secondary fw-600">Beurre Doux</span>
+              </div>
+              <span class="text-danger small fw-bold">0.8 kg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="glass-card p-4" style="background: linear-gradient(135deg, rgba(253, 244, 227, 0.4) 0%, rgba(255, 249, 230, 0.6) 100%);">
+          <h5 class="fw-bold color-marron mb-4 font-montserrat text-center">Actions Rapides</h5>
+          <div class="row g-2">
+            <div class="col-6">
+              <button class="btn btn-primary-custom w-100 py-3" title="Ajouter Utilisateur">
+                <i class="fas fa-user-plus d-block mb-1"></i>
+                <span style="font-size: 0.7rem;">UTILISATEUR</span>
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="btn btn-secondary-custom w-100 py-3" title="Ajouter Produit">
+                <i class="fas fa-plus d-block mb-1"></i>
+                <span style="font-size: 0.7rem;">PRODUIT</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0 font-montserrat">Dernières Ventes</h5>
+          <a class="text-decoration-none color-marron small fw-bold">Voir Plus</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-borderless align-middle mb-0">
+            <thead>
+              <tr class="text-muted small text-uppercase">
+                <th>Client</th>
+                <th>Produit</th>
+                <th>Montant</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="alert-item">
+                <td class="fw-bold text-dark">Client Occasionnel</td>
+                <td class="text-secondary">Croissant x4</td>
+                <td class="fw-bold text-dark">48 MAD</td>
+                <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">Payé</span></td>
+              </tr>
+              <tr class="alert-item">
+                <td class="fw-bold text-dark">Ahmed Alami</td>
+                <td class="text-secondary">Tarte Fraise</td>
+                <td class="fw-bold text-dark">150 MAD</td>
+                <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">Payé</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0 font-montserrat">Production Active</h5>
+          <a class="text-decoration-none color-marron small fw-bold">Plannifier</a>
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <div class="alert-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="p-2 bg-chocolate-light rounded-3 me-3 text-center" style="width: 45px;">
+                <i class="fas fa-fire-alt"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-dark">Pain au Chocolat</div>
+                <div class="text-muted extra-small">Lot #342 - Étape: Cuisson</div>
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold color-marron">85%</div>
+              <div class="progress" style="height: 3px; width: 60px;">
+                <div class="progress-bar bg-chocolate" style="width: 85%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="alert-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="p-2 bg-chocolate-light rounded-3 me-3 text-center" style="width: 45px;">
+                <i class="fas fa-blender"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-dark">Mille-feuille</div>
+                <div class="text-muted extra-small">Lot #343 - Étape: Garnissage</div>
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold color-marron">30%</div>
+              <div class="progress" style="height: 3px; width: 60px;">
+                <div class="progress-bar bg-chocolate" style="width: 30%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

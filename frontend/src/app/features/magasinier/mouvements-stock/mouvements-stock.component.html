@@ -1,0 +1,77 @@
+<div class="mouvements-page p-2 animate-fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+    <div>
+      <h2 class="fw-bold color-marron mb-0 font-montserrat">Historique des Mouvements</h2>
+      <p class="text-muted small mb-0">Tracez chaque entrée et sortie de stock pour une transparence totale.</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="glass-card mb-4 p-3 d-flex flex-wrap align-items-center gap-3 shadow-sm border-0">
+    <div style="width: 250px;">
+      <select class="form-select border-0 shadow-none bg-light rounded-pill px-4" 
+              [(ngModel)]="selectedIngredientId" (change)="applyFilters()">
+        <option [ngValue]="null">Tous les ingrédients</option>
+        <option *ngFor="let ing of ingredients" [value]="ing.id">{{ ing.nom }}</option>
+      </select>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm px-3 py-2 rounded-pill fw-bold border-0"
+              [ngClass]="filterType === 'ALL' ? 'btn-primary-custom' : 'btn-light text-muted'"
+              (click)="filterType = 'ALL'; applyFilters()">TOUS</button>
+      <button class="btn btn-sm px-3 py-2 rounded-pill fw-bold border-0"
+              [ngClass]="filterType === 'ENTREE' ? 'btn-primary-custom' : 'btn-light text-muted'"
+              (click)="filterType = 'ENTREE'; applyFilters()">ENTRÉES</button>
+      <button class="btn btn-sm px-3 py-2 rounded-pill fw-bold border-0"
+              [ngClass]="filterType === 'SORTIE' ? 'btn-primary-custom' : 'btn-light text-muted'"
+              (click)="filterType = 'SORTIE'; applyFilters()">SORTIES</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="glass-card p-0 shadow-sm border-0 bg-white overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light text-muted extra-small uppercase fw-bold">
+          <tr>
+            <th class="ps-4 py-3">DATE</th>
+            <th>INGRÉDIENT</th>
+            <th>TYPE</th>
+            <th class="text-center">QUANTITÉ</th>
+            <th>RAISON</th>
+            <th class="pe-4">UTILISATEUR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of filteredMouvements | paginate: { itemsPerPage: 15, currentPage: p }">
+            <td class="ps-4 small">{{ m.dateMouvement | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="fw-bold color-marron">{{ getIngredientName(m.ingredientId) }}</td>
+            <td>
+              <span class="fw-bold" [ngClass]="'type-' + m.type.toLowerCase()">
+                <i class="fas me-1" [ngClass]="{
+                  'fa-arrow-down': m.type === 'ENTREE',
+                  'fa-arrow-up': m.type === 'SORTIE',
+                  'fa-exclamation-triangle': m.type === 'PERTE',
+                  'fa-sync': m.type === 'AJUSTEMENT'
+                }"></i>
+                {{ m.type }}
+              </span>
+            </td>
+            <td class="text-center fw-bold">{{ m.quantite }}</td>
+            <td class="small text-muted">{{ m.raison }}</td>
+            <td class="pe-4 small">#{{ m.utilisateurId }}</td>
+          </tr>
+          <tr *ngIf="filteredMouvements.length === 0">
+            <td colspan="6" class="text-center py-5">
+              <app-empty-state title="Aucun mouvement" description="Les activités de stock apparaîtront ici." icon="fas fa-history"></app-empty-state>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center mt-4 pb-4">
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+  </div>
+</div>
