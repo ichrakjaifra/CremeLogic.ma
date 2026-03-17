@@ -78,12 +78,20 @@ public class VenteServiceImpl implements VenteService {
                 throw new ValidationException("Stock insuffisant for product: " + produit.getNom());
             }
 
+            BigDecimal quantiteBD = new BigDecimal(ligneRequest.getQuantite());
+            BigDecimal totalLigne = produit.getPrixVente().multiply(quantiteBD);
+            BigDecimal remiseLigne = ligneRequest.getRemise();
+            if (remiseLigne != null && remiseLigne.compareTo(BigDecimal.ZERO) > 0) {
+                totalLigne = totalLigne.subtract(remiseLigne);
+            }
+
             LigneVente ligne = LigneVente.builder()
                     .vente(vente)
                     .produit(produit)
                     .quantite(ligneRequest.getQuantite())
                     .prixUnitaire(produit.getPrixVente())
-                    .remise(ligneRequest.getRemise())
+                    .remise(remiseLigne)
+                    .montantTotal(totalLigne)
                     .build();
 
             vente.getLignesVente().add(ligne);
