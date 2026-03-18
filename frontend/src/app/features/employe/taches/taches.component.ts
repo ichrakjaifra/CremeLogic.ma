@@ -3,91 +3,72 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { NotificationService } from '../../../core/services/notification.service';
-
-interface Task {
-  id: number;
-  title: string;
-  category: string;
-  deadline: string;
-  done: boolean;
-}
+import { TacheService } from '../../../core/services/tache.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Tache } from '../../../core/models/tache.model';
 
 @Component({
   selector: 'app-taches',
   standalone: true,
   imports: [CommonModule, FormsModule, EmptyStateComponent],
   templateUrl: './taches.component.html',
-  styles: [`
-    .tasks-page {
-      min-height: 100vh;
-      animation: fadeIn 0.5s ease-out;
-    }
-    .task-card {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      cursor: pointer;
-    }
-    .task-card:hover { border-color: var(--dore-clair); transform: translateX(5px); }
-    .task-card.completed { opacity: 0.6; background: rgba(255, 255, 255, 0.2); }
-    .task-card.completed .task-title { text-decoration: line-through; }
-    
-    .category-tag { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; }
-    .bg-chocolate-light { background: #FDF4E3; }
-    
-    .custom-checkbox {
-      width: 24px;
-      height: 24px;
-      border: 2px solid var(--marron-chocolat);
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .custom-checkbox.checked { background: var(--marron-chocolat); color: white; }
-    
-    .progress-header {
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(10px);
-      border-radius: 25px;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-  `]
+  styleUrls: ['./taches.component.css']
 })
 export class TachesComponent implements OnInit {
+  private tacheService = inject(TacheService);
+  private authService = inject(AuthService);
   private notification = inject(NotificationService);
 
-  tasks: Task[] = [
-    { id: 1, title: 'Préparer 20 baguettes de tradition', deadline: 'Aujourd\'hui 11:00', category: 'Production', done: false },
-    { id: 2, title: 'Vérifier la vitrine pâtisserie', deadline: 'Aujourd\'hui 09:00', category: 'Hygiène', done: true },
-    { id: 3, title: 'Nettoyer le four n°2', deadline: 'Aujourd\'hui 17:00', category: 'Maintenance', done: false },
-    { id: 4, title: 'Réceptionner commande farine', deadline: 'Aujourd\'hui 14:00', category: 'Stock', done: false },
-    { id: 5, title: 'Inventaire des boîtes d\'emballage', deadline: 'Demain 10:00', category: 'Stock', done: false }
-  ];
-
+  tasks: Tache[] = [];
   filterStatus: 'ALL' | 'PENDING' | 'DONE' = 'ALL';
+  loading = false;
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadTasks();
+  }
 
-  get filteredTasks(): Task[] {
-    if (this.filterStatus === 'PENDING') return this.tasks.filter(t => !t.done);
-    if (this.filterStatus === 'DONE') return this.tasks.filter(t => t.done);
+  loadTasks() {
+    const user = this.authService.currentUserValue;
+    if (!user) return;
+
+    this.loading = true;
+    // For simplicity, showing all tasks for now, or filter by user if role is EMPLOYEE
+    const obs = ['ADMIN', 'CHEF'].includes(user.role) 
+      ? this.tacheService.getAll() 
+      : this.tacheService.getByUtilisateur(user.id);
+
+    obs.subscribe({
+      next: (data) => {
+        this.tasks = data;
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
+  }
+
+  get filteredTasks(): Tache[] {
+    if (this.filterStatus === 'PENDING') return this.tasks.filter(t => t.statut !== 'TERMINE');
+    if (this.filterStatus === 'DONE') return this.tasks.filter(t => t.statut === 'TERMINE');
     return this.tasks;
   }
 
   get completedTasksCount(): number {
-    return this.tasks.filter(t => t.done).length;
+    return this.tasks.filter(t => t.statut === 'TERMINE').length;
   }
 
   getCount(status: 'PENDING' | 'DONE'): number {
-    return this.tasks.filter(t => status === 'DONE' ? t.done : !t.done).length;
+    return this.tasks.filter(t => status === 'DONE' ? t.statut === 'TERMINE' : t.statut !== 'TERMINE').length;
   }
 
-  toggleTask(task: Task) {
-    task.done = !task.done;
-    if (task.done) {
-      this.notification.success(`Tâche "${task.title}" terminée.`, 'Bravo');
-    }
+  toggleTask(task: Tache) {
+    const newStatut = task.statut === 'TERMINE' ? 'A_FAIRE' : 'TERMINE';
+    this.tacheService.updateStatut(task.id, newStatut).subscribe({
+      next: (updated) => {
+        task.statut = updated.statut;
+        if (task.statut === 'TERMINE') {
+          this.notification.success(`Tâche "${task.titre}" terminée.`, 'Bravo');
+        }
+      }
+    });
   }
 }

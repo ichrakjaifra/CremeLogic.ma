@@ -36,11 +36,11 @@
   <div class="row g-3 px-2">
     <div class="col-12" *ngFor="let task of filteredTasks">
       <div class="glass-card task-card p-3 rounded-4 shadow-sm border-0 d-flex align-items-center"
-           [ngClass]="{'completed': task.done}" (click)="toggleTask(task)">
+           [ngClass]="{'completed': task.statut === 'TERMINE'}" (click)="toggleTask(task)">
         
         <!-- Checkbox -->
-        <div class="custom-checkbox me-4" [ngClass]="{'checked': task.done}">
-          <i class="fas fa-check small" *ngIf="task.done"></i>
+        <div class="custom-checkbox me-4" [ngClass]="{'checked': task.statut === 'TERMINE'}">
+          <i class="fas fa-check small" *ngIf="task.statut === 'TERMINE'"></i>
         </div>
 
         <!-- Info -->
@@ -48,21 +48,22 @@
           <div class="d-flex align-items-center mb-1">
             <span class="badge category-tag px-2 py-1 rounded-3 me-2" 
                   [ngClass]="{
-                    'bg-warning bg-opacity-10 text-warning': task.category === 'Production',
-                    'bg-info bg-opacity-10 text-info': task.category === 'Hygiène',
-                    'bg-danger bg-opacity-10 text-danger': task.category === 'Maintenance',
-                    'bg-chocolate-light color-marron': task.category === 'Stock'
+                    'bg-danger bg-opacity-10 text-danger': task.priorite === 'HAUTE',
+                    'bg-warning bg-opacity-10 text-warning': task.priorite === 'MOYENNE',
+                    'bg-info bg-opacity-10 text-info': task.priorite === 'BASSE'
                   }">
-              {{ task.category | uppercase }}
+              {{ task.priorite }}
             </span>
-            <span class="extra-small text-muted fw-bold"><i class="far fa-clock me-1"></i> {{ task.deadline }}</span>
+            <span class="extra-small text-muted fw-bold" *ngIf="task.dateEcheance">
+              <i class="far fa-clock me-1"></i> {{ task.dateEcheance | date:'HH:mm' }}
+            </span>
           </div>
-          <div class="fw-bold task-title color-marron">{{ task.title }}</div>
+          <div class="fw-bold task-title color-marron">{{ task.titre }}</div>
         </div>
 
         <!-- Status Indicator -->
         <div class="ms-3 text-end">
-          <i class="fas" [ngClass]="task.done ? 'fa-check-circle text-success' : 'fa-circle-notch fa-spin text-muted opacity-50'"></i>
+          <i class="fas" [ngClass]="task.statut === 'TERMINE' ? 'fa-check-circle text-success' : 'fa-circle-notch fa-spin text-muted opacity-50'"></i>
         </div>
       </div>
     </div>

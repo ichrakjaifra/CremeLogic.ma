@@ -9,13 +9,15 @@
 
   <!-- KPI Cards -->
   <div class="row g-4 mb-5">
-    <div class="col-md-3">
-      <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
-        <div class="kpi-icon bg-dore-soft mb-3">
-          <i class="fas fa-fire color-dore"></i>
+    <div class="col-md-3 mb-4">
+      <div class="kpi-card p-3 bg-white rounded-4 shadow-sm border-0 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="kpi-icon bg-dore-soft color-marron">
+            <i class="fas fa-list-check"></i>
+          </div>
         </div>
-        <div class="text-muted small text-uppercase fw-bold mb-1">Ordres en Cours</div>
-        <div class="h3 fw-bold mb-0">{{ stats?.ordresEnCours }}</div>
+        <p class="text-muted small mb-1">Ordres en cours</p>
+        <h3 class="fw-bold mb-0 color-marron">{{ stats?.totalProductionsJour || 0 }}</h3>
       </div>
     </div>
     <div class="col-md-3">
@@ -24,7 +26,7 @@
           <i class="fas fa-check-circle text-success"></i>
         </div>
         <div class="text-muted small text-uppercase fw-bold mb-1">Terminés Aujourd'hui</div>
-        <div class="h3 fw-bold mb-0">{{ stats?.ordresTerminesAujourdhui }}</div>
+        <div class="h3 fw-bold mb-0">--</div>
       </div>
     </div>
     <div class="col-md-3">
@@ -33,7 +35,7 @@
           <i class="fas fa-book color-marron"></i>
         </div>
         <div class="text-muted small text-uppercase fw-bold mb-1">Recettes Actives</div>
-        <div class="h3 fw-bold mb-0">{{ stats?.recettesActives }}</div>
+        <div class="h3 fw-bold mb-0">--</div>
       </div>
     </div>
     <div class="col-md-3">
@@ -42,7 +44,7 @@
           <i class="fas fa-leaf text-warning"></i>
         </div>
         <div class="text-muted small text-uppercase fw-bold mb-1">Ingrédients Bas</div>
-        <div class="h3 fw-bold mb-0 text-warning">{{ stats?.ingredientsStockBas }}</div>
+        <div class="h3 fw-bold mb-0 text-warning">{{ stats?.ingredientsStockFaible || 0 }}</div>
       </div>
     </div>
   </div>

@@ -17,19 +17,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, FormatPricePipe, EmptyStateComponent, NgxPaginationModule],
   templateUrl: './commandes-achat.component.html',
-  styles: [`
-    .commandes-page { min-height: 100vh; animation: fadeIn 0.5s ease-out; }
-    .commande-card { 
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-left: 4px solid transparent;
-    }
-    .commande-card:hover { transform: translateX(5px); }
-    .statut-en_attente { border-left-color: #f1c40f; }
-    .statut-validee { border-left-color: #3498db; }
-    .statut-recue { border-left-color: #2ecc71; }
-    .statut-annulee { border-left-color: #e74c3c; }
-  `]
+  styleUrls: ['./commandes-achat.component.css']
 })
 export class CommandesAchatComponent implements OnInit {
   private commandeService = inject(CommandeAchatService);

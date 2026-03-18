@@ -13,16 +13,7 @@ import { CommandeAchat } from '../../../core/models/commande-achat.model';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.component.html',
-  styles: [`
-    .magasinier-dashboard { background-color: var(--bg-global); min-height: 100vh; }
-    .kpi-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-    .bg-danger-soft { background-color: #fef2f2; }
-    .bg-warning-soft { background-color: #fffbeb; }
-    .bg-success-soft { background-color: #f0fdf4; }
-    .bg-info-soft { background-color: #eff6ff; }
-    .alert-danger-soft { background-color: #fff1f2; }
-    .extra-small { font-size: 0.75rem; }
-  `]
+  styleUrls: ['./dashboard.component.css']
 })
 export class MagasinierDashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
@@ -46,7 +37,7 @@ export class MagasinierDashboardComponent implements OnInit {
     this.purchaseService.getAll().subscribe(cmds => {
       this.commandesAchat = cmds.slice(0, 5).map(c => ({
         id: c.id,
-        fournisseurNom: 'Fournisseur Central', // Mock
+        fournisseurNom: c.nomFournisseur ?? 'Fournisseur inconnu',
         dateCommande: c.dateCommande,
         statut: c.statut
       }));

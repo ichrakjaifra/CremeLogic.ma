@@ -10,78 +10,7 @@ import { RoleLabelPipe } from '../../shared/pipes/role-label.pipe';
   standalone: true,
   imports: [CommonModule, RouterLink, RoleLabelPipe],
   templateUrl: './navbar.component.html',
-  styles: [`
-    .navbar {
-      margin-left: 280px;
-      height: 80px;
-      background: rgba(255, 255, 255, 0.8) !important;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(139, 69, 19, 0.1) !important;
-      transition: all 0.3s ease;
-      z-index: 1000;
-    }
-    .welcome-text {
-      font-family: 'Poppins', sans-serif;
-      font-size: 1.25rem;
-      color: var(--texte-principal);
-    }
-    .role-text {
-      color: var(--marron-chocolat);
-      font-weight: 600;
-    }
-    .nav-icon-btn {
-      width: 45px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      background: #FDF4E3;
-      color: var(--marron-chocolat);
-      transition: all 0.3s ease;
-      border: none;
-      position: relative;
-    }
-    .nav-icon-btn:hover {
-      background: var(--beige-creme);
-      transform: translateY(-2px);
-    }
-    .notification-badge {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      width: 20px;
-      height: 20px;
-      background: #E74C3C;
-      color: white;
-      border-radius: 50%;
-      font-size: 0.7rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid white;
-      font-weight: bold;
-    }
-    .user-profile-btn {
-      padding: 5px 15px;
-      border-radius: 15px;
-      background: #FDF4E3;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(139, 69, 19, 0.05);
-    }
-    .user-profile-btn:hover {
-      background: var(--beige-creme);
-    }
-    .avatar-img {
-      width: 45px;
-      height: 45px;
-      border-radius: 12px;
-      object-fit: cover;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      border: 2px solid white;
-    }
-  `]
+  styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
   private authService = inject(AuthService);

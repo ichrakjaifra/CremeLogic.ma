@@ -15,65 +15,7 @@ import { NotificationService } from '../../../core/services/notification.service
   standalone: true,
   imports: [CommonModule, FormsModule, FormatPricePipe, StockStatusPipe, EmptyStateComponent, NgxPaginationModule],
   templateUrl: './ingredients.component.html',
-  styles: [`
-    .ingredients-page {
-      min-height: 100vh;
-      animation: fadeIn 0.5s ease-out;
-    }
-    .search-box {
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(139, 69, 19, 0.05);
-      background: white;
-    }
-    .custom-table thead th {
-      background: rgba(139, 69, 19, 0.03);
-      padding: 15px 20px;
-      color: var(--marron-chocolat);
-      font-size: 0.8rem;
-      text-uppercase: uppercase;
-      letter-spacing: 1px;
-      border-bottom: 2px solid rgba(139, 69, 19, 0.05);
-    }
-    .custom-table tbody tr {
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-    .custom-table tbody tr:hover {
-      background: rgba(253, 244, 227, 0.3);
-    }
-    .btn-action {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      transition: all 0.2s ease;
-      background: white;
-      color: var(--marron-chocolat);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    }
-    .btn-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
-    .btn-action.edit:hover { color: #3498db; }
-    .btn-action.key:hover { color: #f1c40f; }
-    
-    .bg-chocolate-light { background: #FDF4E3; }
-    
-    .custom-switch {
-      width: 2.8em !important;
-      height: 1.4em !important;
-      cursor: pointer;
-    }
-    .custom-switch:checked {
-      background-color: #2ecc71 !important;
-      border-color: #2ecc71 !important;
-    }
-  `]
+  styleUrls: ['./ingredients.component.css']
 })
 export class IngredientsComponent implements OnInit {
   private ingredientService = inject(IngredientService);

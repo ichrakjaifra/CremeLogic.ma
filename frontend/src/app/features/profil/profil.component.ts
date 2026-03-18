@@ -12,64 +12,7 @@ import { NotificationService } from '../../core/services/notification.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profil.component.html',
-  styles: [`
-    .profile-page {
-      min-height: 100vh;
-      animation: fadeIn 0.5s ease-out;
-    }
-    .profile-card {
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 30px;
-      overflow: hidden;
-    }
-    .avatar-wrapper {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      margin: 0 auto;
-    }
-    .profile-avatar {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid white;
-      box-shadow: 0 10px 25px rgba(139, 69, 19, 0.1);
-    }
-    .edit-avatar-btn {
-      position: absolute;
-      bottom: 5px;
-      right: 5px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--marron-chocolat);
-      color: white;
-      border: 2px solid white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .history-item {
-      position: relative;
-      padding-left: 25px;
-      padding-bottom: 20px;
-      border-left: 2px solid rgba(139, 69, 19, 0.1);
-    }
-    .history-item::before {
-      content: '';
-      position: absolute;
-      left: -7px;
-      top: 0;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--dore-clair);
-      border: 2px solid white;
-    }
-    .bg-chocolate-light { background: #FDF4E3; }
-  `]
+  styleUrls: ['./profil.component.css']
 })
 export class ProfilComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -83,11 +26,7 @@ export class ProfilComponent implements OnInit {
   loading = false;
   selectedFile: File | null = null;
 
-  activities = [
-    { type: 'LOGIN', description: 'Connexion réussie', date: new Date(), icon: 'fas fa-sign-in-alt' },
-    { type: 'UPDATE', description: 'Mise à jour du profil', date: new Date(Date.now() - 86400000), icon: 'fas fa-user-edit' },
-    { type: 'SALE', description: 'Vente #2045 effectuée', date: new Date(Date.now() - 172800000), icon: 'fas fa-shopping-cart' }
-  ];
+  activities: any[] = [];
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();

@@ -14,33 +14,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
   standalone: true,
   imports: [CommonModule, FormsModule, EmptyStateComponent, ConfirmDirective, NgxPaginationModule],
   templateUrl: './production.component.html',
-  styles: [`
-    .production-page {
-      min-height: 100vh;
-      animation: fadeIn 0.5s ease-out;
-    }
-    .order-card {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-left: 5px solid transparent;
-    }
-    .order-card:hover { transform: translateX(5px); box-shadow: 0 10px 20px rgba(139, 69, 19, 0.05) !important; }
-    .status-planifie { border-left-color: #95a5a6; }
-    .status-en_cours { border-left-color: #f1c40f; }
-    .status-termine { border-left-color: #2ecc71; }
-    .status-annule { border-left-color: #e74c3c; }
-    
-    .status-badge { font-size: 0.7rem; letter-spacing: 0.5px; }
-    .bg-chocolate-light { background: #FDF4E3; }
-    
-    .btn-status {
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-  `]
+  styleUrls: ['./production.component.css']
 })
 export class ProductionComponent implements OnInit {
   private ordreService = inject(OrdreProductionService);

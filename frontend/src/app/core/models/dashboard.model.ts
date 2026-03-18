@@ -1,30 +1,31 @@
 export interface AdminStats {
-  ventesJour: number;
-  produitsTotal: number;
-  stockFaibleAlertes: number;
-  ventesMensuelles: { mois: string; montant: number; benefice: number }[];
-  alertesRecentes: string[];
+  totalProduits: number;
+  totalIngredients: number;
+  totalVentesJour: number;
+  totalCommandesJour: number;
+  chiffreAffairesJour: number;
+  chiffreAffairesMois: number;
+  depensesMois: number;
+  produitsStockFaible: number;
+  ingredientsStockFaible: number;
+  alertesNonResolues: number;
+  ventesParMois: { [key: string]: number };
+  ventesParCategorie: { [key: string]: number };
 }
 
 export interface ChefStats {
-  ordresEnCours: number;
-  ordresTerminesAujourdhui: number;
-  recettesActives: number;
-  ingredientsStockBas: number;
-  ordresProductionJour?: number;
-  recettesPopulaires?: { nom: string; usage: number }[];
-  alertesIngredients?: string[];
+  totalProductionsJour: number;
+  ingredientsStockFaible: number;
+  produitsStockFaible?: number;
 }
 
 export interface MagasinierStats {
-  ingredientsStockBas: number;
-  ingredientsExpirantBientot: number;
-  commandesAchatEnAttente: number;
-  commandesARecevoir?: number;
+  ingredientsStockFaible: number;
+  totalCommandesJour: number;
+  ingredientsExpirant?: number;
 }
 
 export interface EmployeStats {
-  ventesAujourdhui: number;
-  ventesPersoJour?: number;
-  tachesACompleter: number;
+  chiffreAffairesJour?: number;
+  tachesACompleter?: number;
 }

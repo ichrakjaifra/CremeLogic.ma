@@ -1,0 +1,38 @@
+.admin-dashboard {
+  background-color: var(--bg-global);
+  min-height: 100vh;
+}
+.kpi-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.bg-beige { background-color: #fceec7; }
+.bg-beige-light { background-color: #fff9ea; }
+.bg-error-light { background-color: #fee2e2; }
+
+.bg-success-soft { background-color: #dcfce7; }
+.bg-warning-soft { background-color: #fef9c3; }
+.bg-danger-soft { background-color: #fee2e2; }
+
+.alert-danger-soft { background-color: #fff1f2; }
+
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+.extra-small { font-size: 0.75rem; }
+.supplier-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

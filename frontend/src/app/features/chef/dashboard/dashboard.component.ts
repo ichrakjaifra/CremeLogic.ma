@@ -10,18 +10,7 @@ import { OrdreProduction } from '../../../core/models/ordre-production.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.component.html',
-  styles: [`
-    .chef-dashboard { background-color: var(--bg-global); min-height: 100vh; }
-    .kpi-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-    .bg-dore-soft { background-color: #fffbeb; }
-    .bg-success-soft { background-color: #f0fdf4; }
-    .bg-warning-soft { background-color: #fffbeb; }
-    .bg-danger-soft { background-color: #fef2f2; }
-    .bg-info-soft { background-color: #eff6ff; }
-    .alert-warning-soft { background-color: #fffbeb; }
-    .extra-small { font-size: 0.75rem; }
-    .bg-beige-light { background-color: #fff9f0; }
-  `]
+  styleUrls: ['./dashboard.component.css']
 })
 export class ChefDashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
@@ -37,11 +26,10 @@ export class ChefDashboardComponent implements OnInit {
     });
 
     this.ordreService.getAll().subscribe(ordres => {
-      // Mocking some display data for the table
       this.ordresRecents = ordres.slice(0, 5).map(o => ({
         ...o,
-        produitNom: 'Gâteau Chocolat', // Mocking name until expansion logic implemented
-        recetteVersion: 'V2.1'
+        produitNom: o.nomProduit ?? 'Produit inconnu',
+        recetteVersion: 'V1.0' // Keeping as hardcoded for now as it's not in frontend model
       }));
     });
   }

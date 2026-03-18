@@ -2,20 +2,19 @@
   <!-- KPI Cards -->
   <div class="row g-4 mb-4">
     <div class="col-md-3">
-      <div class="glass-card kpi-card p-4">
-        <div class="d-flex align-items-center mb-3">
-          <div class="kpi-icon bg-gold-light me-3">
-            <i class="fas fa-shopping-basket"></i>
+        <div class="kpi-card p-4 rounded-4 shadow-sm bg-white border-0 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="kpi-icon bg-beige-light color-marron">
+              <i class="fas fa-euro-sign"></i>
+            </div>
+            <span class="badge bg-success-soft text-success">+12.5%</span>
           </div>
-          <div>
-            <div class="text-muted small fw-bold text-uppercase">Ventes Jour</div>
-            <div class="h3 fw-bold mb-0 text-dark">{{ stats?.ventesJour || 0 | formatPrice }}</div>
+          <p class="text-muted small mb-1">C.A. Mensuel</p>
+          <h3 class="fw-bold mb-0 color-marron">{{ stats?.chiffreAffairesMois | formatPrice }}</h3>
+          <div class="progress mt-2" style="height: 4px;">
+            <div class="progress-bar bg-gold" role="progressbar" style="width: 75%"></div>
           </div>
         </div>
-        <div class="progress mt-2" style="height: 4px;">
-          <div class="progress-bar bg-gold" role="progressbar" style="width: 75%"></div>
-        </div>
-      </div>
     </div>
     
     <div class="col-md-3">
@@ -26,7 +25,7 @@
           </div>
           <div>
             <div class="text-muted small fw-bold text-uppercase">Stock Faible</div>
-            <div class="h3 fw-bold mb-0 text-danger">{{ stats?.stockFaibleAlertes || 0 }} <span class="small opacity-75" style="font-size: 0.8rem;">ALERTES</span></div>
+            <div class="h3 fw-bold mb-0 text-danger">{{ (stats?.ingredientsStockFaible || 0) + (stats?.produitsStockFaible || 0) }} <span class="small opacity-75" style="font-size: 0.8rem;">ALERTES</span></div>
           </div>
         </div>
         <div class="progress mt-2" style="height: 4px;">
@@ -43,7 +42,7 @@
           </div>
           <div>
             <div class="text-muted small fw-bold text-uppercase">Total Produits</div>
-            <div class="h3 fw-bold mb-0 text-dark">{{ stats?.produitsTotal || 0 }} <span class="small opacity-75" style="font-size: 0.8rem;">OBJETS</span></div>
+            <div class="h3 fw-bold mb-0 text-dark">{{ stats?.totalProduits || 0 }} <span class="small opacity-75" style="font-size: 0.8rem;">ARTICLES</span></div>
           </div>
         </div>
         <div class="progress mt-2" style="height: 4px;">
@@ -56,11 +55,11 @@
       <div class="glass-card kpi-card p-4">
         <div class="d-flex align-items-center mb-3">
           <div class="kpi-icon bg-gold-light me-3">
-            <i class="fas fa-users"></i>
+            <i class="fas fa-chart-line"></i>
           </div>
           <div>
-            <div class="text-muted small fw-bold text-uppercase">Utilisateurs</div>
-            <div class="h3 fw-bold mb-0 text-dark">12 <span class="small opacity-75" style="font-size: 0.8rem;">ACTIFS</span></div>
+            <div class="text-muted small fw-bold text-uppercase">Ventes Jour</div>
+            <div class="h3 fw-bold mb-0 text-dark">{{ stats?.totalVentesJour || 0 }} <span class="small opacity-75" style="font-size: 0.8rem;">REÇUS</span></div>
           </div>
         </div>
         <div class="progress mt-2" style="height: 4px;">
