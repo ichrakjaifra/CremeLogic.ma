@@ -3,18 +3,18 @@
     <!-- Left Side: Brand/Marketing -->
     <div class="left-side d-none d-lg-flex">
       <div class="brand-content text-center">
-        <img src="assets/images/logo.png" alt="CrèmeLogic" class="mb-4 brand-logo animate-fade-in">
-        <h1 class="display-3 fw-bold text-white mb-3" style="font-family: 'Poppins', sans-serif; letter-spacing: 4px;">CrèmeLogic</h1>
+        <img src="assets/images/logo2.png" alt="CrèmeLogic" class="mb-4 brand-logo animate-fade-in">
+        <!-- <h1 class="display-3 fw-bold text-white mb-3" style="font-family: 'Poppins', sans-serif; letter-spacing: 4px;">CrèmeLogic</h1> -->
         <p class="lead text-white px-5 opacity-75">Gérez votre pâtisserie avec élégance et précision.</p>
-        
-        <div class="mt-5 d-flex gap-3 justify-content-center">
+
+        <!-- <div class="mt-5 d-flex gap-3 justify-content-center">
           <div class="glass-card p-3 px-4 text-white small">
             <i class="fas fa-magic me-2"></i> Artisanat
           </div>
           <div class="glass-card p-3 px-4 text-white small">
             <i class="fas fa-award me-2"></i> Qualité
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -32,7 +32,7 @@
               <span class="input-group-text">
                 <i class="fas fa-envelope opacity-50"></i>
               </span>
-              <input type="email" formControlName="email" class="form-control" 
+              <input type="email" formControlName="email" class="form-control"
                      placeholder="Adresse e-mail"
                      [ngClass]="{'is-invalid': submitted && f['email'].errors}">
             </div>
@@ -47,8 +47,8 @@
               <span class="input-group-text">
                 <i class="fas fa-lock opacity-50"></i>
               </span>
-              <input [type]="showPassword ? 'text' : 'password'" formControlName="password" 
-                     class="form-control" 
+              <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                     class="form-control"
                      placeholder="Mot de passe"
                      [ngClass]="{'is-invalid': submitted && f['password'].errors}">
               <span class="input-group-text pe-3 cursor-pointer" (click)="togglePassword()">

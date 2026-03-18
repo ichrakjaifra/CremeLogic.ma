@@ -32,7 +32,7 @@
   animation: fadeIn 0.8s ease-out;
 }
 .brand-logo {
-  max-width: 160px;
+  max-width: 320px;
   filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
 }
 .right-side {
