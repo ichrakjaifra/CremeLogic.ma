@@ -46,6 +46,10 @@ export class VentesComponent implements OnInit {
   }
 
   applyFilters() {
+    if (!this.products || !Array.isArray(this.products)) {
+      this.filteredProducts = [];
+      return;
+    }
     this.filteredProducts = this.products.filter(p => {
       const matchSearch = !this.searchProduct || p.nom.toLowerCase().includes(this.searchProduct.toLowerCase());
       const matchCat = this.selectedCategorie === 'TOUT' || p.categorie === this.selectedCategorie;

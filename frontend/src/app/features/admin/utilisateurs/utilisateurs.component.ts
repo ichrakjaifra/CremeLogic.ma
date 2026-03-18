@@ -128,6 +128,10 @@ export class UtilisateursComponent implements OnInit {
   }
 
   applyFilters() {
+    if (!this.users || !Array.isArray(this.users)) {
+      this.filteredUsers = [];
+      return;
+    }
     this.filteredUsers = this.users.filter(user => {
       const matchKeyword = !this.filter.keyword || 
         `${user.nom} ${user.prenom} ${user.email} ${user.telephone}`.toLowerCase().includes(this.filter.keyword.toLowerCase());

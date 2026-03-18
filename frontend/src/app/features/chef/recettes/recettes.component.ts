@@ -51,6 +51,10 @@ export class RecettesComponent implements OnInit {
   }
 
   applyFilters() {
+    if (!this.recettes || !Array.isArray(this.recettes)) {
+      this.filteredRecettes = [];
+      return;
+    }
     this.filteredRecettes = this.recettes.filter(r => 
       r.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
       r.description?.toLowerCase().includes(this.searchTerm.toLowerCase())

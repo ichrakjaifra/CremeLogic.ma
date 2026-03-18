@@ -9,11 +9,16 @@
   z-index: 1050;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
 }
 .sidebar-logo {
   max-width: 140px;
   margin: 15px auto;
   filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));
+  mix-blend-mode: multiply;
+  background-color: transparent;
 }
 .nav-link {
   padding: 14px 24px;

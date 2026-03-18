@@ -20,7 +20,8 @@ import { FooterComponent } from '../footer/footer.component';
       display: flex;
       flex-direction: column;
       margin-left: 280px;
-      min-height: 100vh;
+      height: 100vh;
+      overflow-y: auto;
       background: transparent;
     }
     .main-content {

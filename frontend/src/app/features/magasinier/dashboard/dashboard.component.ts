@@ -31,16 +31,24 @@ export class MagasinierDashboardComponent implements OnInit {
     });
 
     this.ingredientService.getStockFaible().subscribe(ingredients => {
-      this.ingredientsCritiques = ingredients.slice(0, 5);
+      if (ingredients && Array.isArray(ingredients)) {
+        this.ingredientsCritiques = ingredients.slice(0, 5);
+      } else {
+        this.ingredientsCritiques = [];
+      }
     });
 
     this.purchaseService.getAll().subscribe(cmds => {
-      this.commandesAchat = cmds.slice(0, 5).map(c => ({
-        id: c.id,
-        fournisseurNom: c.nomFournisseur ?? 'Fournisseur inconnu',
-        dateCommande: c.dateCommande,
-        statut: c.statut
-      }));
+      if (cmds && Array.isArray(cmds)) {
+        this.commandesAchat = cmds.slice(0, 5).map(c => ({
+          id: c.id,
+          fournisseurNom: c.nomFournisseur ?? 'Fournisseur inconnu',
+          dateCommande: c.dateCommande,
+          statut: c.statut
+        }));
+      } else {
+        this.commandesAchat = [];
+      }
     });
   }
 }

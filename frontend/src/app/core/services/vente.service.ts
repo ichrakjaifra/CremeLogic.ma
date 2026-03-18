@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Vente } from '../models/vente.model';
+import { ApiResponse } from '../models/api-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +14,21 @@ export class VenteService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<Vente[]> {
-    return this.http.get<Vente[]>(this.baseUrl);
+    return this.http.get<ApiResponse<Vente[]>>(this.baseUrl).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getById(id: number): Observable<Vente> {
-    return this.http.get<Vente>(`${this.baseUrl}/${id}`);
+    return this.http.get<ApiResponse<Vente>>(`${this.baseUrl}/${id}`).pipe(
+      map(response => response.data)
+    );
   }
 
   create(vente: Partial<Vente>): Observable<Vente> {
-    return this.http.post<Vente>(this.baseUrl, vente);
+    return this.http.post<ApiResponse<Vente>>(this.baseUrl, vente).pipe(
+      map(response => response.data)
+    );
   }
 
   annuler(id: number): Observable<void> {
@@ -30,16 +37,22 @@ export class VenteService {
 
   getByPeriode(debut: string, fin: string): Observable<Vente[]> {
     let params = new HttpParams().set('debut', debut).set('fin', fin);
-    return this.http.get<Vente[]>(`${this.baseUrl}/periode`, { params });
+    return this.http.get<ApiResponse<Vente[]>>(`${this.baseUrl}/periode`, { params }).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getByCaissier(caissierId: number): Observable<Vente[]> {
-    return this.http.get<Vente[]>(`${this.baseUrl}/caissier/${caissierId}`);
+    return this.http.get<ApiResponse<Vente[]>>(`${this.baseUrl}/caissier/${caissierId}`).pipe(
+      map(response => response.data || [])
+    );
   }
 
   searchByClient(keyword: string): Observable<Vente[]> {
     let params = new HttpParams().set('keyword', keyword);
-    return this.http.get<Vente[]>(`${this.baseUrl}/client`, { params });
+    return this.http.get<ApiResponse<Vente[]>>(`${this.baseUrl}/client`, { params }).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getFacture(id: number): Observable<Blob> {
@@ -48,22 +61,30 @@ export class VenteService {
 
   getChiffreAffaires(debut: string, fin: string): Observable<number> {
     let params = new HttpParams().set('debut', debut).set('fin', fin);
-    return this.http.get<number>(`${this.baseUrl}/chiffre-affaires`, { params });
+    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/chiffre-affaires`, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   getNombreVentes(debut: string, fin: string): Observable<number> {
     let params = new HttpParams().set('debut', debut).set('fin', fin);
-    return this.http.get<number>(`${this.baseUrl}/nombre-ventes`, { params });
+    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/nombre-ventes`, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   getRecentes(limit: number = 10): Observable<Vente[]> {
     let params = new HttpParams().set('limit', limit.toString());
-    return this.http.get<Vente[]>(`${this.baseUrl}/recentes`, { params });
+    return this.http.get<ApiResponse<Vente[]>>(`${this.baseUrl}/recentes`, { params }).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getParCategorie(debut: string, fin: string): Observable<any> {
     let params = new HttpParams().set('debut', debut).set('fin', fin);
-    return this.http.get<any>(`${this.baseUrl}/par-categorie`, { params });
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/par-categorie`, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   getProduitsPlusVendus(debut: string, fin: string, limit: number = 5): Observable<any> {
@@ -71,6 +92,8 @@ export class VenteService {
       .set('debut', debut)
       .set('fin', fin)
       .set('limit', limit.toString());
-    return this.http.get<any>(`${this.baseUrl}/produits-plus-vendus`, { params });
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/produits-plus-vendus`, { params }).pipe(
+      map(response => response.data)
+    );
   }
 }

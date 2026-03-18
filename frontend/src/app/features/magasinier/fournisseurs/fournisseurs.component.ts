@@ -25,7 +25,9 @@ export class FournisseursComponent implements OnInit {
   p: number = 1;
 
   get activeCount(): number {
-    return this.fournisseurs.filter(s => s.actif).length;
+    return (this.fournisseurs && Array.isArray(this.fournisseurs)) 
+      ? this.fournisseurs.filter(s => s.actif).length 
+      : 0;
   }
 
   ngOnInit() {
@@ -40,6 +42,10 @@ export class FournisseursComponent implements OnInit {
   }
 
   applySearch() {
+    if (!this.fournisseurs || !Array.isArray(this.fournisseurs)) {
+      this.filteredFournisseurs = [];
+      return;
+    }
     this.filteredFournisseurs = this.fournisseurs.filter(s => 
       s.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
       (s.ville && s.ville.toLowerCase().includes(this.searchTerm.toLowerCase()))

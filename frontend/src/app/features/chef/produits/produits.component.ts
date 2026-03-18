@@ -74,6 +74,10 @@ export class ProduitsComponent implements OnInit {
   }
 
   applyFilters() {
+    if (!this.produits || !Array.isArray(this.produits)) {
+      this.filteredProduits = [];
+      return;
+    }
     this.filteredProduits = this.produits.filter(p => {
       const matchSearch = !this.searchTerm || p.nom.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchCat = this.selectedCategorie === 'TOUT' || p.categorie === this.selectedCategorie;

@@ -9,7 +9,7 @@
 
   <!-- KPI Cards -->
   <div class="row g-4 mb-5">
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
         <div class="kpi-icon bg-success-soft text-success mb-3">
           <i class="fas fa-cash-register"></i>
@@ -18,16 +18,7 @@
         <div class="h3 fw-bold mb-0">{{ stats?.chiffreAffairesJour || 0 | formatPrice }}</div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
-        <div class="kpi-icon bg-warning-soft text-warning mb-3">
-          <i class="fas fa-tasks"></i>
-        </div>
-        <div class="text-muted small text-uppercase fw-bold mb-1">Tâches en Attente</div>
-        <div class="h3 fw-bold mb-0">5</div>
-      </div>
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div class="card-custom h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
         <div class="kpi-icon bg-info-soft text-info mb-3">
           <i class="fas fa-cookie-bite"></i>
@@ -46,9 +37,6 @@
         <div class="d-grid gap-3">
           <button class="btn btn-primary-custom py-3" routerLink="../ventes">
             <i class="fas fa-cart-plus me-2"></i> Nouvelle Vente
-          </button>
-          <button class="btn btn-secondary-custom py-3" routerLink="../taches">
-            <i class="fas fa-clipboard-check me-2"></i> Voir mes Tâches
           </button>
         </div>
       </div>
@@ -69,32 +57,6 @@
       </div>
     </div>
 
-    <!-- Daily Tasks -->
-    <div class="col-lg-8">
-      <div class="card-custom p-4 h-100">
-        <h5 class="fw-bold color-marron mb-4">Tâches Prioritaires</h5>
-        <div class="task-list">
-          <div class="task-item d-flex align-items-center p-3 mb-3 bg-light rounded border-start border-4 shadow-sm" 
-               [ngClass]="{
-                 'border-danger': task.priorite === 'HAUTE',
-                 'border-warning': task.priorite === 'MOYENNE',
-                 'border-info': task.priorite === 'BASSE'
-               }"
-               *ngFor="let task of tasks">
-            <div class="form-check me-3">
-              <input class="form-check-input" type="checkbox" (change)="completeTask(task)">
-            </div>
-            <div class="flex-grow-1">
-              <div class="fw-bold text-secondary">{{ task.titre }}</div>
-              <div class="extra-small text-muted">{{ task.dateEcheance ? (task.dateEcheance | date:'HH:mm') : 'Sans délai' }}</div>
-            </div>
-            <span class="badge bg-white text-muted border fw-normal">{{ task.priorite }}</span>
-          </div>
-          <div *ngIf="tasks.length === 0" class="text-center py-4 text-muted small">
-            Aucune tâche urgente pour le moment.
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Daily Tasks removed -->
   </div>
 </div>

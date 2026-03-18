@@ -46,6 +46,10 @@ export class IngredientsComponent implements OnInit {
   }
 
   applyFilters() {
+    if (!this.ingredients || !Array.isArray(this.ingredients)) {
+      this.filteredIngredients = [];
+      return;
+    }
     this.filteredIngredients = this.ingredients.filter(ing => {
       const matchSearch = !this.searchTerm || ing.nom.toLowerCase().includes(this.searchTerm.toLowerCase());
       let matchAlerte = true;

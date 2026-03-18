@@ -7,7 +7,6 @@ import { VenteService } from '../../../core/services/vente.service';
 import { Vente } from '../../../core/models/vente.model';
 import { FormatPricePipe } from '../../../shared/pipes/format-price.pipe';
 import { NotificationService } from '../../../core/services/notification.service';
-import { TacheService } from '../../../core/services/tache.service';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -20,7 +19,6 @@ import { AuthService } from '../../../core/services/auth.service';
 export class EmployeDashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
   private venteService = inject(VenteService);
-  private tacheService = inject(TacheService);
   private authService = inject(AuthService);
   private notification = inject(NotificationService);
 
@@ -35,29 +33,13 @@ export class EmployeDashboardComponent implements OnInit {
     });
 
     this.venteService.getAll().subscribe(ventes => {
-      if (ventes.length > 0) {
+      if (ventes && Array.isArray(ventes) && ventes.length > 0) {
         this.derniereVente = ventes[0];
       }
     });
 
-    this.loadTasks();
+    // loadTasks() removed as service doesn't exist
   }
 
-  loadTasks() {
-    const user = this.authService.currentUserValue;
-    if (user) {
-      this.tacheService.getByUtilisateur(user.id).subscribe(tasks => {
-        this.tasks = tasks.filter(t => t.statut !== 'TERMINE').slice(0, 4);
-      });
-    }
-  }
-
-  completeTask(task: any) {
-    this.tacheService.updateStatut(task.id, 'TERMINE').subscribe({
-      next: () => {
-        this.notification.success(`Tâche "${task.titre}" terminée !`, 'Bravo');
-        this.loadTasks();
-      }
-    });
-  }
+  // completeTask removed
 }

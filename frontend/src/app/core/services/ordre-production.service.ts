@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { OrdreProduction } from '../models/ordre-production.model';
+import { ApiResponse } from '../models/api-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,19 +14,27 @@ export class OrdreProductionService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<OrdreProduction[]> {
-    return this.http.get<OrdreProduction[]>(this.baseUrl);
+    return this.http.get<ApiResponse<OrdreProduction[]>>(this.baseUrl).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getById(id: number): Observable<OrdreProduction> {
-    return this.http.get<OrdreProduction>(`${this.baseUrl}/${id}`);
+    return this.http.get<ApiResponse<OrdreProduction>>(`${this.baseUrl}/${id}`).pipe(
+      map(response => response.data)
+    );
   }
 
   create(ordre: Partial<OrdreProduction>): Observable<OrdreProduction> {
-    return this.http.post<OrdreProduction>(this.baseUrl, ordre);
+    return this.http.post<ApiResponse<OrdreProduction>>(this.baseUrl, ordre).pipe(
+      map(response => response.data)
+    );
   }
 
   update(id: number, ordre: Partial<OrdreProduction>): Observable<OrdreProduction> {
-    return this.http.put<OrdreProduction>(`${this.baseUrl}/${id}`, ordre);
+    return this.http.put<ApiResponse<OrdreProduction>>(`${this.baseUrl}/${id}`, ordre).pipe(
+      map(response => response.data)
+    );
   }
 
   delete(id: number): Observable<void> {
@@ -33,16 +42,22 @@ export class OrdreProductionService {
   }
 
   getByProduit(produitId: number): Observable<OrdreProduction[]> {
-    return this.http.get<OrdreProduction[]>(`${this.baseUrl}/produit/${produitId}`);
+    return this.http.get<ApiResponse<OrdreProduction[]>>(`${this.baseUrl}/produit/${produitId}`).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getByStatut(statut: string): Observable<OrdreProduction[]> {
-    return this.http.get<OrdreProduction[]>(`${this.baseUrl}/statut/${statut}`);
+    return this.http.get<ApiResponse<OrdreProduction[]>>(`${this.baseUrl}/statut/${statut}`).pipe(
+      map(response => response.data || [])
+    );
   }
 
   changerStatut(id: number, statut: string): Observable<OrdreProduction> {
     let params = new HttpParams().set('statut', statut);
-    return this.http.patch<OrdreProduction>(`${this.baseUrl}/${id}/statut`, {}, { params });
+    return this.http.patch<ApiResponse<OrdreProduction>>(`${this.baseUrl}/${id}/statut`, {}, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   demarrer(id: number): Observable<void> {
@@ -59,12 +74,16 @@ export class OrdreProductionService {
   }
 
   getEnRetard(): Observable<OrdreProduction[]> {
-    return this.http.get<OrdreProduction[]>(`${this.baseUrl}/en-retard`);
+    return this.http.get<ApiResponse<OrdreProduction[]>>(`${this.baseUrl}/en-retard`).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getCoutPeriode(debut: string, fin: string): Observable<number> {
     let params = new HttpParams().set('debut', debut).set('fin', fin);
-    return this.http.get<number>(`${this.baseUrl}/cout-periode`, { params });
+    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/cout-periode`, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   getQuantiteProduite(produitId: number, debut: string, fin: string): Observable<number> {
@@ -72,11 +91,15 @@ export class OrdreProductionService {
       .set('produitId', produitId.toString())
       .set('debut', debut)
       .set('fin', fin);
-    return this.http.get<number>(`${this.baseUrl}/quantite-produite`, { params });
+    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/quantite-produite`, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   dupliquer(id: number): Observable<OrdreProduction> {
-    return this.http.post<OrdreProduction>(`${this.baseUrl}/${id}/dupliquer`, {});
+    return this.http.post<ApiResponse<OrdreProduction>>(`${this.baseUrl}/${id}/dupliquer`, {}).pipe(
+      map(response => response.data)
+    );
   }
 
   consommerIngredients(id: number): Observable<void> {

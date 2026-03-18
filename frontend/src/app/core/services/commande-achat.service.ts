@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { CommandeAchat } from '../models/commande-achat.model';
+import { ApiResponse } from '../models/api-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,19 +14,27 @@ export class CommandeAchatService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<CommandeAchat[]> {
-    return this.http.get<CommandeAchat[]>(this.baseUrl);
+    return this.http.get<ApiResponse<CommandeAchat[]>>(this.baseUrl).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getById(id: number): Observable<CommandeAchat> {
-    return this.http.get<CommandeAchat>(`${this.baseUrl}/${id}`);
+    return this.http.get<ApiResponse<CommandeAchat>>(`${this.baseUrl}/${id}`).pipe(
+      map(response => response.data)
+    );
   }
 
   create(commande: Partial<CommandeAchat>): Observable<CommandeAchat> {
-    return this.http.post<CommandeAchat>(this.baseUrl, commande);
+    return this.http.post<ApiResponse<CommandeAchat>>(this.baseUrl, commande).pipe(
+      map(response => response.data)
+    );
   }
 
   update(id: number, commande: Partial<CommandeAchat>): Observable<CommandeAchat> {
-    return this.http.put<CommandeAchat>(`${this.baseUrl}/${id}`, commande);
+    return this.http.put<ApiResponse<CommandeAchat>>(`${this.baseUrl}/${id}`, commande).pipe(
+      map(response => response.data)
+    );
   }
 
   delete(id: number): Observable<void> {
@@ -33,16 +42,22 @@ export class CommandeAchatService {
   }
 
   getByFournisseur(fournisseurId: number): Observable<CommandeAchat[]> {
-    return this.http.get<CommandeAchat[]>(`${this.baseUrl}/fournisseur/${fournisseurId}`);
+    return this.http.get<ApiResponse<CommandeAchat[]>>(`${this.baseUrl}/fournisseur/${fournisseurId}`).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getByStatut(statut: string): Observable<CommandeAchat[]> {
-    return this.http.get<CommandeAchat[]>(`${this.baseUrl}/statut/${statut}`);
+    return this.http.get<ApiResponse<CommandeAchat[]>>(`${this.baseUrl}/statut/${statut}`).pipe(
+      map(response => response.data || [])
+    );
   }
 
   changerStatut(id: number, statut: string): Observable<CommandeAchat> {
     let params = new HttpParams().set('statut', statut);
-    return this.http.patch<CommandeAchat>(`${this.baseUrl}/${id}/statut`, {}, { params });
+    return this.http.patch<ApiResponse<CommandeAchat>>(`${this.baseUrl}/${id}/statut`, {}, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   recevoir(id: number): Observable<void> {
@@ -50,12 +65,16 @@ export class CommandeAchatService {
   }
 
   getEnRetard(): Observable<CommandeAchat[]> {
-    return this.http.get<CommandeAchat[]>(`${this.baseUrl}/en-retard`);
+    return this.http.get<ApiResponse<CommandeAchat[]>>(`${this.baseUrl}/en-retard`).pipe(
+      map(response => response.data || [])
+    );
   }
 
   getMontantPeriode(debut: string, fin: string): Observable<number> {
     let params = new HttpParams().set('debut', debut).set('fin', fin);
-    return this.http.get<number>(`${this.baseUrl}/montant-periode`, { params });
+    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/montant-periode`, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   annuler(id: number, raison: string): Observable<void> {
@@ -64,6 +83,8 @@ export class CommandeAchatService {
   }
 
   dupliquer(id: number): Observable<CommandeAchat> {
-    return this.http.post<CommandeAchat>(`${this.baseUrl}/${id}/dupliquer`, {});
+    return this.http.post<ApiResponse<CommandeAchat>>(`${this.baseUrl}/${id}/dupliquer`, {}).pipe(
+      map(response => response.data)
+    );
   }
 }

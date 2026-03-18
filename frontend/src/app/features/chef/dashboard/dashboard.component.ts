@@ -26,11 +26,15 @@ export class ChefDashboardComponent implements OnInit {
     });
 
     this.ordreService.getAll().subscribe(ordres => {
-      this.ordresRecents = ordres.slice(0, 5).map(o => ({
-        ...o,
-        produitNom: o.nomProduit ?? 'Produit inconnu',
-        recetteVersion: 'V1.0' // Keeping as hardcoded for now as it's not in frontend model
-      }));
+      if (ordres && Array.isArray(ordres)) {
+        this.ordresRecents = ordres.slice(0, 5).map(o => ({
+          ...o,
+          produitNom: o.nomProduit ?? 'Produit inconnu',
+          recetteVersion: 'V1.0'
+        }));
+      } else {
+        this.ordresRecents = [];
+      }
     });
   }
 }
