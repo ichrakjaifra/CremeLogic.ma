@@ -29,7 +29,7 @@ export class ChefDashboardComponent implements OnInit {
       if (ordres && Array.isArray(ordres)) {
         this.ordresRecents = ordres.slice(0, 5).map(o => ({
           ...o,
-          produitNom: o.nomProduit ?? 'Produit inconnu',
+          produitNom: o.produitNom ?? 'Produit inconnu',
           recetteVersion: 'V1.0'
         }));
       } else {

@@ -5,21 +5,61 @@
 .order-card {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-left: 5px solid transparent;
+  border-left: 6px solid transparent;
 }
-.order-card:hover { transform: translateX(5px); box-shadow: 0 10px 20px rgba(139, 69, 19, 0.05) !important; }
-.status-planifie { border-left-color: #95a5a6; }
-.status-en_cours { border-left-color: #f1c40f; }
-.status-termine { border-left-color: #2ecc71; }
-.status-annule { border-left-color: #e74c3c; }
+.order-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(139, 69, 19, 0.1) !important; }
 
-.status-badge { font-size: 0.7rem; letter-spacing: 0.5px; }
-.bg-chocolate-light { background: #FDF4E3; }
+.status-planifie, .status-planifiee { border-left-color: #6c757d; }
+.status-en_cours { border-left-color: #f39c12; }
+.status-terminee, .status-termine { border-left-color: #27ae60; }
+.status-annulee, .status-annule { border-left-color: #c0392b; }
 
-.btn-status {
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  transition: all 0.2s;
+.status-badge { font-size: 0.75rem; letter-spacing: 0.5px; }
+.bg-chocolate-light { background: #fdf5e6; }
+.bg-success-soft { background: rgba(39, 174, 96, 0.1); }
+.bg-warning-soft { background: rgba(243, 156, 18, 0.1); }
+.bg-danger-soft { background: rgba(192, 57, 43, 0.1); }
+
+.animate-pulse {
+  animation: pulse-red 2s infinite;
 }
+
+@keyframes pulse-red {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.extra-small { font-size: 0.75rem; }
+.color-dore { color: #d4af37; }
+.color-marron { color: #5d4037; }
+
+/* Custom Pagination Styling */
+::ng-deep .ngx-pagination .current {
+  background: #5d4037 !important;
+  border-radius: 6px;
+  padding: 5px 12px;
+}
+
+::ng-deep .ngx-pagination a:hover, 
+::ng-deep .ngx-pagination .current:hover {
+  background: #8b4513 !important;
+  color: white !important;
+}
+
+::ng-deep .ngx-pagination .disabled {
+  padding: 5px 12px;
+}
+
+/* Status Badge Overrides */
+.status-badge {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 100px;
+  display: inline-block;
+}
+
+.bg-success { background-color: #27ae60 !important; color: white !important; }
+.bg-warning { background-color: #f39c12 !important; color: white !important; }
+.bg-danger { background-color: #c0392b !important; color: white !important; }
+.bg-secondary { background-color: #7f8c8d !important; color: white !important; }

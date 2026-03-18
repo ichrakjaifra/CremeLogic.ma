@@ -60,12 +60,12 @@ export class OrdreProductionService {
     );
   }
 
-  demarrer(id: number): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${id}/demarrer`, {});
+  demarrer(id: number, request: any): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${id}/demarrer`, request);
   }
 
-  terminer(id: number): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${id}/terminer`, {});
+  terminer(id: number, request: any): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${id}/terminer`, request);
   }
 
   annuler(id: number, raison: string): Observable<void> {

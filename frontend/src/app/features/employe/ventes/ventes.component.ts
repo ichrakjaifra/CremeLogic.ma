@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProduitService } from '../../../core/services/produit.service';
 import { VenteService } from '../../../core/services/vente.service';
-import { Produit } from '../../../core/models/produit.model';
+import { Produit, PRODUCT_CATEGORIES } from '../../../core/models/produit.model';
 import { Vente, LigneVente } from '../../../core/models/vente.model';
 import { FormatPricePipe } from '../../../shared/pipes/format-price.pipe';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -22,7 +22,7 @@ export class VentesComponent implements OnInit {
 
   products: Produit[] = [];
   filteredProducts: Produit[] = [];
-  categories: string[] = ['TOUT', 'PAIN', 'PATISSERIE', 'VIENNOISERIE', 'SALE', 'AUTRE'];
+  categories: string[] = ['TOUT', ...PRODUCT_CATEGORIES];
   selectedCategorie: string = 'TOUT';
   searchProduct: string = '';
   cart: LigneVente[] = [];

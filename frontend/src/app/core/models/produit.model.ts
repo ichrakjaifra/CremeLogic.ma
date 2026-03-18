@@ -13,6 +13,17 @@ export interface Produit {
   actif: boolean;
 }
 
+export const PRODUCT_CATEGORIES = [
+  'GATEAUX',
+  'PATISSERIES',
+  'VIENNOISERIES',
+  'BOULANGERIE',
+  'DESSERTS',
+  'BOISSONS',
+  'SANDWICHS',
+  'SALADES'
+];
+
 export interface CategorieProduit {
   id: number;
   nom: string;

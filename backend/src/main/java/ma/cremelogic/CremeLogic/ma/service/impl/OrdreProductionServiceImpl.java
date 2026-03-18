@@ -246,14 +246,13 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
 
     @Override
     public BigDecimal getCoutTotalProductionPeriode(LocalDate debut, LocalDate fin) {
-        Double cout = ordreProductionRepository.getCoutTotalProductionPeriode(debut, fin);
-        return cout != null ? BigDecimal.valueOf(cout) : BigDecimal.ZERO;
+        BigDecimal cout = ordreProductionRepository.getCoutTotalProductionPeriode(debut.atStartOfDay(), fin.atTime(23, 59, 59));
+        return cout != null ? cout : BigDecimal.ZERO;
     }
 
     @Override
     public Integer getQuantiteProduite(Long produitId, LocalDate debut, LocalDate fin) {
-        return ordreProductionRepository.getQuantiteProduitePeriode(produitId, debut.atStartOfDay(),
-                fin.atTime(23, 59, 59));
+        return ordreProductionRepository.getQuantiteProduitePeriode(produitId, debut, fin);
     }
 
     @Override

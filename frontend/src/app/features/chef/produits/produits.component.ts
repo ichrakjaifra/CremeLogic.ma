@@ -5,7 +5,7 @@ import { ProduitService } from '../../../core/services/produit.service';
 import { RecetteService } from '../../../core/services/recette.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { Produit } from '../../../core/models/produit.model';
+import { Produit, PRODUCT_CATEGORIES } from '../../../core/models/produit.model';
 import { Recette } from '../../../core/models/recette.model';
 import { FormatPricePipe } from '../../../shared/pipes/format-price.pipe';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
@@ -30,7 +30,7 @@ export class ProduitsComponent implements OnInit {
   
   searchTerm: string = '';
   selectedCategorie: string = 'TOUT';
-  categories: string[] = ['TOUT', 'PAIN', 'PATISSERIE', 'VIENNOISERIE', 'SALE', 'AUTRE'];
+  categories: string[] = ['TOUT', ...PRODUCT_CATEGORIES];
 
   showModal = false;
   isEditing = false;
@@ -51,7 +51,7 @@ export class ProduitsComponent implements OnInit {
       nom: ['', [Validators.required]],
       description: [''],
       prixVente: [0, [Validators.required, Validators.min(0)]],
-      categorie: ['PAIN', [Validators.required]],
+      categorie: ['GATEAUX', [Validators.required]],
       stockDisponible: [0, [Validators.required, Validators.min(0)]],
       stockSeuil: [5, [Validators.required, Validators.min(0)]],
       recetteId: [null],
@@ -96,7 +96,7 @@ export class ProduitsComponent implements OnInit {
     } else {
       this.produitForm.reset({
         prixVente: 0,
-        categorie: 'PAIN',
+        categorie: 'GATEAUX',
         stockDisponible: 0,
         stockSeuil: 5,
         actif: true

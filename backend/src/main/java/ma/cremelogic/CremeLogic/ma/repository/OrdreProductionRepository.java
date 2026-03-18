@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface OrdreProductionRepository extends JpaRepository<OrdreProduction, Long> {
@@ -25,11 +27,11 @@ public interface OrdreProductionRepository extends JpaRepository<OrdreProduction
 
     List<OrdreProduction> findByResponsableId(Long responsableId);
 
-    @Query("SELECT o FROM OrdreProduction o WHERE o.dateCreation = :date")
-    List<OrdreProduction> findByDateCreation(LocalDate date);
+    @Query("SELECT o FROM OrdreProduction o WHERE o.dateCreation BETWEEN :start AND :end")
+    List<OrdreProduction> findByDateCreation(LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT SUM(o.quantite) FROM OrdreProduction o WHERE o.produit.id = :produitId AND o.statut = 'TERMINEE' AND o.dateFinReelle BETWEEN :startDate AND :endDate")
-    Integer getQuantiteProduitePeriode(Long produitId, LocalDateTime startDate, LocalDateTime endDate);
+    Integer getQuantiteProduitePeriode(Long produitId, LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT o FROM OrdreProduction o WHERE o.dateDebutPrevue BETWEEN :startDate AND :endDate")
     List<OrdreProduction> findByDateDebutBetween(LocalDate startDate, LocalDate endDate);
@@ -38,10 +40,10 @@ public interface OrdreProductionRepository extends JpaRepository<OrdreProduction
     List<OrdreProduction> findOrdresEnRetard();
 
     @Query("SELECT o FROM OrdreProduction o WHERE o.dateCreation >= :date")
-    List<OrdreProduction> findOrdresDepuis(LocalDate date);
+    List<OrdreProduction> findOrdresDepuis(LocalDateTime date);
 
     @Query("SELECT SUM(o.coutTotal) FROM OrdreProduction o WHERE o.dateCreation BETWEEN :startDate AND :endDate")
-    Double getCoutTotalProductionPeriode(LocalDate startDate, LocalDate endDate);
+    BigDecimal getCoutTotalProductionPeriode(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT SUM(o.quantite) FROM OrdreProduction o WHERE o.produit.id = :produitId AND o.statut = 'TERMINEE'")
     Integer getQuantiteProduite(Long produitId);
