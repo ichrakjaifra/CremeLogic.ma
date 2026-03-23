@@ -37,10 +37,7 @@
             <div class="extra-small text-muted">{{ c.numeroCommande }}</div>
             <div class="extra-small text-muted">Créée le {{ c.dateCommande | date:'dd/MM/yyyy' }}</div>
           </div>
-          <div class="col-md-2 text-center">
-            <div class="extra-small text-muted mb-1">Articles</div>
-            <div class="fw-bold">{{ c.lignesCommande?.length || 0 }} réf.</div>
-          </div>
+            <div class="fw-bold">{{ c.lignesCommande.length }} réf.</div>
           <div class="col-md-2 text-center">
             <span class="badge rounded-pill px-3 py-2 extra-small"
                   [ngClass]="{
