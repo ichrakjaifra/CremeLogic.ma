@@ -51,7 +51,7 @@
                 <i class="fas me-1" [ngClass]="{
                   'fa-arrow-down': m.type === 'ENTREE',
                   'fa-arrow-up': m.type === 'SORTIE',
-                  'fa-exclamation-triangle': m.type === 'PERTE',
+                  'fa-exclamation-triangle': m.type === 'PERDU' || m.type === 'DETRUIT',
                   'fa-sync': m.type === 'AJUSTEMENT'
                 }"></i>
                 {{ m.type }}

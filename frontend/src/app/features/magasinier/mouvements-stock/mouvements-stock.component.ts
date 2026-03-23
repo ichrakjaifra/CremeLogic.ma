@@ -15,7 +15,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     .mouvements-page { min-height: 100vh; animation: fadeIn 0.5s ease-out; }
     .type-entree { color: #2ecc71; }
     .type-sortie { color: #e74c3c; }
-    .type-perte { color: #e67e22; }
+    .type-perdu { color: #e67e22; }
+    .type-detruit { color: #d35400; }
     .type-ajustement { color: #3498db; }
   `]
 })

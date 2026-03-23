@@ -70,14 +70,14 @@ export class IngredientService {
 
   getConsommationMoyenne(id: number, jours: number = 30): Observable<number> {
     let params = new HttpParams().set('jours', jours.toString());
-    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/${id}/consommation-moyenne`, { params }).pipe(
-      map(response => response.data)
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/${id}/consommation-moyenne`, { params }).pipe(
+      map(response => response.data?.consommationMoyenne || 0)
     );
   }
 
   getValeurStockTotal(): Observable<number> {
-    return this.http.get<ApiResponse<number>>(`${this.baseUrl}/valeur-stock-total`).pipe(
-      map(response => response.data)
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/valeur-stock-total`).pipe(
+      map(response => response.data?.valeurStockTotal || 0)
     );
   }
 
@@ -87,8 +87,10 @@ export class IngredientService {
     );
   }
 
-  getMouvements(ingredientId?: number): Observable<MouvementStock[]> {
-    const url = ingredientId ? `${this.baseUrl}/${ingredientId}/mouvements` : `${environment.apiUrl}/mouvements-stock`;
-    return this.http.get<MouvementStock[]>(url);
+  getMouvements(ingredientId?: number): Observable<any[]> {
+    const url = ingredientId 
+      ? `${environment.apiUrl}/stocks/mouvements/ingredient/${ingredientId}` 
+      : `${environment.apiUrl}/stocks/mouvements`;
+    return this.http.get<any[]>(url);
   }
 }

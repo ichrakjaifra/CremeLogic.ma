@@ -6,12 +6,30 @@
     </div>
     <div class="d-flex gap-2">
       <button class="btn btn-outline-custom px-4 py-2 shadow-sm" (click)="openMouvementModal()" *ngIf="canEdit()">
-        <i class="fas fa-exchange-alt me-2"></i> Mouvement Stock
+        <i class="fas fa-box me-2"></i> Mouvement Stock
       </button>
       <button class="btn btn-primary-custom px-4 py-2 shadow-sm" (click)="openIngredientModal()" *ngIf="canEdit()">
         <i class="fas fa-plus me-2"></i> Nouvel Ingrédient
       </button>
     </div>
+  </div>
+
+  <!-- Quick Info Cards -->
+  <div class="row g-4 mb-4 px-3">
+    <div class="col-md-4">
+      <div class="glass-card p-3 border-0 bg-chocolate-light">
+        <div class="d-flex align-items-center">
+          <div class="p-3 bg-white rounded-4 shadow-sm me-3 text-chocolate">
+            <i class="fas fa-wallet fa-lg"></i>
+          </div>
+          <div>
+            <div class="extra-small fw-bold text-uppercase opacity-50 mb-1">Valeur Totale Stock</div>
+            <div class="h4 mb-0 fw-bold color-marron">{{ valeurStockTotal | formatPrice }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Other metrics can be added here if needed -->
   </div>
 
   <!-- Filters -->
@@ -101,11 +119,14 @@
             </td>
             <td class="text-end pe-4">
               <div class="d-flex justify-content-end gap-2">
-                <button class="btn-action edit" (click)="editIngredient(ing)" title="Modifier">
+                <button class="btn-action edit" (click)="editIngredient(ing)" title="Modifier" *ngIf="canEdit()">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="btn-action key" (click)="viewHistory(ing)" title="Historique">
                   <i class="fas fa-history"></i>
+                </button>
+                <button class="btn-action trash" (click)="deleteIngredient(ing)" title="Supprimer" *ngIf="canEdit() && userRole === 'ADMIN'">
+                    <i class="fas fa-trash"></i>
                 </button>
               </div>
             </td>
@@ -113,8 +134,8 @@
           <tr *ngIf="filteredIngredients.length === 0">
             <td colspan="6" class="py-5">
               <app-empty-state title="Aucun ingrédient trouvé" 
-                              description="Ajustez vos filtres ou ajoutez une nouvelle matière première."
-                              icon="fas fa-box-open">
+                               description="Ajustez vos filtres ou ajoutez une nouvelle matière première."
+                               icon="fas fa-box-open">
               </app-empty-state>
             </td>
           </tr>
@@ -126,3 +147,8 @@
     </div>
   </div>
 </div>
+
+<!-- Modals -->
+<app-ingredient-form-modal #ingredientModal (ingredientSaved)="onDataChanged()"></app-ingredient-form-modal>
+<app-stock-mouvement-modal #mouvementModal (mouvementSaved)="onDataChanged()"></app-stock-mouvement-modal>
+<app-ingredient-history-modal #historyModal></app-ingredient-history-modal>

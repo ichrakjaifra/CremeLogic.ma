@@ -1,0 +1,68 @@
+<div class="modal fade" id="mouvementModal" tabindex="-1" aria-hidden="true" [ngClass]="{'show d-block': isOpen}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card shadow-2xl border-0 rounded-5 overflow-hidden">
+      <div class="modal-header border-0 bg-chocolate-light p-4">
+        <h5 class="modal-title fw-bold color-marron font-montserrat">
+          <i class="fas fa-exchange-alt"></i>
+          <span class="ms-3">Mouvement de Stock</span>
+        </h5>
+        <button type="button" class="btn-close opacity-50" (click)="close()"></button>
+      </div>
+      
+      <div class="modal-body p-4 pt-5">
+        <form [formGroup]="mouvementForm" (ngSubmit)="onSubmit()">
+          <div class="row g-4">
+            <!-- Ingredient -->
+            <div class="col-md-12">
+              <div class="form-floating mb-1">
+                <select formControlName="ingredientId" class="form-select bg-light border-0" id="floatIng"
+                        [ngClass]="{'is-invalid': (submitted || f['ingredientId'].touched) && f['ingredientId'].errors}">
+                  <option [ngValue]="null">Sélectionner un ingrédient...</option>
+                  <option *ngFor="let ing of ingredients" [value]="ing.id">{{ ing.nom }} ({{ ing.quantiteStock }} {{ ing.uniteMesure }})</option>
+                </select>
+                <label for="floatIng" class="text-muted small fw-bold">INGRÉDIENT</label>
+              </div>
+            </div>
+
+            <!-- Type and Quantity -->
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <select formControlName="type" class="form-select bg-light border-0" id="floatType">
+                  <option value="ENTREE">Entrée</option>
+                  <option value="SORTIE">Sortie</option>
+                  <option value="AJUSTEMENT">Ajustement</option>
+                  <option value="PERDU">Perte / Perdu</option>
+                  <option value="DETRUIT">Détruit</option>
+                </select>
+                <label for="floatType" class="text-muted small fw-bold">TYPE DE MOUVEMENT</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <input type="number" formControlName="quantite" class="form-control bg-light border-0" id="floatQte" placeholder="Quantité" step="0.01"
+                       [ngClass]="{'is-invalid': (submitted || f['quantite'].touched) && f['quantite'].errors}">
+                <label for="floatQte" class="text-muted small fw-bold">QUANTITÉ</label>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-floating mb-1">
+                <textarea formControlName="raison" class="form-control bg-light border-0" id="floatRaison" placeholder="Raison" style="height: 100px"></textarea>
+                <label for="floatRaison" class="text-muted small fw-bold">RAISON / COMMENTAIRE</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end mt-5 pt-4 border-top">
+            <button type="button" class="btn btn-link text-decoration-none color-marron opacity-75 fw-bold" (click)="close()">ANNULER</button>
+            <button type="submit" class="btn btn-primary-custom px-5 py-3 rounded-4 fw-bold shadow-lg" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              ENREGISTRER LE MOUVEMENT
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [ngClass]="{'show d-block': isOpen}" *ngIf="isOpen"></div>

@@ -19,7 +19,7 @@ export interface MouvementStock {
   id: number;
   ingredientId: number;
   quantite: number;
-  type: 'ENTREE' | 'SORTIE' | 'PERTE' | 'AJUSTEMENT';
+  type: 'ENTREE' | 'SORTIE' | 'AJUSTEMENT' | 'PERDU' | 'DETRUIT';
   dateMouvement: Date;
   raison: string;
   utilisateurId: number;
