@@ -72,14 +72,24 @@
             <div class="fw-bold color-dore">{{ c.montantTotal | formatPrice }}</div>
           </div>
           <div class="col-md-2 text-center">
-            <span class="badge rounded-pill px-3 py-2 extra-small"
-                  [ngClass]="{
-                    'bg-warning text-dark': c.statut === 'EN_ATTENTE',
-                    'bg-info': c.statut === 'VALIDEE',
-                    'bg-primary': c.statut === 'EN_COURS',
-                    'bg-success': c.statut === 'LIVREE',
-                    'bg-danger': c.statut === 'ANNULEE'
-                  }">{{ c.statut }}</span>
+            <div class="dropdown">
+              <button class="badge rounded-pill px-3 py-2 extra-small border-0 dropdown-toggle shadow-none"
+                      type="button" data-bs-toggle="dropdown"
+                      [ngClass]="{
+                        'bg-warning text-dark': c.statut === 'EN_ATTENTE',
+                        'bg-info': c.statut === 'VALIDEE',
+                        'bg-primary': c.statut === 'EN_COURS',
+                        'bg-success': c.statut === 'LIVREE',
+                        'bg-danger': c.statut === 'ANNULEE'
+                      }">{{ c.statut }}</button>
+              <ul class="dropdown-menu shadow-lg border-0 rounded-4 p-2">
+                <li><a class="dropdown-item rounded-3 extra-small" (click)="changerStatut(c, 'EN_ATTENTE')">EN ATTENTE</a></li>
+                <li><a class="dropdown-item rounded-3 extra-small" (click)="changerStatut(c, 'VALIDEE')">VALIDÉE</a></li>
+                <li><a class="dropdown-item rounded-3 extra-small" (click)="changerStatut(c, 'EN_COURS')">EN COURS</a></li>
+                <li><a class="dropdown-item rounded-3 extra-small" (click)="changerStatut(c, 'LIVREE')">LIVRÉE</a></li>
+                <li><a class="dropdown-item text-danger rounded-3 extra-small" (click)="changerStatut(c, 'ANNULEE')">ANNULÉE</a></li>
+              </ul>
+            </div>
             <div *ngIf="c.enRetard" class="text-danger extra-small fw-bold mt-1">
               <i class="fas fa-clock"></i> EN RETARD
             </div>
@@ -93,13 +103,13 @@
             <button class="btn btn-action duplicate" (click)="duplicateCommande(c.id)" title="Dupliquer">
               <i class="fas fa-copy"></i>
             </button>
-            <button class="btn btn-action edit" (click)="openModal(c)" title="Modifier" *ngIf="c.statut === 'EN_ATTENTE'">
+            <button class="btn btn-action edit" (click)="openModal(c)" title="Modifier">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-action trash" (click)="deleteCommande(c.id)" title="Supprimer" *ngIf="c.statut === 'EN_ATTENTE'">
+            <button class="btn btn-action trash" (click)="deleteCommande(c.id)" title="Supprimer">
               <i class="fas fa-trash"></i>
             </button>
-            <button class="btn btn-action cancel" (click)="cancelCommande(c.id)" title="Annuler" *ngIf="c.statut !== 'ANNULEE' && c.statut !== 'LIVREE' && c.statut !== 'EN_ATTENTE'">
+            <button class="btn btn-action cancel" (click)="cancelCommande(c.id)" title="Annuler (votre raison)">
               <i class="fas fa-ban"></i>
             </button>
           </div>

@@ -172,6 +172,15 @@ export class CommandesAchatComponent implements OnInit {
     }
   }
 
+  changerStatut(c: CommandeAchat, nouveauStatut: string) {
+    if (confirm(`Changer le statut de la commande en ${nouveauStatut} ?`)) {
+      this.commandeService.changerStatut(c.id, nouveauStatut).subscribe(() => {
+        this.notification.success('Statut mis à jour', 'Succès');
+        this.loadData();
+      });
+    }
+  }
+
   deleteCommande(id: number) {
     if (confirm('Voulez-vous vraiment supprimer définitivement cette commande ? Cette action est irréversible.')) {
       this.commandeService.delete(id).subscribe({
