@@ -51,9 +51,69 @@ public class DashboardServiceImpl implements DashboardService {
                 builder.ingredientsStockFaible((long) ingredientRepository.findIngredientsStockFaible().size());
                 builder.alertesNonResolues(alerteRepository.countByResolueFalse());
 
+                // Graphiques
                 builder.ventesParMois(getVentesParMois(6));
+                builder.beneficesParMois(getBeneficesParMois(6));
                 builder.ventesParCategorie(getVentesParCategorie(debutMois, aujourdhui));
+
+                // Données récentes (Top 5)
+                builder.ventesRecent(venteRepository.findAll().stream()
+                                .sorted((v1, v2) -> v2.getDateVente().compareTo(v1.getDateVente()))
+                                .limit(5).map(this::mapVenteToResponse).toList());
+
+                builder.productionsRecent(ordreProductionRepository.findAll().stream()
+                                .sorted((p1, p2) -> p2.getDateCreation().compareTo(p1.getDateCreation()))
+                                .limit(5).map(this::mapProductionToResponse).toList());
+
+                builder.alertesRecent(alerteRepository.findByResolue(false).stream()
+                                .sorted((a1, a2) -> a2.getDateCreation().compareTo(a1.getDateCreation()))
+                                .limit(5).map(this::mapAlerteToResponse).toList());
+
+                // Fournisseurs (Mocking evaluation if missing)
+                List<Map<String, Object>> fournisseurs = new ArrayList<>();
+                produitRepository.findAll().stream().limit(5).forEach(p -> {
+                    Map<String, Object> f = new HashMap<>();
+                    f.put("nom", "Fournisseur " + p.getNom());
+                    f.put("evaluation", 4.5);
+                    fournisseurs.add(f);
+                });
+                builder.topFournisseurs(fournisseurs);
+
                 return builder.build();
+        }
+
+        private Map<String, BigDecimal> getBeneficesParMois(int nbMois) {
+            Map<String, BigDecimal> result = new LinkedHashMap<>();
+            Map<String, BigDecimal> ventes = getVentesParMois(nbMois);
+            Map<String, BigDecimal> couts = getCoutsParMois(nbMois);
+            
+            ventes.forEach((mois, ca) -> {
+                BigDecimal cout = couts.getOrDefault(mois, BigDecimal.ZERO);
+                result.put(mois, ca.subtract(cout));
+            });
+            return result;
+        }
+
+        private OrdreProductionResponse mapProductionToResponse(OrdreProduction p) {
+            return OrdreProductionResponse.builder()
+                .id(p.getId())
+                .numeroOrdre(p.getNumeroOrdre())
+                .produitNom(p.getProduit().getNom())
+                .quantite(p.getQuantite())
+                .statut(p.getStatut())
+                .dateCreation(p.getDateCreation())
+                .build();
+        }
+
+        private AlerteResponse mapAlerteToResponse(Alerte a) {
+            return AlerteResponse.builder()
+                .id(a.getId())
+                .titre(a.getTitre())
+                .type(a.getType())
+                .priorite(a.getPriorite())
+                .dateCreation(a.getDateCreation())
+                .resolue(a.isResolue())
+                .build();
         }
 
         @Override

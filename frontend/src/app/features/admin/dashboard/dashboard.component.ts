@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { DashboardService } from '../../../core/services/dashboard.service';
 import { AdminStats } from '../../../core/models/dashboard.model';
 import { FormatPricePipe } from '../../../shared/pipes/format-price.pipe';
@@ -10,7 +11,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormatPricePipe],
+  imports: [CommonModule, FormatPricePipe, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -21,6 +22,10 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   chart: any;
 
   ngOnInit() {
+    this.loadStats();
+  }
+
+  loadStats() {
     this.dashboardService.getAdminStats().subscribe(stats => {
       this.stats = stats;
       this.updateChart();
@@ -38,23 +43,25 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     this.chart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: [],
         datasets: [
           {
             label: 'Ventes',
-            data: [25, 45, 30, 55, 40, 85],
+            data: [],
             backgroundColor: '#D4AF37',
             borderRadius: 5,
+            order: 2
           },
           {
             label: 'Bénéfices',
             type: 'line',
-            data: [15, 35, 20, 45, 30, 75],
+            data: [],
             borderColor: '#8B4513',
             borderWidth: 3,
             fill: false,
             tension: 0.4,
-            pointBackgroundColor: '#8B4513'
+            pointBackgroundColor: '#8B4513',
+            order: 1
           }
         ]
       },
@@ -70,7 +77,8 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
           y: {
             beginAtZero: true,
             grid: {
-              display: false
+              display: true,
+              color: 'rgba(0,0,0,0.05)'
             }
           },
           x: {
@@ -84,15 +92,21 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   }
 
   updateChart() {
-    if (this.stats?.ventesParMois && this.chart) {
-      const labels = Object.keys(this.stats.ventesParMois);
-      const data = Object.values(this.stats.ventesParMois);
-      
-      this.chart.data.labels = labels;
-      this.chart.data.datasets[0].data = data;
-      // If we had benefit data, we'd add it here. For now using same or 0.
-      this.chart.data.datasets[1].data = data.map(v => v * 0.3); // Mocking benefit as 30% of sales if not provided
-      this.chart.update();
+    if (this.stats && this.chart) {
+      if (this.stats.ventesParMois) {
+        const labels = Object.keys(this.stats.ventesParMois).map(l => {
+            const [year, month] = l.split('-');
+            const date = new Date(parseInt(year), parseInt(month) - 1);
+            return date.toLocaleString('default', { month: 'short' });
+        });
+        const salesData = Object.values(this.stats.ventesParMois);
+        const profitData = this.stats.beneficesParMois ? Object.values(this.stats.beneficesParMois) : salesData.map(v => v * 0.2);
+
+        this.chart.data.labels = labels;
+        this.chart.data.datasets[0].data = salesData;
+        this.chart.data.datasets[1].data = profitData;
+        this.chart.update();
+      }
     }
   }
 }

@@ -6,11 +6,20 @@ export interface AdminStats {
   chiffreAffairesJour: number;
   chiffreAffairesMois: number;
   depensesMois: number;
+  beneficeMois: number;
   produitsStockFaible: number;
   ingredientsStockFaible: number;
   alertesNonResolues: number;
   ventesParMois: { [key: string]: number };
+  beneficesParMois: { [key: string]: number };
   ventesParCategorie: { [key: string]: number };
+  
+  // New lists
+  ventesRecent: any[];
+  commandesRecent: any[];
+  productionsRecent: any[];
+  alertesRecent: any[];
+  topFournisseurs: any[];
 }
 
 export interface ChefStats {

@@ -36,8 +36,12 @@ public class DashboardResponse {
 
     // Graphiques
     private Map<String, BigDecimal> ventesParMois;
+    private Map<String, BigDecimal> beneficesParMois;
     private Map<String, BigDecimal> ventesParCategorie;
     private Map<String, Long> produitsPlusVendus;
+
+    // Fournisseurs
+    private List<Map<String, Object>> topFournisseurs;
 
     // Activités récentes
     private List<VenteResponse> ventesRecent;
