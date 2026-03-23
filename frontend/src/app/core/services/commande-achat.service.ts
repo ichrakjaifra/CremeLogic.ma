@@ -60,8 +60,8 @@ export class CommandeAchatService {
     );
   }
 
-  recevoir(id: number): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${id}/recevoir`, {});
+  recevoir(id: number, request: any): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${id}/recevoir`, request);
   }
 
   getEnRetard(): Observable<CommandeAchat[]> {

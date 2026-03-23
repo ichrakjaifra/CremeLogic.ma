@@ -42,9 +42,10 @@ export class MagasinierDashboardComponent implements OnInit {
       if (cmds && Array.isArray(cmds)) {
         this.commandesAchat = cmds.slice(0, 5).map(c => ({
           id: c.id,
-          fournisseurNom: c.nomFournisseur ?? 'Fournisseur inconnu',
-          dateCommande: c.dateCommande,
-          statut: c.statut
+          fournisseurNom: c.fournisseurNom ?? 'Fournisseur inconnu',
+          total: c.montantTotal,
+          statut: c.statut,
+          date: c.dateCommande
         }));
       } else {
         this.commandesAchat = [];

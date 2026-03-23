@@ -49,8 +49,8 @@ export class CommandesAchatComponent implements OnInit {
     this.commandeForm = this.fb.group({
       id: [null],
       fournisseurId: [null, [Validators.required]],
-      dateCommande: [new Date(), [Validators.required]],
-      dateReceptionPrevue: [null],
+      dateCommande: [new Date().toISOString().substring(0, 10), [Validators.required]],
+      dateLivraisonPrevue: [null],
       notes: [''],
       lignes: this.fb.array([], [Validators.required, Validators.minLength(1)])
     });
@@ -61,7 +61,7 @@ export class CommandesAchatComponent implements OnInit {
   addLigne() {
     this.lignes.push(this.fb.group({
       ingredientId: [null, [Validators.required]],
-      quantite: [1, [Validators.required, Validators.min(0.01)]],
+      quantiteCommandee: [1, [Validators.required, Validators.min(0.01)]],
       prixUnitaire: [0, [Validators.required, Validators.min(0)]]
     }));
   }
@@ -76,7 +76,9 @@ export class CommandesAchatComponent implements OnInit {
 
   applyFilters() {
     this.filteredCommandes = this.commandes.filter(c => {
-      const matchSearch = !this.searchTerm || c.nomFournisseur.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchSearch = !this.searchTerm || 
+                         (c.fournisseurNom && c.fournisseurNom.toLowerCase().includes(this.searchTerm.toLowerCase())) ||
+                         (c.numeroCommande && c.numeroCommande.toLowerCase().includes(this.searchTerm.toLowerCase()));
       const matchStatut = this.filterStatut === 'ALL' || c.statut === this.filterStatut;
       return matchSearch && matchStatut;
     });
@@ -88,16 +90,24 @@ export class CommandesAchatComponent implements OnInit {
     this.lignes.clear();
     
     if (commande) {
-      this.commandeForm.patchValue(commande);
+      this.commandeForm.patchValue({
+        id: commande.id,
+        fournisseurId: commande.fournisseurId,
+        dateCommande: commande.dateCommande ? new Date(commande.dateCommande).toISOString().substring(0, 10) : null,
+        dateLivraisonPrevue: commande.dateLivraisonPrevue ? new Date(commande.dateLivraisonPrevue).toISOString().substring(0, 10) : null,
+        notes: commande.notes
+      });
       commande.lignesCommande.forEach(l => {
         this.lignes.push(this.fb.group({
           ingredientId: [l.ingredientId, Validators.required],
-          quantite: [l.quantite, Validators.required],
+          quantiteCommandee: [l.quantiteCommandee, Validators.required],
           prixUnitaire: [l.prixUnitaire, Validators.required]
         }));
       });
     } else {
-      this.commandeForm.reset({ dateCommande: new Date() });
+      this.commandeForm.reset({ 
+        dateCommande: new Date().toISOString().substring(0, 10) 
+      });
       this.addLigne();
     }
   }
@@ -119,15 +129,35 @@ export class CommandesAchatComponent implements OnInit {
     });
   }
 
-  recevoirCommande(id: number) {
-    this.commandeService.recevoir(id).subscribe({
+  recevoirCommande(c: CommandeAchat) {
+    // For now simple reception, but plan is to add a modal for precise quantities
+    const request = {
+      dateLivraisonReelle: new Date().toISOString().substring(0, 10),
+      lignesRecues: c.lignesCommande.map(l => ({
+        ingredientId: l.ingredientId,
+        quantiteRecue: l.quantiteCommandee
+      }))
+    };
+    
+    this.commandeService.recevoir(c.id, request).subscribe({
       next: () => { this.notification.success('Commande reçue et stock mis à jour', 'Succès'); this.loadData(); }
     });
   }
 
-  deleteCommande(id: number) {
-    if (confirm('Supprimer cette commande ?')) {
-      this.commandeService.delete(id).subscribe(() => { this.notification.success('Supprimée', 'OK'); this.loadData(); });
+  duplicateCommande(id: number) {
+    this.commandeService.dupliquer(id).subscribe(() => {
+      this.notification.success('Commande dupliquée', 'Succès');
+      this.loadData();
+    });
+  }
+
+  cancelCommande(id: number) {
+    const raison = prompt('Raison de l\'annulation ?');
+    if (raison) {
+      this.commandeService.annuler(id, raison).subscribe(() => {
+        this.notification.success('Commande annulée', 'Succès');
+        this.loadData();
+      });
     }
   }
 }

@@ -1,20 +1,29 @@
 export interface CommandeAchat {
   id: number;
+  numeroCommande: string;
   fournisseurId: number;
-  nomFournisseur: string;
-  dateCommande: Date;
-  dateReceptionPrevue?: Date;
+  fournisseurNom: string;
+  dateCommande: string;
+  dateLivraisonPrevue?: string;
+  dateLivraisonReelle?: string;
   montantTotal: number;
-  statut: 'EN_ATTENTE' | 'VALIDEE' | 'EN_COURS' | 'RECUE' | 'ANNULEE';
+  statut: 'EN_ATTENTE' | 'VALIDEE' | 'EN_COURS' | 'LIVREE' | 'ANNULEE';
   lignesCommande: LigneCommandeAchat[];
   notes?: string;
+  enRetard: boolean;
+  createurNom?: string;
 }
 
 export interface LigneCommandeAchat {
+  id?: number;
   ingredientId: number;
-  nomIngredient: string;
-  quantite: number;
+  ingredientNom: string;
+  ingredientCode: string;
+  quantiteCommandee: number;
+  quantiteRecue: number;
   prixUnitaire: number;
+  montantTotal: number;
+  uniteMesure: string;
 }
 
 export interface Fournisseur {
