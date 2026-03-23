@@ -192,6 +192,12 @@ public class MouvementStockServiceImpl implements MouvementStockService {
     }
 
     @Override
+    public List<MouvementStockResponse> getAllMouvements() {
+        return mouvementStockRepository.findAllByOrderByDateMouvementDesc().stream()
+                .map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Override
     public Map<String, Object> getHistoriqueComplet(Long ingredientId, LocalDateTime debut, LocalDateTime fin) {
         Map<String, Object> result = new HashMap<>();
         List<MouvementStock> mouvements = mouvementStockRepository

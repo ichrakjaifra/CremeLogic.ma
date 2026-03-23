@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface MouvementStockRepository extends JpaRepository<MouvementStock, Long> {
     List<MouvementStock> findByIngredientId(Long ingredientId);
+    List<MouvementStock> findAllByOrderByDateMouvementDesc();
 
     List<MouvementStock> findByType(TypeMouvement type);
 

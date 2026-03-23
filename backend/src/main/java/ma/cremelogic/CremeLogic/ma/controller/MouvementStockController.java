@@ -20,7 +20,12 @@ public class MouvementStockController {
 
         private final MouvementStockService mouvementStockService;
 
-        @PostMapping("/entree")
+        @GetMapping
+    public ResponseEntity<List<MouvementStockResponse>> getAllMouvements() {
+        return ResponseEntity.ok(mouvementStockService.getAllMouvements());
+    }
+
+    @PostMapping("/entree")
         public ResponseEntity<MouvementStockResponse> enregistrerEntree(@RequestBody MouvementStockRequest request) {
                 return ResponseEntity.ok(mouvementStockService.enregistrerEntree(
                                 request.getIngredientId(),

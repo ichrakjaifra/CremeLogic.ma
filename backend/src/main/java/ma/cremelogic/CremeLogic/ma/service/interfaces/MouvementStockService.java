@@ -20,6 +20,7 @@ public interface MouvementStockService {
 
     Map<String, BigDecimal> getStatistiquesConsommation(Long ingredientId, LocalDateTime debut, LocalDateTime fin);
     Map<String, Object> getHistoriqueComplet(Long ingredientId, LocalDateTime debut, LocalDateTime fin);
+    List<MouvementStockResponse> getAllMouvements();
 
     void verifierEtCreerAlertes();
     void deduireConsommationProduction(Long ordreProductionId, Map<Long, BigDecimal> consommations);

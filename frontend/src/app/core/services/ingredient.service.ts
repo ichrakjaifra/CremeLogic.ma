@@ -87,10 +87,20 @@ export class IngredientService {
     );
   }
 
-  getMouvements(ingredientId?: number): Observable<any[]> {
+  getMouvements(ingredientId?: number): Observable<MouvementStock[]> {
     const url = ingredientId 
       ? `${environment.apiUrl}/stocks/mouvements/ingredient/${ingredientId}` 
       : `${environment.apiUrl}/stocks/mouvements`;
-    return this.http.get<any[]>(url);
+    return this.http.get<MouvementStock[]>(url);
+  }
+
+  enregistrerMouvement(request: any): Observable<MouvementStock> {
+    const type = request.type.toLowerCase(); // 'entree', 'sortie', 'perte', 'ajustement'
+    return this.http.post<MouvementStock>(`${environment.apiUrl}/stocks/mouvements/${type}`, request);
+  }
+
+  getStatistiquesMouvement(ingredientId: number, debut: string, fin: string): Observable<any> {
+    let params = new HttpParams().set('debut', debut).set('fin', fin);
+    return this.http.get<any>(`${environment.apiUrl}/stocks/mouvements/statistiques/${ingredientId}`, { params });
   }
 }

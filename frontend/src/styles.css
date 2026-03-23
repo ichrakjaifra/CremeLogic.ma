@@ -100,7 +100,22 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
 }
 
-/* Animations */
+/* Utility Classes */
+.extra-small { font-size: 0.75rem; }
+.uppercase { text-transform: uppercase; }
+.color-marron { color: var(--marron-chocolat); }
+.color-dore { color: var(--dore-clair); }
+
+.bg-chocolate-light { background-color: #FDF4E3; }
+.bg-success-light { background-color: #E8F5E9; }
+.bg-danger-light { background-color: #FFEBEE; }
+.bg-warning-light { background-color: #FFF3E0; }
+.bg-info-light { background-color: #E3F2FD; }
+
+.bg-success-subtle { background-color: rgba(76, 175, 80, 0.1); }
+.bg-danger-subtle { background-color: rgba(231, 76, 60, 0.1); }
+.bg-info-subtle { background-color: rgba(52, 152, 219, 0.1); }
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
