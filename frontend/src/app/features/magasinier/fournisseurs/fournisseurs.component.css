@@ -38,3 +38,29 @@
   background-color: #2ecc71 !important;
   border-color: #2ecc71 !important;
 }
+.text-light-gray { color: #e5e7eb; }
+.width-15 { width: 15px; }
+.hover-opacity-100:hover { opacity: 1 !important; transform: scale(1.1); }
+
+.btn-icon-only {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: all 0.2s ease;
+}
+.btn-icon-only:hover {
+  background-color: #f3f4f6 !important;
+  transform: translateY(-2px);
+}
+
+.supplier-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.opacity-75 {
+  filter: grayscale(0.5);
+}
