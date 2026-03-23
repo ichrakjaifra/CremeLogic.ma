@@ -24,4 +24,6 @@ public class UpdateUtilisateurRequest {
     private String telephone;
 
     private Role role;
+    
+    private Boolean actif;
 }

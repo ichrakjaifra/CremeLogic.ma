@@ -40,8 +40,8 @@ export class UserService {
     return this.http.patch<User>(`${this.baseUrl}/${id}/toggle-actif`, {});
   }
 
-  resetPassword(id: number): Observable<void> {
-    return this.http.patch<void>(`${this.baseUrl}/${id}/reset-password`, {});
+  resetPassword(id: number, newPassword: string): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${id}/reset-password`, { newPassword });
   }
 
   getStatsTotal(): Observable<number> {

@@ -152,17 +152,27 @@ export class UtilisateursComponent implements OnInit {
     this.userService.toggleActif(user.id).subscribe({
       next: (updatedUser) => {
         user.actif = updatedUser.actif;
-        this.notification.success(`Statut de ${user.prenom} mis à jour.`, 'Succès');
+        const status = user.actif ? 'activé' : 'désactivé';
+        this.notification.success(`Compte de ${user.prenom} ${status}.`, 'Succès');
+      },
+      error: () => {
+        // Revert toggle if error
+        user.actif = !user.actif;
       }
     });
   }
 
   resetPassword(user: User) {
-    this.userService.resetPassword(user.id).subscribe({
-      next: () => {
-        this.notification.info(`Mot de passe de ${user.prenom} réinitialisé.`, 'Information');
-      }
-    });
+    const newPassword = prompt(`Saisissez le nouveau mot de passe pour ${user.prenom} :`, '123456');
+    if (newPassword && newPassword.length >= 6) {
+      this.userService.resetPassword(user.id, newPassword).subscribe({
+        next: () => {
+          this.notification.success(`Mot de passe de ${user.prenom} réinitialisé avec succès.`, 'Succès');
+        }
+      });
+    } else if (newPassword) {
+      this.notification.warning('Le mot de passe doit contenir au moins 6 caractères.', 'Attention');
+    }
   }
 
   deleteUser(user: User) {

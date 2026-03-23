@@ -17,7 +17,7 @@ public interface UtilisateurService {
     void deleteUtilisateur(Long id);
 
     // Status management
-    void toggleActif(Long id);
+    UtilisateurResponse toggleActif(Long id);
     void resetPassword(Long id, ResetPasswordRequest request);
 
     // Current user

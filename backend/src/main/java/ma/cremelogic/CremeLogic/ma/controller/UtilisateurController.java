@@ -29,7 +29,7 @@ public class UtilisateurController {
     // ============ READ OPERATIONS ============
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Liste tous les utilisateurs")
     public ResponseEntity<List<UtilisateurResponse>> getAllUtilisateurs() {
         return ResponseEntity.ok(utilisateurService.getAllUtilisateurs());
@@ -43,7 +43,7 @@ public class UtilisateurController {
     }
 
     @GetMapping("/email/{email}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Récupère un utilisateur par email")
     public ResponseEntity<UtilisateurResponse> getUtilisateurByEmail(@PathVariable String email) {
         return ResponseEntity.ok(utilisateurService.getUtilisateurByEmail(email));
@@ -58,7 +58,7 @@ public class UtilisateurController {
     // ============ CREATE OPERATION ============
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Crée un nouvel utilisateur")
     public ResponseEntity<UtilisateurResponse> createUtilisateur(@Valid @RequestBody CreateUtilisateurRequest request) {
         return new ResponseEntity<>(utilisateurService.createUtilisateur(request), HttpStatus.CREATED);
@@ -67,7 +67,7 @@ public class UtilisateurController {
     // ============ UPDATE OPERATIONS ============
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Met à jour un utilisateur")
     public ResponseEntity<UtilisateurResponse> updateUtilisateur(
             @PathVariable Long id,
@@ -76,15 +76,14 @@ public class UtilisateurController {
     }
 
     @PatchMapping("/{id}/toggle-actif")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Active/désactive un utilisateur")
-    public ResponseEntity<Void> toggleActif(@PathVariable Long id) {
-        utilisateurService.toggleActif(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UtilisateurResponse> toggleActif(@PathVariable Long id) {
+        return ResponseEntity.ok(utilisateurService.toggleActif(id));
     }
 
     @PatchMapping("/{id}/reset-password")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Réinitialise le mot de passe d'un utilisateur")
     public ResponseEntity<Void> resetPassword(
             @PathVariable Long id,
@@ -96,7 +95,7 @@ public class UtilisateurController {
     // ============ DELETE OPERATION ============
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Supprime un utilisateur")
     public ResponseEntity<Void> deleteUtilisateur(@PathVariable Long id) {
         utilisateurService.deleteUtilisateur(id);
@@ -106,14 +105,14 @@ public class UtilisateurController {
     // ============ STATISTICS ============
 
     @GetMapping("/stats/total")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Nombre total d'utilisateurs")
     public ResponseEntity<Long> getTotalUtilisateurs() {
         return ResponseEntity.ok(utilisateurService.getTotalUtilisateurs());
     }
 
     @GetMapping("/stats/role/{role}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_ADMIN')")
     @Operation(summary = "Nombre d'utilisateurs par rôle")
     public ResponseEntity<Long> getCountByRole(@PathVariable String role) {
         return ResponseEntity.ok(utilisateurService.getCountByRole(role));

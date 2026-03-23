@@ -89,6 +89,10 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             utilisateur.setRole(request.getRole());
         }
 
+        if (request.getActif() != null) {
+            utilisateur.setActif(request.getActif());
+        }
+
         Utilisateur saved = utilisateurRepository.save(utilisateur);
         return mapToResponse(saved);
     }
@@ -111,7 +115,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     @Transactional
-    public void toggleActif(Long id) {
+    public UtilisateurResponse toggleActif(Long id) {
         Utilisateur utilisateur = utilisateurRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.forUtilisateur(id));
 
@@ -123,7 +127,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         }
 
         utilisateur.setActif(!utilisateur.isActif());
-        utilisateurRepository.save(utilisateur);
+        return mapToResponse(utilisateurRepository.save(utilisateur));
     }
 
     @Override
