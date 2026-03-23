@@ -23,4 +23,5 @@ export interface MouvementStock {
   dateMouvement: Date;
   raison: string;
   utilisateurId: number;
+  utilisateurNom?: string;
 }

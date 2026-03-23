@@ -11,15 +11,20 @@ import { FormatPricePipe } from '../../../shared/pipes/format-price.pipe';
 @Component({
   selector: 'app-mouvements-stock',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, EmptyStateComponent, NgxPaginationModule, FormatPricePipe],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ReactiveFormsModule, 
+    EmptyStateComponent, 
+    NgxPaginationModule, 
+    FormatPricePipe
+  ],
   templateUrl: './mouvements-stock.component.html',
   styles: [`
     .mouvements-page { min-height: 100vh; animation: fadeIn 0.5s ease-out; }
-    .type-entree { color: #2ecc71; }
-    .type-sortie { color: #e74c3c; }
-    .type-perdu { color: #e67e22; }
-    .type-detruit { color: #d35400; }
-    .type-ajustement { color: #3498db; }
+    .bg-success-light { background: #E8F5E9; }
+    .bg-danger-light { background: #FFEBEE; }
+    .bg-warning-light { background: #FFF3E0; }
   `]
 })
 export class MouvementsStockComponent implements OnInit {
@@ -64,14 +69,14 @@ export class MouvementsStockComponent implements OnInit {
 
   loadData() {
     this.ingredientService.getMouvements().subscribe(data => {
-      this.mouvements = data;
+      this.mouvements = data || [];
       this.applyFilters();
     });
-    this.ingredientService.getAll().subscribe(data => this.ingredients = data);
+    this.ingredientService.getAll().subscribe(data => this.ingredients = data || []);
   }
 
   applyFilters() {
-    this.filteredMouvements = this.mouvements.filter(m => {
+    this.filteredMouvements = (this.mouvements || []).filter(m => {
       const matchType = this.filterType === 'ALL' || m.type === this.filterType;
       const matchIng = !this.selectedIngredientId || Number(m.ingredientId) === Number(this.selectedIngredientId);
       
@@ -122,6 +127,6 @@ export class MouvementsStockComponent implements OnInit {
   }
 
   getIngredientName(id: number): string {
-    return this.ingredients.find(i => i.id === id)?.nom || 'Inconnu';
+    return this.ingredients.find(i => Number(i.id) === Number(id))?.nom || 'Inconnu';
   }
 }

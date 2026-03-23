@@ -16,13 +16,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("/stocks/mouvements")
 @RequiredArgsConstructor
+@lombok.extern.slf4j.Slf4j
 public class MouvementStockController {
 
-        private final MouvementStockService mouvementStockService;
+    private final MouvementStockService mouvementStockService;
 
-        @GetMapping
+    @GetMapping({"", "/all"})
     public ResponseEntity<List<MouvementStockResponse>> getAllMouvements() {
-        return ResponseEntity.ok(mouvementStockService.getAllMouvements());
+        log.info("Appel API: Récupération de tous les mouvements de stock");
+        List<MouvementStockResponse> responses = mouvementStockService.getAllMouvements();
+        log.info("Récupérés: {} mouvements", responses.size());
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/entree")

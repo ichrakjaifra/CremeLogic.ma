@@ -90,7 +90,7 @@ export class IngredientService {
   getMouvements(ingredientId?: number): Observable<MouvementStock[]> {
     const url = ingredientId 
       ? `${environment.apiUrl}/stocks/mouvements/ingredient/${ingredientId}` 
-      : `${environment.apiUrl}/stocks/mouvements`;
+      : `${environment.apiUrl}/stocks/mouvements/all`;
     return this.http.get<MouvementStock[]>(url);
   }
 

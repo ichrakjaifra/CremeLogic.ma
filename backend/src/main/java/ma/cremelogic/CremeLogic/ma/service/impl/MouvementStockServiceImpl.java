@@ -240,18 +240,47 @@ public class MouvementStockServiceImpl implements MouvementStockService {
     }
 
     private MouvementStockResponse mapToResponse(MouvementStock mouvement) {
-        return MouvementStockResponse.builder()
-                .id(mouvement.getId()).dateMouvement(mouvement.getDateMouvement())
-                .ingredientId(mouvement.getIngredient().getId()).ingredientNom(mouvement.getIngredient().getNom())
-                .type(mouvement.getType()).quantite(mouvement.getQuantite())
-                .quantiteAvant(mouvement.getQuantiteAvant()).quantiteApres(mouvement.getQuantiteApres())
-                .coutUnitaire(mouvement.getCoutUnitaire()).montantTotal(mouvement.getMontantTotal())
-                .utilisateurId(mouvement.getUtilisateur() != null ? mouvement.getUtilisateur().getId() : null)
-                .utilisateurNom(mouvement.getUtilisateur() != null ? mouvement.getUtilisateur().getNom() : null)
-                .commandeId(mouvement.getCommande() != null ? mouvement.getCommande().getId() : null)
-                .ordreProductionId(
-                        mouvement.getOrdreProduction() != null ? mouvement.getOrdreProduction().getId() : null)
-                .venteId(mouvement.getVente() != null ? mouvement.getVente().getId() : null)
-                .raison(mouvement.getRaison()).synchronise(mouvement.isSynchronise()).build();
+        if (mouvement == null) return null;
+        
+        MouvementStockResponse.MouvementStockResponseBuilder builder = MouvementStockResponse.builder()
+                .id(mouvement.getId())
+                .dateMouvement(mouvement.getDateMouvement())
+                .type(mouvement.getType())
+                .quantite(mouvement.getQuantite())
+                .quantiteAvant(mouvement.getQuantiteAvant())
+                .quantiteApres(mouvement.getQuantiteApres())
+                .coutUnitaire(mouvement.getCoutUnitaire())
+                .montantTotal(mouvement.getMontantTotal())
+                .raison(mouvement.getRaison())
+                .synchronise(mouvement.isSynchronise());
+
+        if (mouvement.getIngredient() != null) {
+            builder.ingredientId(mouvement.getIngredient().getId())
+                   .ingredientNom(mouvement.getIngredient().getNom())
+                   .ingredientCode(mouvement.getIngredient().getCodeIngredient())
+                   .uniteMesure(mouvement.getIngredient().getUniteMesure() != null ? mouvement.getIngredient().getUniteMesure().name() : null);
+        }
+
+        if (mouvement.getUtilisateur() != null) {
+            builder.utilisateurId(mouvement.getUtilisateur().getId())
+                   .utilisateurNom(mouvement.getUtilisateur().getNom());
+        }
+
+        if (mouvement.getCommande() != null) {
+            builder.commandeId(mouvement.getCommande().getId())
+                   .commandeNumero(mouvement.getCommande().getNumeroCommande());
+        }
+
+        if (mouvement.getOrdreProduction() != null) {
+            builder.ordreProductionId(mouvement.getOrdreProduction().getId())
+                   .ordreProductionNumero(mouvement.getOrdreProduction().getNumeroOrdre());
+        }
+
+        if (mouvement.getVente() != null) {
+            builder.venteId(mouvement.getVente().getId())
+                   .venteNumero(mouvement.getVente().getNumeroVente());
+        }
+
+        return builder.build();
     }
 }
