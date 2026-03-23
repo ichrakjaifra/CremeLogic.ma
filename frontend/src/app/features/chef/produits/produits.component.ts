@@ -33,11 +33,14 @@ export class ProduitsComponent implements OnInit {
   categories: string[] = ['TOUT', ...PRODUCT_CATEGORIES];
 
   showModal = false;
+  showStockModal = false;
   isEditing = false;
   produitForm!: FormGroup;
+  stockForm!: FormGroup;
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   loading = false;
+  selectedProduit: Produit | null = null;
 
   ngOnInit() {
     this.loadProduits();
@@ -53,10 +56,17 @@ export class ProduitsComponent implements OnInit {
       prixVente: [0, [Validators.required, Validators.min(0)]],
       categorie: ['GATEAUX', [Validators.required]],
       stockDisponible: [0, [Validators.required, Validators.min(0)]],
-      stockSeuil: [5, [Validators.required, Validators.min(0)]],
+      stockMinimum: [5, [Validators.required, Validators.min(0)]],
+      stockMaximum: [100, [Validators.required, Validators.min(0)]],
+      uniteMesure: ['UNITE'],
       recetteId: [null],
-      actif: [true],
-      photoUrl: ['']
+      statut: ['ACTIF'],
+      imageUrl: ['']
+    });
+
+    this.stockForm = this.fb.group({
+      quantite: [0, [Validators.required, Validators.min(0.1)]],
+      type: ['ENTREE', [Validators.required]]
     });
   }
 
@@ -89,7 +99,7 @@ export class ProduitsComponent implements OnInit {
     this.isEditing = !!produit;
     this.showModal = true;
     this.selectedFile = null;
-    this.imagePreview = produit?.photoUrl || null;
+    this.imagePreview = produit?.imageUrl || null;
     
     if (produit) {
       this.produitForm.patchValue(produit);
@@ -98,14 +108,44 @@ export class ProduitsComponent implements OnInit {
         prixVente: 0,
         categorie: 'GATEAUX',
         stockDisponible: 0,
-        stockSeuil: 5,
-        actif: true
+        stockMinimum: 5,
+        stockMaximum: 100,
+        uniteMesure: 'UNITE',
+        statut: 'ACTIF'
       });
     }
   }
 
   closeModal() {
     this.showModal = false;
+    this.showStockModal = false;
+  }
+
+  openStockModal(produit: Produit) {
+    this.selectedProduit = produit;
+    this.showStockModal = true;
+    this.stockForm.reset({
+      quantite: 0,
+      type: 'ENTREE'
+    });
+  }
+
+  confirmAjusterStock() {
+    if (this.stockForm.invalid || !this.selectedProduit) return;
+    this.loading = true;
+    const { quantite, type } = this.stockForm.value;
+    this.produitService.ajusterStock(this.selectedProduit.id, quantite, type).subscribe({
+      next: () => {
+        this.notification.success('Stock mis à jour', 'Succès');
+        this.loadProduits();
+        this.closeModal();
+        this.loading = false;
+      },
+      error: () => {
+        this.notification.error('Erreur lors de l\'ajustement', 'Erreur');
+        this.loading = false;
+      }
+    });
   }
 
   onFileSelected(event: any) {
@@ -135,9 +175,9 @@ export class ProduitsComponent implements OnInit {
     }
   }
 
-  private submitForm(photoUrl?: string) {
+  private submitForm(imageUrl?: string) {
     const data = this.produitForm.value;
-    if (photoUrl) data.photoUrl = photoUrl;
+    if (imageUrl) data.imageUrl = imageUrl;
 
     const obs = this.isEditing 
       ? this.produitService.update(data.id, data)

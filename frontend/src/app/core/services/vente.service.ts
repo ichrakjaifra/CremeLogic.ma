@@ -31,8 +31,9 @@ export class VenteService {
     );
   }
 
-  annuler(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  annuler(id: number, raison: string): Observable<void> {
+    let params = new HttpParams().set('raison', raison);
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { params });
   }
 
   getByPeriode(debut: string, fin: string): Observable<Vente[]> {

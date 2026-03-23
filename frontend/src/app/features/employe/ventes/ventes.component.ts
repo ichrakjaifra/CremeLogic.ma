@@ -8,10 +8,13 @@ import { Vente, LigneVente } from '../../../core/models/vente.model';
 import { FormatPricePipe } from '../../../shared/pipes/format-price.pipe';
 import { NotificationService } from '../../../core/services/notification.service';
 
+import { VenteHistoryComponent } from './vente-history/vente-history.component';
+import { VenteStatsComponent } from './vente-stats/vente-stats.component';
+
 @Component({
   selector: 'app-ventes',
   standalone: true,
-  imports: [CommonModule, FormsModule, FormatPricePipe],
+  imports: [CommonModule, FormsModule, FormatPricePipe, VenteHistoryComponent, VenteStatsComponent],
   templateUrl: './ventes.component.html',
   styleUrls: ['./ventes.component.css']
 })
@@ -19,6 +22,8 @@ export class VentesComponent implements OnInit {
   private produitService = inject(ProduitService);
   private venteService = inject(VenteService);
   private notification = inject(NotificationService);
+
+  currentView: string = 'CAISSE';
 
   products: Produit[] = [];
   filteredProducts: Produit[] = [];
@@ -53,7 +58,7 @@ export class VentesComponent implements OnInit {
     this.filteredProducts = this.products.filter(p => {
       const matchSearch = !this.searchProduct || p.nom.toLowerCase().includes(this.searchProduct.toLowerCase());
       const matchCat = this.selectedCategorie === 'TOUT' || p.categorie === this.selectedCategorie;
-      return matchSearch && matchCat && p.actif;
+      return matchSearch && matchCat && p.statut === 'ACTIF';
     });
   }
 
@@ -73,7 +78,7 @@ export class VentesComponent implements OnInit {
     } else {
       this.cart.push({
         produitId: p.id!,
-        nomProduit: p.nom,
+        produitNom: p.nom,
         quantite: 1,
         prixUnitaire: p.prixVente
       });

@@ -15,25 +15,47 @@ export class ProduitService {
 
   getAll(): Observable<Produit[]> {
     return this.http.get<ApiResponse<Produit[]>>(this.baseUrl).pipe(
-      map(response => response.data || [])
+      map(response => (response.data || []).map(p => this.mapImageUrl(p)))
     );
   }
 
   getById(id: number): Observable<Produit> {
     return this.http.get<ApiResponse<Produit>>(`${this.baseUrl}/${id}`).pipe(
-      map(response => response.data)
+      map(response => this.mapImageUrl(response.data))
     );
+  }
+
+  private mapImageUrl(p: Produit): Produit {
+    if (p && p.imageUrl) {
+      if (p.imageUrl.includes('http')) {
+        try {
+          const url = new URL(p.imageUrl);
+          p.imageUrl = url.pathname;
+        } catch (e) {
+          // Fallback if URL is invalid
+          const index = p.imageUrl.indexOf('/api/uploads/');
+          if (index !== -1) {
+            p.imageUrl = p.imageUrl.substring(index);
+          }
+        }
+      } else if (!p.imageUrl.startsWith('/api') && p.imageUrl.includes('uploads/')) {
+        // If it starts with /uploads/ but misses /api
+        const index = p.imageUrl.indexOf('/uploads/');
+        p.imageUrl = '/api' + p.imageUrl.substring(index);
+      }
+    }
+    return p;
   }
 
   create(produit: Partial<Produit>): Observable<Produit> {
     return this.http.post<ApiResponse<Produit>>(this.baseUrl, produit).pipe(
-      map(response => response.data)
+      map(response => this.mapImageUrl(response.data))
     );
   }
 
   update(id: number, produit: Partial<Produit>): Observable<Produit> {
     return this.http.put<ApiResponse<Produit>>(`${this.baseUrl}/${id}`, produit).pipe(
-      map(response => response.data)
+      map(response => this.mapImageUrl(response.data))
     );
   }
 
@@ -43,20 +65,20 @@ export class ProduitService {
 
   getByCategorie(categorie: string): Observable<Produit[]> {
     return this.http.get<ApiResponse<Produit[]>>(`${this.baseUrl}/categorie/${categorie}`).pipe(
-      map(response => response.data || [])
+      map(response => (response.data || []).map(p => this.mapImageUrl(p)))
     );
   }
 
   getStockFaible(): Observable<Produit[]> {
     return this.http.get<ApiResponse<Produit[]>>(`${this.baseUrl}/stock-faible`).pipe(
-      map(response => response.data || [])
+      map(response => (response.data || []).map(p => this.mapImageUrl(p)))
     );
   }
 
   search(keyword: string): Observable<Produit[]> {
     let params = new HttpParams().set('keyword', keyword);
     return this.http.get<ApiResponse<Produit[]>>(`${this.baseUrl}/search`, { params }).pipe(
-      map(response => response.data || [])
+      map(response => (response.data || []).map(p => this.mapImageUrl(p)))
     );
   }
 

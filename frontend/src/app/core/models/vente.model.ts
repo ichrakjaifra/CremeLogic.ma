@@ -1,22 +1,25 @@
 export interface Vente {
   id: number;
   numeroVente: string;
-  dateVente: Date;
+  dateVente: string | Date;
   caissierId?: number;
-  nomCaissier?: string;
+  caissierNom?: string;
   montantTotal: number;
   montantPaye?: number;
   montantRendu?: number;
   modePaiement: 'ESPECES' | 'CARTE' | 'AUTRE';
   lignesVente: LigneVente[];
   nomClient?: string;
+  telephoneClient?: string;
+  emailClient?: string;
   notes?: string;
+  dateCreation?: string;
 }
 
 export interface LigneVente {
   id?: number;
   produitId: number;
-  nomProduit: string;
+  produitNom: string;
   quantite: number;
   prixUnitaire: number;
   montantTotal?: number;

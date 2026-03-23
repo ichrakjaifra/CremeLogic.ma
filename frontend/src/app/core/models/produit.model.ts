@@ -1,16 +1,23 @@
 export interface Produit {
   id: number;
+  codeProduit?: string;
   nom: string;
   categorie: string;
   prixVente: number;
+  coutProduction?: number;
+  marge?: number;
   stockDisponible: number;
-  stockSeuil: number;
+  stockMinimum: number;
+  stockMaximum: number;
   uniteMesure: string;
   description?: string;
-  photoUrl?: string;
+  imageUrl?: string;
   recetteId?: number;
   dateCreation: Date;
-  actif: boolean;
+  statut: 'ACTIF' | 'INACTIF' | string;
+  stockFaible?: boolean;
+  enRupture?: boolean;
+  valeurStock?: number;
 }
 
 export const PRODUCT_CATEGORIES = [

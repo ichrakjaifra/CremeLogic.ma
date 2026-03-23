@@ -1,0 +1,91 @@
+<div class="history-container animate-fade-in p-3">
+  <!-- Search & Filters -->
+  <div class="glass-card mb-4 p-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label extra-small fw-bold text-muted text-uppercase">Rechercher</label>
+        <div class="input-group search-box border rounded-3">
+          <span class="input-group-text bg-white border-0 ps-3 text-muted"><i class="fas fa-search"></i></span>
+          <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" 
+                 class="form-control border-0 py-2 shadow-none" placeholder="Numéro de vente, Client...">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label extra-small fw-bold text-muted text-uppercase">Du</label>
+        <input type="date" [(ngModel)]="dateDebut" class="form-control border-0 bg-light py-2 shadow-none rounded-3">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label extra-small fw-bold text-muted text-uppercase">Au</label>
+        <input type="date" [(ngModel)]="dateFin" class="form-control border-0 bg-light py-2 shadow-none rounded-3">
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary-custom w-100 py-2" (click)="filterByDate()">
+          <i class="fas fa-filter me-2"></i> Filtrer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border color-marron" role="status"></div>
+    <p class="mt-2 text-muted">Chargement de l'historique...</p>
+  </div>
+
+  <!-- Table -->
+  <div class="glass-card overflow-hidden" *ngIf="!loading">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3 text-uppercase extra-small fw-bold text-muted border-0">N° Vente</th>
+            <th class="py-3 text-uppercase extra-small fw-bold text-muted border-0">Date</th>
+            <th class="py-3 text-uppercase extra-small fw-bold text-muted border-0">Caissier</th>
+            <th class="py-3 text-uppercase extra-small fw-bold text-muted border-0">Client</th>
+            <th class="py-3 text-uppercase extra-small fw-bold text-muted border-0">Montant</th>
+            <th class="py-3 text-uppercase extra-small fw-bold text-muted border-0">Paiement</th>
+            <th class="pe-4 py-3 text-uppercase extra-small fw-bold text-muted border-0 text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of filteredVentes | paginate: { itemsPerPage: 10, currentPage: p }">
+            <td class="ps-4 py-3 fw-bold color-marron small">{{ v.numeroVente }}</td>
+            <td class="py-3 small">{{ v.dateVente | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="py-3 small">{{ v.caissierNom || 'Auto' }}</td>
+            <td class="py-3 small text-muted">{{ v.nomClient || '-' }}</td>
+            <td class="py-3 fw-bold text-dark">{{ v.montantTotal | formatPrice }}</td>
+            <td class="py-3">
+              <span class="badge extra-small px-2 py-1 rounded-pill" 
+                    [ngClass]="v.modePaiement === 'ESPECES' ? 'bg-success bg-opacity-10 text-success' : 'bg-primary bg-opacity-10 text-primary'">
+                {{ v.modePaiement }}
+              </span>
+            </td>
+            <td class="pe-4 py-3 text-end">
+              <div class="btn-group shadow-sm rounded-3 overflow-hidden">
+                <button class="btn btn-white btn-sm border-end" title="Détails" (click)="viewDetails(v)">
+                  <i class="fas fa-eye color-marron opacity-75"></i>
+                </button>
+                <button class="btn btn-white btn-sm border-end" title="Imprimer" (click)="printInvoice(v.id)">
+                  <i class="fas fa-print text-primary opacity-75"></i>
+                </button>
+                <button class="btn btn-white btn-sm text-danger" title="Annuler" 
+                        [appConfirm]="'Êtes-vous sûr de vouloir annuler cette vente ? Cette action restaurera le stock.'"
+                        (confirmed)="annulerVente(v.id)">
+                  <i class="fas fa-times-circle opacity-75"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredVentes.length === 0">
+            <td colspan="7" class="text-center py-5 text-muted">
+              Aucune vente trouvée pour cette période.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-center py-3 border-top" *ngIf="filteredVentes.length > 10">
+      <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""></pagination-controls>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="stats-container animate-fade-in p-3">
+  <!-- KPI Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-3">
+      <div class="glass-card stat-card p-4 text-center border-0 shadow-sm h-100">
+        <div class="icon-circle bg-chocolate-light mx-auto mb-3">
+          <i class="fas fa-coins color-marron"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Chiffre d'Affaires (Auj.)</div>
+        <div class="h3 fw-bold color-marron mb-0">{{ stats.revenueToday | formatPrice }}</div>
+        <div class="mt-2 text-success extra-small fw-bold">
+          <i class="fas fa-arrow-up me-1"></i> {{ stats.growth }}% <span class="text-muted fw-normal">vs hier</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="glass-card stat-card p-4 text-center border-0 shadow-sm h-100">
+        <div class="icon-circle bg-blue-light mx-auto mb-3">
+          <i class="fas fa-shopping-bag text-primary"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Ventes Réalisées</div>
+        <div class="h3 fw-bold text-primary mb-0">{{ stats.salesCount }}</div>
+        <div class="mt-2 text-muted extra-small">Nombre de tickets</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="glass-card stat-card p-4 text-center border-0 shadow-sm h-100">
+        <div class="icon-circle bg-green-light mx-auto mb-3">
+          <i class="fas fa-shopping-basket text-success"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Panier Moyen</div>
+        <div class="h3 fw-bold text-success mb-0">{{ stats.avgBasket | formatPrice }}</div>
+        <div class="mt-2 text-muted extra-small">Valeur par client</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="glass-card stat-card p-4 text-center border-0 shadow-sm h-100">
+        <div class="icon-circle bg-warning-light mx-auto mb-3">
+          <i class="fas fa-star text-warning"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Top Catégorie</div>
+        <div class="h3 fw-bold text-warning mb-0">Viennoiserie</div>
+        <div class="mt-2 text-muted extra-small">La plus vendue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-7">
+      <div class="glass-card p-4 h-100 border-0 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0">Top 5 Produits Vendus</h5>
+          <span class="badge bg-light text-dark fw-normal extra-small">Derniers 30 jours</span>
+        </div>
+        <div class="chart-container" style="position: relative; height: 300px;">
+          <canvas #productsChart></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="glass-card p-4 h-100 border-0 shadow-sm">
+        <h5 class="fw-bold color-marron mb-4">CA par Catégorie</h5>
+        <div class="chart-container" style="position: relative; height: 300px;">
+          <canvas #categoriesChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popular Timing or other stat... -->
+  <div class="glass-card p-4 border-0 shadow-sm mb-4">
+     <h5 class="fw-bold color-marron mb-4">Ventes récentes</h5>
+     <div class="text-center py-4 text-muted small">
+       <i class="fas fa-info-circle me-2"></i> Consultez l'historique pour les détails complets par transaction.
+     </div>
+  </div>
+</div>

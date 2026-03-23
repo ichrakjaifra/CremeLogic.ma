@@ -32,10 +32,10 @@
     <div class="col-md-4 col-lg-3" *ngFor="let p of filteredProduits">
       <div class="glass-card product-card p-3 h-100 border-0 shadow-sm bg-white position-relative">
         <div class="product-img-container mb-3 shadow-inner">
-          <img [src]="p.photoUrl || 'assets/images/default-product.png'" class="img-preview" alt="Produit">
+          <img [src]="p.imageUrl || 'assets/images/default-product.png'" class="img-preview" alt="Produit">
           <span class="badge status-badge rounded-pill shadow-sm"
-                [ngClass]="p.actif ? 'bg-success' : 'bg-danger'">
-            {{ p.actif ? 'ACTIF' : 'INACTIF' }}
+                [ngClass]="p.statut === 'ACTIF' ? 'bg-success' : 'bg-danger'">
+            {{ p.statut }}
           </span>
         </div>
         
@@ -50,16 +50,19 @@
         <div class="stock-info d-flex justify-content-between align-items-center mb-3">
           <div class="extra-small">
             <span class="text-muted">Stock: </span>
-            <span class="fw-bold" [ngClass]="p.stockDisponible <= p.stockSeuil ? 'text-danger' : 'text-success'">
+            <span class="fw-bold" [ngClass]="p.stockDisponible <= p.stockMinimum ? 'text-danger' : 'text-success'">
               {{ p.stockDisponible }}
             </span>
           </div>
-          <div class="extra-small text-muted">Seuil: {{ p.stockSeuil }}</div>
+          <div class="extra-small text-muted">Seuil: {{ p.stockMinimum }}</div>
         </div>
 
         <div class="d-flex gap-2 pt-2 border-top">
           <button class="btn btn-sm btn-light flex-grow-1 border-0 rounded-3 color-marron fw-bold" (click)="openModal(p)">
             <i class="fas fa-edit me-1"></i> MODIFIER
+          </button>
+          <button class="btn btn-sm btn-light border-0 rounded-3 color-marron" (click)="openStockModal(p)" title="Ajuster Stock">
+            <i class="fas fa-boxes"></i>
           </button>
           <button class="btn btn-sm btn-light border-0 rounded-3 text-danger" (click)="deleteProduit(p.id!)">
             <i class="fas fa-trash"></i>
@@ -120,7 +123,7 @@
                   </div>
                   <div class="col-md-6">
                     <label class="form-label extra-small fw-bold text-muted text-uppercase">Seuil d'Alerte</label>
-                    <input type="number" formControlName="stockSeuil" class="form-control rounded-3 bg-light border-0 shadow-none">
+                    <input type="number" formControlName="stockMinimum" class="form-control rounded-3 bg-light border-0 shadow-none">
                   </div>
                   <div class="col-12">
                     <label class="form-label extra-small fw-bold text-muted text-uppercase">Associer une Recette</label>
@@ -138,6 +141,46 @@
               <button type="submit" class="btn btn-primary-custom flex-grow-2 py-3 rounded-4 fw-bold shadow-lg" [disabled]="produitForm.invalid || loading">
                 <i class="fas fa-spinner fa-spin me-2" *ngIf="loading"></i>
                 {{ isEditing ? 'ENREGISTRER LES MODIFICATIONS' : 'CRÉER LE PRODUIT' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  <!-- Stock Adjustment Modal -->
+  <div class="modal d-block" *ngIf="showStockModal" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-card border-0 rounded-4 shadow-2xl">
+        <div class="modal-header border-0 p-4 pb-0">
+          <h5 class="fw-bold color-marron mb-0">Ajuster le Stock : {{ selectedProduit?.nom }}</h5>
+          <button class="btn-close shadow-none" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form [formGroup]="stockForm" (ngSubmit)="confirmAjusterStock()">
+            <div class="mb-3">
+              <label class="form-label extra-small fw-bold text-muted text-uppercase">Type d'opération</label>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm flex-grow-1 rounded-3 py-2 fw-bold"
+                        [ngClass]="stockForm.get('type')?.value === 'ENTREE' ? 'btn-success shadow-sm' : 'btn-light'"
+                        (click)="stockForm.get('type')?.setValue('ENTREE')">
+                  ENTRÉE
+                </button>
+                <button type="button" class="btn btn-sm flex-grow-1 rounded-3 py-2 fw-bold"
+                        [ngClass]="stockForm.get('type')?.value === 'SORTIE' ? 'btn-danger shadow-sm' : 'btn-light'"
+                        (click)="stockForm.get('type')?.setValue('SORTIE')">
+                  SORTIE
+                </button>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label extra-small fw-bold text-muted text-uppercase">Quantité</label>
+              <input type="number" formControlName="quantite" class="form-control rounded-3 bg-light border-0 shadow-none py-2" placeholder="Ex: 50">
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-light flex-grow-1 rounded-3 fw-bold" (click)="closeModal()">ANNULER</button>
+              <button type="submit" class="btn btn-primary-custom flex-grow-1 rounded-3 fw-bold" [disabled]="stockForm.invalid || loading">
+                <i class="fas fa-spinner fa-spin me-2" *ngIf="loading"></i>
+                CONFIRMER
               </button>
             </div>
           </form>

@@ -1,7 +1,29 @@
 <div class="sales-page p-2 animate-fade-in">
-  <div class="row g-0 h-100">
+  <!-- View Selector Tabs -->
+  <div class="d-flex justify-content-center mb-4 mt-2">
+    <div class="glass-card p-1 rounded-pill shadow-sm d-flex gap-1" style="max-width: fit-content;">
+      <button class="btn btn-sm px-4 py-2 rounded-pill fw-bold border-0 transition-all d-flex align-items-center"
+              [ngClass]="currentView === 'CAISSE' ? 'btn-primary-custom shadow' : 'btn-light-gray text-muted'"
+              (click)="currentView = 'CAISSE'">
+        <i class="fas fa-cash-register me-2"></i> Caisse POS
+      </button>
+      <button class="btn btn-sm px-4 py-2 rounded-pill fw-bold border-0 transition-all d-flex align-items-center"
+              [ngClass]="currentView === 'HISTORIQUE' ? 'btn-primary-custom shadow' : 'btn-light-gray text-muted'"
+              (click)="currentView = 'HISTORIQUE'">
+        <i class="fas fa-history me-2"></i> Historique
+      </button>
+      <button class="btn btn-sm px-4 py-2 rounded-pill fw-bold border-0 transition-all d-flex align-items-center"
+              [ngClass]="currentView === 'STATS' ? 'btn-primary-custom shadow' : 'btn-light-gray text-muted'"
+              (click)="currentView = 'STATS'">
+        <i class="fas fa-chart-line me-2"></i> Analytique
+      </button>
+    </div>
+  </div>
+
+  <!-- Caisse POS View -->
+  <div class="row g-0 h-100" *ngIf="currentView === 'CAISSE'">
     <!-- Left: Product Selection Area -->
-    <div class="col-lg-8 pe-lg-3 d-flex flex-column" style="height: calc(100vh - 20px);">
+    <div class="col-lg-8 pe-lg-3 d-flex flex-column" style="height: calc(100vh - 120px);">
       <!-- Header & Search -->
       <div class="glass-search mb-4 p-3 d-flex align-items-center justify-content-between gap-3">
         <div class="input-group search-box flex-grow-1">
@@ -29,8 +51,8 @@
               
               <!-- Product Image Placeholder -->
               <div class="product-img-container mb-3 shadow-inner">
-                <img *ngIf="p.photoUrl" [src]="p.photoUrl" class="w-100 h-100 object-fit-cover rounded-3">
-                <div *ngIf="!p.photoUrl" class="text-center opacity-75">
+                <img *ngIf="p.imageUrl" [src]="p.imageUrl" class="w-100 h-100 object-fit-cover rounded-3">
+                <div *ngIf="!p.imageUrl" class="text-center opacity-75">
                   <i class="fas fa-bread-slice fa-2x color-marron mb-1"></i>
                   <div class="extra-small fw-bold text-uppercase opacity-50">ARTISANAL</div>
                 </div>
@@ -80,7 +102,7 @@
                 <i class="fas fa-cookie-bite color-marron small"></i>
               </div>
               <div class="flex-grow-1">
-                <div class="fw-bold text-dark small text-truncate" style="max-width: 150px;">{{ item.nomProduit }}</div>
+                <div class="fw-bold text-dark small text-truncate" style="max-width: 150px;">{{ item.produitNom }}</div>
                 <div class="extra-small text-muted">{{ item.prixUnitaire | formatPrice }} l'unité</div>
               </div>
               <div class="qty-controls d-flex align-items-center bg-light rounded-pill px-2 py-1">
@@ -138,5 +160,15 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Historique View -->
+  <div *ngIf="currentView === 'HISTORIQUE'">
+    <app-vente-history></app-vente-history>
+  </div>
+
+  <!-- Stats View -->
+  <div *ngIf="currentView === 'STATS'">
+    <app-vente-stats></app-vente-stats>
   </div>
 </div>
