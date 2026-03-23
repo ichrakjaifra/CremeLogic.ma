@@ -182,7 +182,14 @@ export class CommandesAchatComponent implements OnInit {
   }
 
   deleteCommande(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer définitivement cette commande ? Cette action est irréversible.')) {
+    const commande = this.commandes.find(c => c.id === id);
+    let message = 'Voulez-vous vraiment supprimer définitivement cette commande ?';
+    
+    if (commande && (commande.statut === 'LIVREE' || commande.statut === 'ANNULEE')) {
+      message = '⚠️ Attention, cette commande est déjà livrée ou annulée. La supprimer pourrait fausser vos statistiques et votre historique de stock. Voulez-vous vraiment continuer ?';
+    }
+
+    if (confirm(message)) {
       this.commandeService.delete(id).subscribe({
         next: () => {
           this.notification.success('Commande supprimée', 'Succès');
