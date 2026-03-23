@@ -57,7 +57,7 @@ public class DashboardController {
     }
 
     @GetMapping("/magasinier")
-    @PreAuthorize("hasRole('MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
     @Operation(summary = "Dashboard Magasinier - Vue stock")
     public ResponseEntity<ApiResponse<DashboardResponse>> getDashboardMagasinier() {
         DashboardResponse response = dashboardService.getDashboardMagasinier();

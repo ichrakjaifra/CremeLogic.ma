@@ -22,7 +22,8 @@ export interface ChefStats {
 export interface MagasinierStats {
   ingredientsStockFaible: number;
   totalCommandesJour: number;
-  ingredientsExpirant?: number;
+  ingredientsExpirant: number;
+  valeurStockTotal: number;
 }
 
 export interface EmployeStats {

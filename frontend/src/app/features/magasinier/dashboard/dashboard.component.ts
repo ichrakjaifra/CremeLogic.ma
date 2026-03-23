@@ -22,7 +22,9 @@ export class MagasinierDashboardComponent implements OnInit {
 
   stats?: MagasinierStats;
   ingredientsCritiques: Ingredient[] = [];
-  commandesAchat: any[] = []; // Simplified for mock
+  commandesAujourdhui: any[] = [];
+  stockParCategorie: { [key: string]: number } = {};
+  valeurTotaleStock = 0;
   today = new Date();
 
   ngOnInit() {
@@ -30,25 +32,38 @@ export class MagasinierDashboardComponent implements OnInit {
       this.stats = stats;
     });
 
-    this.ingredientService.getStockFaible().subscribe(ingredients => {
+    this.ingredientService.getAll().subscribe(ingredients => {
       if (ingredients && Array.isArray(ingredients)) {
-        this.ingredientsCritiques = ingredients.slice(0, 5);
-      } else {
-        this.ingredientsCritiques = [];
+        this.valeurTotaleStock = ingredients.reduce((acc, curr) => acc + (curr.quantiteStock * curr.prixUnitaire), 0);
+        
+        // Group by category
+        this.stockParCategorie = ingredients.reduce((acc: any, curr) => {
+          const cat = curr.categorie || 'Autres';
+          acc[cat] = (acc[cat] || 0) + curr.quantiteStock;
+          return acc;
+        }, {});
+
+        // Detailed critical ingredients (slice top 5)
+        this.ingredientsCritiques = ingredients
+          .filter(i => i.quantiteStock <= i.quantiteMinimum)
+          .slice(0, 5);
       }
     });
 
     this.purchaseService.getAll().subscribe(cmds => {
       if (cmds && Array.isArray(cmds)) {
-        this.commandesAchat = cmds.slice(0, 5).map(c => ({
-          id: c.id,
-          fournisseurNom: c.fournisseurNom ?? 'Fournisseur inconnu',
-          total: c.montantTotal,
-          statut: c.statut,
-          date: c.dateCommande
-        }));
+        const todayStr = this.today.toISOString().split('T')[0];
+        this.commandesAujourdhui = cmds
+          .filter(c => c.dateLivraisonPrevue && c.dateLivraisonPrevue.startsWith(todayStr))
+          .map(c => ({
+            id: c.id,
+            fournisseurNom: c.fournisseurNom ?? 'Fournisseur inconnu',
+            total: c.montantTotal,
+            statut: c.statut,
+            date: c.dateCommande
+          }));
       } else {
-        this.commandesAchat = [];
+        this.commandesAujourdhui = [];
       }
     });
   }
