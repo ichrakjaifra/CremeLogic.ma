@@ -39,6 +39,10 @@ export class CommandesAchatComponent implements OnInit {
   isEditing = false;
   commandeForm!: FormGroup;
   loading = false;
+  
+  montantTotalPeriode: number = 0;
+  dateDebut: string = new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().substring(0, 10);
+  dateFin: string = new Date().toISOString().substring(0, 10);
 
   ngOnInit() {
     this.loadData();
@@ -72,6 +76,13 @@ export class CommandesAchatComponent implements OnInit {
     this.commandeService.getAll().subscribe(data => { this.commandes = data; this.applyFilters(); });
     this.fournisseurService.getAll().subscribe(data => this.fournisseurs = data);
     this.ingredientService.getAll().subscribe(data => this.ingredients = data);
+    this.calculerMontantPeriode();
+  }
+
+  calculerMontantPeriode() {
+    this.commandeService.getMontantPeriode(this.dateDebut, this.dateFin).subscribe(total => {
+      this.montantTotalPeriode = total;
+    });
   }
 
   applyFilters() {
@@ -157,6 +168,18 @@ export class CommandesAchatComponent implements OnInit {
       this.commandeService.annuler(id, raison).subscribe(() => {
         this.notification.success('Commande annulée', 'Succès');
         this.loadData();
+      });
+    }
+  }
+
+  deleteCommande(id: number) {
+    if (confirm('Voulez-vous vraiment supprimer définitivement cette commande ? Cette action est irréversible.')) {
+      this.commandeService.delete(id).subscribe({
+        next: () => {
+          this.notification.success('Commande supprimée', 'Succès');
+          this.loadData();
+        },
+        error: () => this.notification.error('Impossible de supprimer une commande liée à d\'autres enregistrements', 'Erreur')
       });
     }
   }

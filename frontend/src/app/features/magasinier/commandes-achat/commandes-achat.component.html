@@ -7,6 +7,32 @@
     <button class="btn btn-primary-custom shadow-sm px-4 py-2 rounded-pill" (click)="openModal()">
       <i class="fas fa-plus me-2"></i> Nouvelle Commande
     </button>
+  </div>  <!-- Stats & Period Filter -->
+  <div class="row g-4 mb-4 px-3">
+    <div class="col-md-4">
+      <div class="glass-card p-3 border-0 bg-chocolate-light">
+        <div class="d-flex align-items-center">
+          <div class="p-3 bg-white rounded-4 shadow-sm me-3 text-chocolate">
+            <i class="fas fa-calculator fa-lg"></i>
+          </div>
+          <div>
+            <div class="extra-small fw-bold text-uppercase opacity-50 mb-1">Total Commandé (Période)</div>
+            <div class="h4 mb-0 fw-bold color-marron">{{ montantTotalPeriode | formatPrice }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="glass-card p-3 border-0 d-flex align-items-center gap-3">
+        <div class="flex-grow-1">
+          <label class="extra-small fw-bold text-muted text-uppercase mb-1 d-block">Période d'analyse</label>
+          <div class="d-flex gap-2">
+            <input type="date" [(ngModel)]="dateDebut" (change)="calculerMontantPeriode()" class="form-control form-control-sm border-0 bg-light rounded-pill px-3">
+            <input type="date" [(ngModel)]="dateFin" (change)="calculerMontantPeriode()" class="form-control form-control-sm border-0 bg-light rounded-pill px-3">
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Filters -->
@@ -14,7 +40,7 @@
     <div class="input-group search-box" style="max-width: 300px;">
       <span class="input-group-text bg-white border-0 ps-3 text-muted"><i class="fas fa-search"></i></span>
       <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" 
-             class="form-control border-0 py-2 shadow-none" placeholder="Rechercher fournisseur...">
+             class="form-control border-0 py-2 shadow-none" placeholder="Rechercher fournisseur ou N°...">
     </div>
     <select class="form-select border-0 shadow-none bg-light rounded-pill px-4" style="width: auto;" 
             [(ngModel)]="filterStatut" (change)="applyFilters()">
@@ -32,12 +58,19 @@
     <div class="col-12" *ngFor="let c of filteredCommandes | paginate: { itemsPerPage: 10, currentPage: p }">
       <div class="glass-card commande-card p-3 shadow-sm bg-white" [ngClass]="'statut-' + c.statut.toLowerCase()">
         <div class="row align-items-center">
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="fw-bold color-marron">{{ c.fournisseurNom }}</div>
-            <div class="extra-small text-muted">{{ c.numeroCommande }}</div>
+            <div class="extra-small text-muted fw-bold">{{ c.numeroCommande }}</div>
             <div class="extra-small text-muted">Créée le {{ c.dateCommande | date:'dd/MM/yyyy' }}</div>
           </div>
+          <div class="col-md-2 text-center">
+            <div class="extra-small text-muted mb-1">Articles</div>
             <div class="fw-bold">{{ c.lignesCommande.length }} réf.</div>
+          </div>
+          <div class="col-md-2 text-center">
+            <div class="extra-small text-muted mb-1">Total</div>
+            <div class="fw-bold color-dore">{{ c.montantTotal | formatPrice }}</div>
+          </div>
           <div class="col-md-2 text-center">
             <span class="badge rounded-pill px-3 py-2 extra-small"
                   [ngClass]="{
@@ -51,7 +84,8 @@
               <i class="fas fa-clock"></i> EN RETARD
             </div>
           </div>
-          <div class="col-md-3 text-end d-flex align-items-center justify-content-end gap-1">
+          <div class="col-md-3 text-end d-flex align-items-center justify-content-end gap-2">
+            <!-- Action buttons -->
             <button *ngIf="c.statut === 'VALIDEE' || c.statut === 'EN_COURS'" 
                     class="btn btn-sm btn-success rounded-pill px-3" (click)="recevoirCommande(c)">
               <i class="fas fa-check me-1"></i> REÇU
@@ -62,7 +96,10 @@
             <button class="btn btn-action edit" (click)="openModal(c)" title="Modifier" *ngIf="c.statut === 'EN_ATTENTE'">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-action trash" (click)="cancelCommande(c.id)" title="Annuler" *ngIf="c.statut !== 'ANNULEE' && c.statut !== 'LIVREE'">
+            <button class="btn btn-action trash" (click)="deleteCommande(c.id)" title="Supprimer" *ngIf="c.statut === 'EN_ATTENTE'">
+              <i class="fas fa-trash"></i>
+            </button>
+            <button class="btn btn-action cancel" (click)="cancelCommande(c.id)" title="Annuler" *ngIf="c.statut !== 'ANNULEE' && c.statut !== 'LIVREE' && c.statut !== 'EN_ATTENTE'">
               <i class="fas fa-ban"></i>
             </button>
           </div>
