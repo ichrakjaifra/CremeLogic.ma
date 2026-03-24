@@ -6,6 +6,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 6px solid transparent;
+  overflow: visible !important;
 }
 .order-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(139, 69, 19, 0.1) !important; }
 
