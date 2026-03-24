@@ -127,6 +127,20 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
 
+        @ExceptionHandler(ValidationException.class)
+        public ResponseEntity<ErrorResponse> handleBusinessValidationException(
+                        ValidationException ex, WebRequest request) {
+                ErrorResponse error = ErrorResponse.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .error("Business Validation Error")
+                                .message(ex.getMessage())
+                                .path(request.getDescription(false).replace("uri=", ""))
+                                .errorCode("BUSINESS_VALIDATION_ERROR")
+                                .build();
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
+
         @ExceptionHandler(SignatureException.class)
         public ResponseEntity<ErrorResponse> handleSignatureException(
                         SignatureException ex, WebRequest request) {

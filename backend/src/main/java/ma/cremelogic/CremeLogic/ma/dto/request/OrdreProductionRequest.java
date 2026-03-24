@@ -14,7 +14,6 @@ public class OrdreProductionRequest {
     private Integer quantite;
 
     @NotNull(message = "La date de début prévue est obligatoire")
-    @FutureOrPresent(message = "La date de début doit être aujourd'hui ou dans le futur")
     private LocalDate dateDebutPrevue;
 
     private LocalDate dateFinPrevue;

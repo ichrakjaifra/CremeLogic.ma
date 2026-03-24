@@ -77,7 +77,7 @@ public class MouvementStockServiceImpl implements MouvementStockService {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingrédient", "id", ingredientId));
 
-        if (ingredient.getQuantiteStock().compareTo(quantite) < 0) {
+        if (ingredient.getQuantiteStock().compareTo(quantite) < 0 && ordreProductionId == null) {
             throw new ValidationException("Stock insuffisant. Disponible: " + ingredient.getQuantiteStock());
         }
 

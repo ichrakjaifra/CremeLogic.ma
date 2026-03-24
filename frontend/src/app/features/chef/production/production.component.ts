@@ -95,8 +95,9 @@ export class ProductionComponent implements OnInit {
   loadProduits() {
     this.produitService.getAll().subscribe({
       next: (data) => {
-        this.produits = data || [];
-        console.log('Produits chargés module production:', this.produits.length);
+        // Uniquement les produits ayant une recette associée peuvent être produits
+        this.produits = (data || []).filter(p => p.recetteId != null);
+        console.log('Produits avec recette chargés:', this.produits.length);
       },
       error: (err) => console.error('Erreur chargement produits:', err)
     });
@@ -152,7 +153,6 @@ export class ProductionComponent implements OnInit {
         this.closeModal();
       },
       error: () => {
-        this.notification.error('Erreur lors de l\'enregistrement');
         this.loading = false;
       }
     });
