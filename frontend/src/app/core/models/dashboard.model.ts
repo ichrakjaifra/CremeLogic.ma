@@ -42,5 +42,8 @@ export interface MagasinierStats {
 
 export interface EmployeStats {
   chiffreAffairesJour?: number;
+  totalVentesJour?: number;
+  tachesDuJour?: any[];
+  instructionDuChef?: string;
   tachesACompleter?: number;
 }

@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface TacheRepository extends JpaRepository<Tache, Long> {
     List<Tache> findByAssigneAId(Long utilisateurId);
+    List<Tache> findByAssigneAIdAndDateEcheanceBetween(Long utilisateurId, java.time.LocalDateTime start, java.time.LocalDateTime end);
     List<Tache> findByStatut(String statut);
 }

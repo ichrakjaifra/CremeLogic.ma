@@ -24,10 +24,14 @@ export class EmployeDashboardComponent implements OnInit {
 
   stats?: EmployeStats;
   derniereVente?: Vente;
-  tasks: any[] = [];
   today = new Date();
+  employeeName: string = 'Employé';
+  heureArrivee: string = '--:--';
 
   ngOnInit() {
+    this.employeeName = this.authService.getCurrentUser()?.nom || 'Employé';
+    this.trackHeureArrivee();
+
     this.dashboardService.getEmployeStats().subscribe(stats => {
       this.stats = stats;
     });
@@ -37,9 +41,16 @@ export class EmployeDashboardComponent implements OnInit {
         this.derniereVente = ventes[0];
       }
     });
-
-    // loadTasks() removed as service doesn't exist
   }
 
-  // completeTask removed
+  private trackHeureArrivee() {
+    const todayKey = 'arrival_' + new Date().toISOString().split('T')[0];
+    let savedTime = localStorage.getItem(todayKey);
+    
+    if (!savedTime) {
+      savedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      localStorage.setItem(todayKey, savedTime);
+    }
+    this.heureArrivee = savedTime;
+  }
 }

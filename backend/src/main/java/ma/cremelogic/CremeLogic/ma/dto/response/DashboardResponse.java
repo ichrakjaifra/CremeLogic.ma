@@ -55,4 +55,5 @@ public class DashboardResponse {
     private List<IngredientResponse> ingredientsCritiques;
     private Long totalProductionsTermineesJour;
     private Long totalRecettesActives;
+    private String instructionDuChef;
 }

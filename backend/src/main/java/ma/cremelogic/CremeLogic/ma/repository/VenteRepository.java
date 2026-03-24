@@ -29,6 +29,11 @@ public interface VenteRepository extends JpaRepository<Vente, Long> {
     @Query("SELECT COUNT(v) FROM Vente v WHERE v.dateVente BETWEEN :startDate AND :endDate")
     Long getNombreVentesPeriode(LocalDateTime startDate, LocalDateTime endDate);
 
+    Long countByCaissierIdAndDateVenteBetween(Long caissierId, LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT SUM(v.montantTotal) FROM Vente v WHERE v.caissier.id = :caissierId AND v.dateVente BETWEEN :startDate AND :endDate")
+    java.math.BigDecimal sumMontantTotalByCaissierIdAndDateVenteBetween(Long caissierId, LocalDateTime startDate, LocalDateTime endDate);
+
     @Query("SELECT v FROM Vente v ORDER BY v.dateVente DESC")
     List<Vente> findRecentVentes(int limit);
 }

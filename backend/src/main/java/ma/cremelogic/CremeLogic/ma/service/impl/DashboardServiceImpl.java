@@ -211,10 +211,41 @@ public class DashboardServiceImpl implements DashboardService {
                 return builder.build();
         }
 
-        @Override
-        public DashboardResponse getDashboardEmploye() {
-                return DashboardResponse.builder().build();
+    @Override
+    public DashboardResponse getDashboardEmploye() {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Utilisateur user = utilisateurRepository.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        LocalDateTime debutJour = LocalDate.now().atStartOfDay();
+        LocalDateTime maintenant = LocalDateTime.now();
+
+        DashboardResponse.DashboardResponseBuilder builder = DashboardResponse.builder();
+
+        // Stats personnelles du jour
+        Long nbVentes = venteRepository.countByCaissierIdAndDateVenteBetween(user.getId(), debutJour, maintenant);
+        java.math.BigDecimal caJour = venteRepository.sumMontantTotalByCaissierIdAndDateVenteBetween(user.getId(), debutJour, maintenant);
+
+        builder.totalVentesJour(nbVentes);
+        builder.chiffreAffairesJour(caJour != null ? caJour : java.math.BigDecimal.ZERO);
+
+        // Tâches du jour assignées
+        List<Tache> taches = tacheRepository.findByAssigneAIdAndDateEcheanceBetween(
+                user.getId(), debutJour, debutJour.plusDays(1).minusSeconds(1));
+        builder.tachesDuJour(taches.stream().map(this::mapTacheToResponse).toList());
+
+        // Instruction du chef (Dernière alerte non résolue ou message spécial)
+        alerteRepository.findByResolue(false).stream()
+                .filter(a -> a.getPriorite() == ma.cremelogic.CremeLogic.ma.enums.PrioriteAlerte.HAUTE)
+                .findFirst()
+                .ifPresent(a -> builder.instructionDuChef(a.getTitre() + " : " + a.getMessage()));
+
+        if (builder.build().getInstructionDuChef() == null) {
+            builder.instructionDuChef("Bon service ! N'oubliez pas de vérifier les stocks avant chaque vente.");
         }
+
+        return builder.build();
+    }
 
         @Override
         public Map<String, BigDecimal> getVentesParMois(int nbMois) {
