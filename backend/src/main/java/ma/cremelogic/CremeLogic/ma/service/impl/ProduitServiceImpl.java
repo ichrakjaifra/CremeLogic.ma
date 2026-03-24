@@ -51,7 +51,7 @@ public class ProduitServiceImpl implements ProduitService {
                 .prixVente(request.getPrixVente())
                 .stockMinimum(request.getStockMinimum())
                 .stockMaximum(request.getStockMaximum())
-                .stockDisponible(0)
+                .stockDisponible(request.getStockDisponible() != null ? request.getStockDisponible() : 0)
                 .statut(StatutProduit.ACTIF)
                 .imageUrl(request.getImageUrl())
                 .build();

@@ -34,4 +34,5 @@ public class ProduitRequest {
     private Long recetteId;
     private String imageUrl;
     private StatutProduit statut;
+    private Integer stockDisponible;
 }

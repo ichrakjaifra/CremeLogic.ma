@@ -148,7 +148,7 @@ public class ProduitController {
     }
 
     @PostMapping("/{id}/ajuster-stock")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER', 'CHEF')")
     @Operation(summary = "Ajuster le stock d'un produit")
     public ResponseEntity<ApiResponse<ProduitResponse>> ajusterStock(
             @PathVariable Long id,
@@ -200,7 +200,7 @@ public class ProduitController {
     }
 
     @GetMapping("/valeur-stock-total")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER', 'CHEF')")
     @Operation(summary = "Récupérer la valeur totale du stock de produits")
     public ResponseEntity<ApiResponse<Map<String, BigDecimal>>> getValeurStockTotal() {
         BigDecimal valeur = produitService.getValeurStockTotal();
