@@ -104,7 +104,7 @@ public class IngredientController {
     }
 
     @GetMapping("/expirant")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER', 'CHEF')")
     @Operation(summary = "Lister les ingrédients expirant bientôt")
     public ResponseEntity<ApiResponse<List<IngredientResponse>>> getIngredientsExpirant() {
         List<IngredientResponse> response = ingredientService.getIngredientsExpirant();
@@ -184,7 +184,7 @@ public class IngredientController {
     }
 
     @GetMapping("/valeur-stock-total")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER', 'CHEF')")
     @Operation(summary = "Récupérer la valeur totale du stock d'ingrédients")
     public ResponseEntity<ApiResponse<Map<String, BigDecimal>>> getValeurStockTotal() {
         BigDecimal valeur = ingredientService.getValeurStockTotal();
@@ -199,7 +199,7 @@ public class IngredientController {
     }
 
     @GetMapping("/fournisseur/{fournisseurId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER', 'CHEF')")
     @Operation(summary = "Lister les ingrédients par fournisseur")
     public ResponseEntity<ApiResponse<List<IngredientResponse>>> getIngredientsParFournisseur(
             @PathVariable Long fournisseurId) {

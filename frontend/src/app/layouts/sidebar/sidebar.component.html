@@ -44,7 +44,7 @@
 
     <!-- Stock & Suppliers (Admin, Magasinier, Chef Read) -->
     <li *ngIf="['ADMIN', 'MAGASINIER', 'CHEF'].includes(userRole!)">
-      <a routerLink="/magasinier/ingredients" routerLinkActive="active" class="nav-link">
+      <a [routerLink]="userRole === 'CHEF' ? '/chef/ingredients' : '/magasinier/ingredients'" routerLinkActive="active" class="nav-link">
         <i class="fas fa-leaf me-3"></i>
         <span>Ingrédients</span>
       </a>

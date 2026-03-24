@@ -37,7 +37,8 @@ export const routes: Routes = [
           { path: 'dashboard', loadComponent: () => import('./features/chef/dashboard/dashboard.component').then(m => m.ChefDashboardComponent) },
           { path: 'recettes', loadComponent: () => import('./features/chef/recettes/recettes.component').then(m => m.RecettesComponent) },
           { path: 'produits', loadComponent: () => import('./features/chef/produits/produits.component').then(m => m.ProduitsComponent) },
-          { path: 'production', loadComponent: () => import('./features/chef/production/production.component').then(m => m.ProductionComponent) }
+          { path: 'production', loadComponent: () => import('./features/chef/production/production.component').then(m => m.ProductionComponent) },
+          { path: 'ingredients', loadComponent: () => import('./features/magasinier/ingredients/ingredients.component').then(m => m.IngredientsComponent) }
         ]
       },
       {
