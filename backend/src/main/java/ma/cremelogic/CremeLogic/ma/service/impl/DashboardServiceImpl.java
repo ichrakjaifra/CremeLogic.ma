@@ -236,9 +236,9 @@ public class DashboardServiceImpl implements DashboardService {
 
         // Instruction du chef (Dernière alerte non résolue ou message spécial)
         alerteRepository.findByResolue(false).stream()
-                .filter(a -> a.getPriorite() == ma.cremelogic.CremeLogic.ma.enums.PrioriteAlerte.HAUTE)
+                .filter(a -> "HAUTE".equals(a.getPriorite()))
                 .findFirst()
-                .ifPresent(a -> builder.instructionDuChef(a.getTitre() + " : " + a.getMessage()));
+                .ifPresent(a -> builder.instructionDuChef(a.getTitre() + " : " + a.getDescription()));
 
         if (builder.build().getInstructionDuChef() == null) {
             builder.instructionDuChef("Bon service ! N'oubliez pas de vérifier les stocks avant chaque vente.");
