@@ -53,4 +53,12 @@ export class EmployeDashboardComponent implements OnInit {
     }
     this.heureArrivee = savedTime;
   }
+
+  getVenteDisplayId(vente: Vente | undefined): string | number {
+    if (!vente) return '';
+    if (vente.numeroVente && vente.numeroVente.includes('-')) {
+      return vente.numeroVente.split('-')[1];
+    }
+    return vente.id;
+  }
 }
