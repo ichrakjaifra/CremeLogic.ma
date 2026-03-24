@@ -126,8 +126,14 @@ export class CommandesAchatComponent implements OnInit {
   saveCommande() {
     if (this.commandeForm.invalid) return;
     this.loading = true;
-    const data = this.commandeForm.value;
-    const obs = this.isEditing ? this.commandeService.update(data.id, data) : this.commandeService.create(data);
+    const formData = this.commandeForm.value;
+    const requestData = {
+      ...formData,
+      lignesCommande: formData.lignes
+    };
+    delete requestData.lignes;
+    
+    const obs = this.isEditing ? this.commandeService.update(formData.id, requestData) : this.commandeService.create(requestData);
     
     obs.subscribe({
       next: () => {

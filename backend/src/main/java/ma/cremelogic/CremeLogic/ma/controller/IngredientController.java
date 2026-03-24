@@ -134,7 +134,7 @@ public class IngredientController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
     @Operation(summary = "Supprimer un ingrédient")
     public ResponseEntity<ApiResponse<Void>> deleteIngredient(@PathVariable Long id) {
         ingredientService.deleteIngredient(id);

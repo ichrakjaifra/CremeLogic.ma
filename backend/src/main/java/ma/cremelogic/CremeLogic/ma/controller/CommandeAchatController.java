@@ -136,7 +136,7 @@ public class CommandeAchatController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MAGASINIER')")
     @Operation(summary = "Supprimer une commande d'achat")
     public ResponseEntity<ApiResponse<Void>> deleteCommande(@PathVariable Long id) {
         commandeAchatService.deleteCommande(id);

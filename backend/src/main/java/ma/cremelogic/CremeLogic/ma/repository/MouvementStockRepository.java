@@ -14,6 +14,8 @@ public interface MouvementStockRepository extends JpaRepository<MouvementStock, 
     List<MouvementStock> findByIngredientId(Long ingredientId);
     List<MouvementStock> findAllByOrderByDateMouvementDesc();
 
+    void deleteByIngredientId(Long ingredientId);
+
     List<MouvementStock> findByType(TypeMouvement type);
 
     List<MouvementStock> findByUtilisateurId(Long utilisateurId);

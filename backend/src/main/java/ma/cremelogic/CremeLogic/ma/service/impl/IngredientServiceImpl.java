@@ -32,6 +32,8 @@ public class IngredientServiceImpl implements IngredientService {
     private final MouvementStockRepository mouvementStockRepository;
     private final AlerteService alerteService;
     private final HistoriqueService historiqueService;
+    private final ma.cremelogic.CremeLogic.ma.repository.UtilisateurRepository utilisateurRepository;
+    private final ma.cremelogic.CremeLogic.ma.repository.AlerteRepository alerteRepository;
 
     @Override
     @Transactional
@@ -175,10 +177,11 @@ public class IngredientServiceImpl implements IngredientService {
             throw new ValidationException("Impossible de supprimer un ingrédient utilisé dans des recettes");
         }
 
-        // Vérifier si l'ingrédient a des mouvements de stock
-        if (!ingredient.getMouvements().isEmpty()) {
-            throw new ValidationException("Impossible de supprimer un ingrédient avec des mouvements de stock");
-        }
+        // Supprimer les alertes liées (FK constraint)
+        alerteRepository.deleteByIngredientId(id);
+
+        // Supprimer les mouvements de stock liés (FK constraint)
+        mouvementStockRepository.deleteByIngredientId(id);
 
         ingredientRepository.delete(ingredient);
         historiqueService.enregistrerSuppression("INGREDIENT", id,
@@ -306,9 +309,44 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     private void createMouvementStock(Ingredient ingredient, String type, BigDecimal quantite, String raison) {
-        // Cette méthode sera implémentée dans MouvementStockService
-        log.info("Mouvement de stock: {} {} {} ({})",
+        ma.cremelogic.CremeLogic.ma.enums.TypeMouvement typeMouvement = ma.cremelogic.CremeLogic.ma.enums.TypeMouvement.valueOf(type);
+        ma.cremelogic.CremeLogic.ma.entity.Utilisateur utilisateur = getCurrentUser();
+        
+        BigDecimal ancienneQuantite = ingredient.getQuantiteStock();
+        // Since the caller already updated ingredient.getQuantiteStock(), we need to approximate ancienneQuantite based on type.
+        if (typeMouvement == ma.cremelogic.CremeLogic.ma.enums.TypeMouvement.ENTREE) {
+             ancienneQuantite = ingredient.getQuantiteStock().subtract(quantite);
+        } else if (typeMouvement == ma.cremelogic.CremeLogic.ma.enums.TypeMouvement.SORTIE || typeMouvement == ma.cremelogic.CremeLogic.ma.enums.TypeMouvement.PERDU) {
+             ancienneQuantite = ingredient.getQuantiteStock().add(quantite);
+        } else if (typeMouvement == ma.cremelogic.CremeLogic.ma.enums.TypeMouvement.AJUSTEMENT) {
+             ancienneQuantite = ancienneQuantite.subtract(quantite); // quantite here is the difference
+        }
+
+        ma.cremelogic.CremeLogic.ma.entity.MouvementStock mouvement = ma.cremelogic.CremeLogic.ma.entity.MouvementStock.builder()
+                .ingredient(ingredient)
+                .type(typeMouvement)
+                .quantite(quantite)
+                .quantiteAvant(ancienneQuantite)
+                .quantiteApres(ingredient.getQuantiteStock())
+                .coutUnitaire(ingredient.getPrixUnitaire())
+                .montantTotal(ingredient.getPrixUnitaire() != null ? ingredient.getPrixUnitaire().multiply(quantite) : null)
+                .utilisateur(utilisateur)
+                .raison(raison)
+                .build();
+        
+        mouvementStockRepository.save(mouvement);
+        
+        log.info("Mouvement de stock enregistré: {} {} {} ({})",
                 type, quantite, ingredient.getUniteMesure().getSymbole(), raison);
+    }
+
+    private ma.cremelogic.CremeLogic.ma.entity.Utilisateur getCurrentUser() {
+        try {
+            String email = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+            return utilisateurRepository.findByEmail(email).orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private IngredientResponse mapToResponse(Ingredient ingredient) {

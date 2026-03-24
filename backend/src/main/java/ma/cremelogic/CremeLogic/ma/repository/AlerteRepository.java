@@ -32,4 +32,6 @@ public interface AlerteRepository extends JpaRepository<Alerte, Long> {
     Long countByResolueFalse();
 
     Long countByPrioriteAndResolueFalse(String priorite);
+
+    void deleteByIngredientId(Long ingredientId);
 }

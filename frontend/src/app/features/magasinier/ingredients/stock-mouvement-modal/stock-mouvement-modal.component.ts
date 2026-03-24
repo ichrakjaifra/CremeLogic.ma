@@ -71,7 +71,9 @@ export class StockMouvementModalComponent {
     this.loading = true;
     const { ingredientId, quantite, type, raison } = this.mouvementForm.value;
 
-    this.ingredientService.ajusterStock(ingredientId, quantite, type, raison).subscribe({
+    // Use the dedicated mouvements endpoint (not ajusterStock) so that movements
+    // are correctly persisted via MouvementStockServiceImpl and appear in the history.
+    this.ingredientService.enregistrerMouvement({ ingredientId, quantite, type, raison }).subscribe({
       next: () => {
         this.loading = false;
         this.notification.success('Mouvement de stock enregistré.', 'Succès');
@@ -81,6 +83,7 @@ export class StockMouvementModalComponent {
       error: (err) => {
         this.loading = false;
         console.error('Error recording movement:', err);
+        this.notification.error('Erreur lors de l\'enregistrement du mouvement.', 'Erreur');
       }
     });
   }
