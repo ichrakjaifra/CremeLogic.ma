@@ -25,7 +25,12 @@ export interface AdminStats {
 export interface ChefStats {
   totalProductionsJour: number;
   ingredientsStockFaible: number;
-  produitsStockFaible?: number;
+  totalProductionsTermineesJour: number;
+  totalRecettesActives: number;
+  recettesPopulaires: any[];
+  tachesDuJour: any[];
+  ingredientsCritiques: any[];
+  productionsRecent: any[];
 }
 
 export interface MagasinierStats {

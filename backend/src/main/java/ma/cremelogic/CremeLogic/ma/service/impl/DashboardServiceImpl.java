@@ -29,6 +29,8 @@ public class DashboardServiceImpl implements DashboardService {
         private final OrdreProductionRepository ordreProductionRepository;
         private final AlerteRepository alerteRepository;
         private final UtilisateurRepository utilisateurRepository;
+        private final RecetteRepository recetteRepository;
+        private final TacheRepository tacheRepository;
 
         @Override
         public DashboardResponse getDashboardAdmin() {
@@ -118,11 +120,86 @@ public class DashboardServiceImpl implements DashboardService {
 
         @Override
         public DashboardResponse getDashboardChef() {
+                LocalDateTime debutJour = LocalDate.now().atStartOfDay();
+                LocalDateTime finJour = LocalDate.now().atTime(23, 59, 59);
+
                 DashboardResponse.DashboardResponseBuilder builder = DashboardResponse.builder();
-                builder.totalProductionsJour((long) ordreProductionRepository.findByStatutOrderByDateCreationDesc(
-                                ma.cremelogic.CremeLogic.ma.enums.StatutProduction.EN_COURS).size());
-                builder.ingredientsStockFaible((long) ingredientRepository.findIngredientsStockFaible().size());
+
+                // Stats de production
+                long productionsEnCours = ordreProductionRepository.findByStatutOrderByDateCreationDesc(
+                                ma.cremelogic.CremeLogic.ma.enums.StatutProduction.EN_COURS).size();
+                long productionsTerminees = ordreProductionRepository.findAll().stream()
+                                .filter(p -> p.getStatut() == ma.cremelogic.CremeLogic.ma.enums.StatutProduction.TERMINEE
+                                                && ( (p.getDateFinReelle() != null && p.getDateFinReelle().equals(LocalDate.now())) 
+                                                    || (p.getDateModification() != null && p.getDateModification().isAfter(debutJour)) ))
+                                .count();
+
+                builder.totalProductionsJour(productionsEnCours);
+                builder.totalProductionsTermineesJour(productionsTerminees);
+                builder.totalRecettesActives(recetteRepository.count());
+
+                // Ordres récents
+                builder.productionsRecent(ordreProductionRepository.findAll().stream()
+                                .sorted((p1, p2) -> p2.getDateCreation().compareTo(p1.getDateCreation()))
+                                .limit(10).map(this::mapProductionToResponse).toList());
+
+                // Ingrédients stock faible
+                List<Ingredient> ingredientsFaibles = ingredientRepository.findIngredientsStockFaible();
+                builder.ingredientsStockFaible((long) ingredientsFaibles.size());
+                builder.ingredientsCritiques(ingredientsFaibles.stream()
+                                .limit(5).map(this::mapIngredientToResponse).toList());
+
+                // Recettes populaires (Simulé par les dernières recettes utilisées)
+                builder.recettesPopulaires(recetteRepository.findAll().stream()
+                                .limit(5).map(this::mapRecetteToResponse).toList());
+
+                // Tâches du jour
+                String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+                Optional<Utilisateur> currentUser = utilisateurRepository.findByEmail(currentUserEmail);
+
+                List<Tache> taches = tacheRepository.findAll().stream()
+                                .filter(t -> t.getDateEcheance() == null || (t.getDateEcheance().isAfter(debutJour)
+                                                && t.getDateEcheance().isBefore(finJour)))
+                                .filter(t -> t.getAssigneA() == null || (currentUser.isPresent()
+                                                && t.getAssigneA().getId().equals(currentUser.get().getId())))
+                                .sorted((t1, t2) -> t1.getPriorite().compareTo(t2.getPriorite()))
+                                .limit(5).toList();
+
+                builder.tachesDuJour(taches.stream().map(this::mapTacheToResponse).toList());
+
                 return builder.build();
+        }
+
+        private IngredientResponse mapIngredientToResponse(Ingredient i) {
+                return IngredientResponse.builder()
+                                .id(i.getId())
+                                .nom(i.getNom())
+                                .quantiteStock(i.getQuantiteStock())
+                                .quantiteMinimum(i.getQuantiteMinimum())
+                                .uniteMesure(i.getUniteMesure())
+                                .build();
+        }
+
+        private RecetteResponse mapRecetteToResponse(Recette r) {
+                return RecetteResponse.builder()
+                                .id(r.getId())
+                                .nom(r.getNom())
+                                .coutTotal(r.getCoutTotal())
+                                .nombrePortions(r.getNombrePortions())
+                                .build();
+        }
+
+        private TacheResponse mapTacheToResponse(Tache t) {
+                return TacheResponse.builder()
+                                .id(t.getId())
+                                .titre(t.getTitre())
+                                .description(t.getDescription())
+                                .statut(t.getStatut())
+                                .priorite(t.getPriorite())
+                                .dateEcheance(t.getDateEcheance())
+                                .assigneANom(t.getAssigneA() != null ? t.getAssigneA().getNom() : "Non assigné")
+                                .dateCreation(t.getDateCreation())
+                                .build();
         }
 
         @Override

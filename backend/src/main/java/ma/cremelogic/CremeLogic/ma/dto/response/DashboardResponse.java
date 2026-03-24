@@ -48,4 +48,11 @@ public class DashboardResponse {
     private List<CommandeAchatResponse> commandesRecent;
     private List<OrdreProductionResponse> productionsRecent;
     private List<AlerteResponse> alertesRecent;
+
+    // Données spécifiques Chef
+    private List<RecetteResponse> recettesPopulaires;
+    private List<TacheResponse> tachesDuJour;
+    private List<IngredientResponse> ingredientsCritiques;
+    private Long totalProductionsTermineesJour;
+    private Long totalRecettesActives;
 }
