@@ -5,20 +5,19 @@
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.6) !important;
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  border-radius: 24px !important;
-  box-shadow: 0 8px 32px rgba(139, 69, 19, 0.05) !important;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  overflow: visible !important; /* Pour les éventuels dropdowns */
+  background: white !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(139, 69, 19, 0.1) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(139, 69, 19, 0.08) !important;
+  transition: all 0.3s ease;
+  overflow: visible !important;
 }
 
 .glass-card:hover { 
   transform: translateY(-5px); 
-  box-shadow: 0 12px 40px rgba(139, 69, 19, 0.12) !important;
-  background: rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 10px 30px rgba(139, 69, 19, 0.15) !important;
 }
 
 .kpi-card {
