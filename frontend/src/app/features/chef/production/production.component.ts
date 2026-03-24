@@ -85,6 +85,7 @@ export class ProductionComponent implements OnInit {
           ...o,
           notes: o.notes?.startsWith('null') ? o.notes.replace(/^null\n?/, '') : o.notes
         }));
+        console.log('Ordres chargés:', this.ordres.map(o => ({ id: o.id, statut: o.statut })));
         this.applyFilters();
         this.loading = false;
       },

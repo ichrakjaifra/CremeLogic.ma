@@ -107,17 +107,18 @@
                 <button class="btn btn-link text-muted p-2" data-bs-toggle="dropdown">
                   <i class="fas fa-ellipsis-v"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3">
-                  <li><a class="dropdown-item py-2" (click)="openModal(ordre)"><i class="fas fa-edit me-2 text-primary"></i> Modifier</a></li>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 border">
+                  <li><a class="dropdown-item py-2" (click)="openModal(ordre)"><i class="fas fa-edit me-2 text-primary"></i> Modifier l'ordre</a></li>
                   <li><a class="dropdown-item py-2" (click)="dupliquerOrdre(ordre.id)"><i class="fas fa-copy me-2 text-info"></i> Dupliquer</a></li>
-                  <li><a class="dropdown-item py-2" (click)="consommerIngredients(ordre.id)"><i class="fas fa-flask me-2 text-warning"></i> Consommer Stock</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item py-2" (click)="consommerIngredients(ordre.id)"><i class="fas fa-box-open me-2 text-warning"></i> Consommer Ingrédients</a></li>
                   <li *ngIf="ordre.statut !== 'TERMINEE' && ordre.statut !== 'ANNULEE'">
                     <a class="dropdown-item py-2 text-danger" (click)="annulerOrdre(ordre.id)">
-                      <i class="fas fa-ban me-2"></i> Annuler
+                      <i class="fas fa-ban me-2"></i> Annuler la production
                     </a>
                   </li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item py-2 text-danger" (click)="deleteOrdre(ordre.id)"><i class="fas fa-trash me-2"></i> Supprimer</a></li>
+                  <li><a class="dropdown-item py-2 text-danger" (click)="deleteOrdre(ordre.id)"><i class="fas fa-trash me-2"></i> Supprimer définitivement</a></li>
                 </ul>
               </div>
             </div>
