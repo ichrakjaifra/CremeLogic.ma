@@ -103,6 +103,7 @@ public class VenteServiceImpl implements VenteService {
         vente.setMontantRendu(vente.getMontantPaye().subtract(vente.getMontantTotal()));
 
         Vente saved = venteRepository.save(vente);
+        alerteService.creerAlerteNouvelleCommande(saved);
 
         historiqueService.enregistrerCreation("VENTE", saved.getId(), "Vente " + saved.getNumeroVente());
         log.info("Vente enregistrée: {}", saved.getNumeroVente());

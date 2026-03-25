@@ -255,6 +255,7 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
         produitRepository.save(produit);
 
         OrdreProduction updated = ordreProductionRepository.save(ordre);
+        alerteService.creerAlerteProductionTerminee(updated);
         historiqueService.enregistrerModification("ORDRE_PRODUCTION", id, "Production terminée");
         return mapToResponse(updated);
     }

@@ -23,6 +23,9 @@ public interface AlerteService {
     void creerAlerteVenteAnnulee(Vente vente, String raison);
     void creerAlertePerteStock(Ingredient ingredient, BigDecimal quantite, String raison);
     void creerAlerteIngredientsInsuffisants(OrdreProduction ordre, List<String> ingredientsManquants);
+    void creerAlerteProductionTerminee(OrdreProduction ordre);
+    void creerAlerteProblemeSignale(String titre, String description, String priorite);
+    void creerAlerteNouvelleCommande(Vente vente);
     void creerAlertePersonnalisee(String titre, String description, String priorite, TypeAlerte type);
 
     // Consultation des alertes

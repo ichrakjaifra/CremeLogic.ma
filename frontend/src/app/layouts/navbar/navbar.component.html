@@ -11,14 +11,49 @@
       <div class="dropdown">
         <button class="nav-icon-btn d-flex align-items-center justify-content-center" id="notifDropdown" data-bs-toggle="dropdown">
           <i class="fas fa-bell"></i>
-          <span class="notification-badge">3</span>
+          <span class="notification-badge" *ngIf="(unreadCount$ | async) || 0 > 0">{{ unreadCount$ | async }}</span>
         </button>
-        <ul class="dropdown-menu dropdown-menu-end glass-card border-0 mt-3 p-2 shadow-lg" aria-labelledby="notifDropdown">
-          <li><h6 class="dropdown-header font-montserrat fw-bold text-dark">Notifications</h6></li>
-          <li><hr class="dropdown-divider"></li>
-          <li class="p-1"><a class="dropdown-item rounded-3 small py-2" href="#">Stock de Farine faible !</a></li>
-          <li class="p-1"><a class="dropdown-item rounded-3 small py-2" href="#">Nouvel ordre de production</a></li>
-          <li class="p-1"><a class="dropdown-item rounded-3 small py-2" href="#">Vente réussie (120 MAD)</a></li>
+        <ul class="dropdown-menu dropdown-menu-end glass-card border-0 mt-3 p-2 shadow-lg" aria-labelledby="notifDropdown" style="width: 320px; max-height: 450px; overflow-y: auto;">
+          <li>
+            <div class="d-flex justify-content-between align-items-center px-3 py-2">
+              <h6 class="dropdown-header font-montserrat fw-bold text-dark p-0 mb-0">Notifications</h6>
+              <button class="btn btn-link btn-sm text-decoration-none p-0" (click)="markAllAsRead()" *ngIf="(unreadCount$ | async) || 0 > 0">
+                Tout marquer lu
+              </button>
+            </div>
+          </li>
+          <li><hr class="dropdown-divider mt-1"></li>
+          
+          <ng-container *ngIf="(alertes$ | async)?.length; else noNotif">
+            <li class="p-1" *ngFor="let alerte of alertes$ | async">
+              <div class="dropdown-item rounded-3 p-3 border-bottom-0 notification-item animate-fade-in">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="notif-icon-circle" [ngClass]="alerte.type">
+                    <i class="fas" [ngClass]="getIconForType(alerte.type)"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <h6 class="fw-bold mb-1 small text-dark">{{ alerte.titre }}</h6>
+                      <button class="btn-close ms-2" style="font-size: 0.5rem;" (click)="markAsRead(alerte.id, $event)"></button>
+                    </div>
+                    <p class="mb-1 text-muted small lh-sm">{{ alerte.description }}</p>
+                    <span class="text-secondary" style="font-size: 0.65rem;">
+                      <i class="far fa-clock me-1"></i> {{ alerte.dateCreation | date:'HH:mm' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ng-container>
+
+          <ng-template #noNotif>
+            <li class="p-4 text-center">
+              <div class="text-muted small">
+                <i class="fas fa-bell-slash fa-2x mb-2 d-block opacity-25"></i>
+                Aucune nouvelle notification
+              </div>
+            </li>
+          </ng-template>
         </ul>
       </div>
 

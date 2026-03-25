@@ -67,3 +67,34 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   border: 2px solid white;
 }
+
+.notification-item {
+  transition: all 0.2s ease;
+  white-space: normal !important;
+  border-bottom: 1px solid rgba(139, 69, 19, 0.05);
+}
+
+.notification-item:hover {
+  background: rgba(139, 69, 19, 0.03);
+}
+
+.notif-icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  flex-shrink: 0;
+}
+
+.dropdown-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(139, 69, 19, 0.1);
+  border-radius: 10px;
+}
+

@@ -7,6 +7,7 @@ import ma.cremelogic.CremeLogic.ma.repository.*;
 import ma.cremelogic.CremeLogic.ma.service.interfaces.AlerteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,22 @@ public class AlerteServiceImpl implements AlerteService {
         private final IngredientRepository ingredientRepository;
         private final CommandeAchatRepository commandeAchatRepository;
         private final OrdreProductionRepository ordreProductionRepository;
+        private final SimpMessagingTemplate messagingTemplate;
+
+        private void envoyerNotification(Alerte alerte) {
+                try {
+                        AlerteResponse response = mapToResponse(alerte);
+                        messagingTemplate.convertAndSend("/topic/notifications", response);
+                        log.debug("Notification envoyée via WebSocket pour l'alerte: {}", alerte.getTitre());
+                } catch (Exception e) {
+                        log.error("Erreur lors de l'envoi de la notification WebSocket", e);
+                }
+        }
+
+        private void sauvegarderEtNotifier(Alerte alerte) {
+                Alerte saved = alerteRepository.save(alerte);
+                envoyerNotification(saved);
+        }
 
         @Override
         @Transactional
@@ -46,11 +63,11 @@ public class AlerteServiceImpl implements AlerteService {
                                                         ingredient.getUniteMesure().getSymbole()))
                                         .priorite("HAUTE")
                                         .resolue(false)
-                                        .ingredient(ingredient)
-                                        .build();
-                        alerteRepository.save(alerte);
-                        log.info("Alerte stock faible créée pour: {}", ingredient.getNom());
-                }
+                                         .ingredient(ingredient)
+                                         .build();
+                         sauvegarderEtNotifier(alerte);
+                         log.info("Alerte stock faible créée pour: {}", ingredient.getNom());
+                 }
         }
 
         @Override
@@ -62,11 +79,11 @@ public class AlerteServiceImpl implements AlerteService {
                                 .description(String.format("Le stock de %s est épuisé.", ingredient.getNom()))
                                 .priorite("HAUTE")
                                 .resolue(false)
-                                .ingredient(ingredient)
-                                .build();
-                alerteRepository.save(alerte);
-                log.warn("Alerte rupture de stock créée for: {}", ingredient.getNom());
-        }
+                                 .ingredient(ingredient)
+                                 .build();
+                 sauvegarderEtNotifier(alerte);
+                 log.warn("Alerte rupture de stock créée for: {}", ingredient.getNom());
+         }
 
         @Override
         @Transactional
@@ -78,11 +95,11 @@ public class AlerteServiceImpl implements AlerteService {
                                                 ingredient.getDateExpiration()))
                                 .priorite("MOYENNE")
                                 .resolue(false)
-                                .ingredient(ingredient)
-                                .build();
-                alerteRepository.save(alerte);
-                log.warn("Alerte expiration créée for: {}", ingredient.getNom());
-        }
+                                 .ingredient(ingredient)
+                                 .build();
+                 sauvegarderEtNotifier(alerte);
+                 log.warn("Alerte expiration créée for: {}", ingredient.getNom());
+         }
 
         @Override
         @Transactional
@@ -96,7 +113,7 @@ public class AlerteServiceImpl implements AlerteService {
                                 .resolue(false)
                                 .commande(commande)
                                 .build();
-                alerteRepository.save(alerte);
+                sauvegarderEtNotifier(alerte);
         }
 
         @Override
@@ -110,7 +127,7 @@ public class AlerteServiceImpl implements AlerteService {
                                 .resolue(false)
                                 .commande(commande)
                                 .build();
-                alerteRepository.save(alerte);
+                sauvegarderEtNotifier(alerte);
         }
 
         @Override
@@ -125,7 +142,7 @@ public class AlerteServiceImpl implements AlerteService {
                                 .resolue(false)
                                 .ordreProduction(ordre)
                                 .build();
-                alerteRepository.save(alerte);
+                sauvegarderEtNotifier(alerte);
         }
 
         @Override
@@ -139,7 +156,7 @@ public class AlerteServiceImpl implements AlerteService {
                                 .resolue(false)
                                 .ordreProduction(ordre)
                                 .build();
-                alerteRepository.save(alerte);
+                sauvegarderEtNotifier(alerte);
         }
 
         @Override
@@ -150,11 +167,11 @@ public class AlerteServiceImpl implements AlerteService {
                                 .titre("Vente annulée - " + vente.getNumeroVente())
                                 .description("Raison: " + raison)
                                 .priorite("MOYENNE")
-                                .resolue(false)
-                                .vente(vente)
-                                .build();
-                alerteRepository.save(alerte);
-        }
+                                 .resolue(false)
+                                 .vente(vente)
+                                 .build();
+                 sauvegarderEtNotifier(alerte);
+         }
 
         @Override
         @Transactional
@@ -167,7 +184,7 @@ public class AlerteServiceImpl implements AlerteService {
                                 .resolue(false)
                                 .ingredient(ingredient)
                                 .build();
-                alerteRepository.save(alerte);
+                sauvegarderEtNotifier(alerte);
         }
 
         @Override
@@ -181,7 +198,7 @@ public class AlerteServiceImpl implements AlerteService {
                                 .resolue(false)
                                 .ordreProduction(ordre)
                                 .build();
-                alerteRepository.save(alerte);
+                sauvegarderEtNotifier(alerte);
         }
 
         @Override
@@ -191,11 +208,52 @@ public class AlerteServiceImpl implements AlerteService {
                                 .type(type)
                                 .titre(titre)
                                 .description(description)
-                                .priorite(priorite)
-                                .resolue(false)
-                                .build();
-                alerteRepository.save(alerte);
-        }
+                                 .priorite(priorite)
+                                 .resolue(false)
+                                 .build();
+                 sauvegarderEtNotifier(alerte);
+         }
+
+         @Override
+         @Transactional
+         public void creerAlerteProductionTerminee(OrdreProduction ordre) {
+                 Alerte alerte = Alerte.builder()
+                                 .type(TypeAlerte.PRODUCTION_TERMINEE)
+                                 .titre("Production terminée - " + ordre.getNumeroOrdre())
+                                 .description("La production de " + ordre.getProduit().getNom() + " (" + ordre.getQuantite() + " unités) est terminée.")
+                                 .priorite("MOYENNE")
+                                 .resolue(false)
+                                 .ordreProduction(ordre)
+                                 .build();
+                 sauvegarderEtNotifier(alerte);
+         }
+
+         @Override
+         @Transactional
+         public void creerAlerteProblemeSignale(String titre, String description, String priorite) {
+                 Alerte alerte = Alerte.builder()
+                                 .type(TypeAlerte.PROBLEME_SIGNALE)
+                                 .titre(titre)
+                                 .description(description)
+                                 .priorite(priorite)
+                                 .resolue(false)
+                                 .build();
+                 sauvegarderEtNotifier(alerte);
+         }
+
+         @Override
+         @Transactional
+         public void creerAlerteNouvelleCommande(Vente vente) {
+                 Alerte alerte = Alerte.builder()
+                                 .type(TypeAlerte.NOUVELLE_COMMANDE)
+                                 .titre("Nouvelle commande - " + vente.getNumeroVente())
+                                 .description("Une vente de " + vente.getMontantTotal() + " DH vient d'être réalisée.")
+                                 .priorite("BASSE")
+                                 .resolue(false)
+                                 .vente(vente)
+                                 .build();
+                 sauvegarderEtNotifier(alerte);
+         }
 
         @Override
         public List<AlerteResponse> getAlertesNonResolues() {
