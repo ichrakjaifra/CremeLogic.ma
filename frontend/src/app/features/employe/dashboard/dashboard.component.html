@@ -1,49 +1,20 @@
 <div class="employe-dashboard p-4 animate-fade-in">
-  <!-- Header & Welcome -->
-  <div class="row align-items-center mb-5">
-    <div class="col-md-8">
-      <div class="d-flex align-items-center mb-1">
-        <div class="avatar-circle me-3 shadow-sm bg-white p-1">
-          <div class="avatar-initials bg-gold-light color-marron rounded-circle d-flex align-items-center justify-content-center fw-bold">
-            {{ employeeName.charAt(0) }}
-          </div>
-        </div>
-        <div>
-          <h2 class="fw-bold color-marron mb-0 font-montserrat">Bonjour, {{ employeeName }} ! 🥖</h2>
-          <p class="text-muted small mb-0">Ravi de vous voir. Prêt pour une journée d'excellence artisanale ?</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4 text-md-end mt-3 mt-md-0">
-      <div class="glass-card d-inline-block px-4 py-2 rounded-pill shadow-sm">
-        <i class="far fa-clock me-2 text-warning"></i>
-        <span class="extra-small fw-bold text-muted uppercase me-2">Arrivée :</span>
-        <span class="fw-bold color-marron">{{ heureArrivee }}</span>
-      </div>
-      <div class="text-muted extra-small mt-1 fw-bold">{{ today | date:'EEEE dd MMMM yyyy' }}</div>
-    </div>
-  </div>
-
-  <!-- Instruction Spéciale du Chef -->
-  <div class="row mb-5" *ngIf="stats?.instructionDuChef">
+  <!-- Header -->
+  <div class="row mb-4">
     <div class="col-12">
-      <div class="glass-card instruction-card p-4 border-start border-warning border-5 animate-slide-in">
-        <div class="d-flex align-items-start">
-          <div class="instruction-icon me-3">
-            <i class="fas fa-bullhorn fa-2x text-warning"></i>
-          </div>
-          <div>
-            <h6 class="fw-bold text-dark text-uppercase small mb-1">Note du Chef d'Atelier</h6>
-            <p class="mb-0 text-secondary italic">"{{ stats?.instructionDuChef }}"</p>
-          </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="fw-bold color-marron mb-0">Tableau de Bord Employé</h4>
+          <p class="text-muted small mb-0">{{ today | date:'EEEE dd MMMM yyyy' }} | Session active pour <strong>{{ employeeName }}</strong></p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Personal KPI Cards -->
+  <!-- Unified KPI Cards Row -->
   <div class="row g-4 mb-5">
-    <div class="col-md-4">
+    <!-- Ventes -->
+    <div class="col-md-3">
       <div class="glass-card kpi-personal p-4 text-center">
         <div class="kpi-icon bg-success-soft mx-auto mb-3">
           <i class="fas fa-shopping-basket text-success"></i>
@@ -53,24 +24,40 @@
         <div class="extra-small text-success mt-1"><i class="fas fa-arrow-up"></i> Aujourd'hui</div>
       </div>
     </div>
-    <div class="col-md-4">
+
+    <!-- CA -->
+    <div class="col-md-3">
       <div class="glass-card kpi-personal p-4 text-center">
         <div class="kpi-icon bg-gold-light mx-auto mb-3">
           <i class="fas fa-cash-register color-marron"></i>
         </div>
         <div class="extra-small text-muted fw-bold text-uppercase mb-1">Chiffre d'Affaires</div>
         <div class="h3 fw-bold mb-0 color-marron">{{ stats?.chiffreAffairesJour || 0 | formatPrice }}</div>
-        <div class="extra-small text-muted mt-1">Vos performances directes</div>
+        <div class="extra-small text-muted mt-1">Total encaissé</div>
       </div>
     </div>
-    <div class="col-md-4">
+
+    <!-- Tâches -->
+    <div class="col-md-3">
       <div class="glass-card kpi-personal p-4 text-center">
         <div class="kpi-icon bg-info-soft mx-auto mb-3">
-          <i class="fas fa-tasks text-info"></i>
+          <i class="fas fa-list-check text-info"></i>
         </div>
-        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Tâches Accomplies</div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Progression Tâches</div>
         <div class="h3 fw-bold mb-0 color-marron">{{ stats?.tachesACompleter || 0 }} / {{ stats?.tachesDuJour?.length || 0 }}</div>
-        <div class="extra-small text-muted mt-1">Objectifs du jour</div>
+        <div class="extra-small text-muted mt-1">Objectifs complétés</div>
+      </div>
+    </div>
+
+    <!-- Arrivée -->
+    <div class="col-md-3">
+      <div class="glass-card kpi-personal p-4 text-center" style="border-bottom: 4px solid #d4af37 !important;">
+        <div class="kpi-icon bg-chocolate-light mx-auto mb-3">
+          <i class="far fa-clock color-marron"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Heure d'Arrivée</div>
+        <div class="h3 fw-bold mb-0 color-marron">{{ heureArrivee }}</div>
+        <div class="extra-small text-muted mt-1">Enregistré ce matin</div>
       </div>
     </div>
   </div>
