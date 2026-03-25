@@ -97,7 +97,9 @@
                   }">{{ ordre.statut }}</span>
                 </td>
                 <td class="text-end py-3">
-                  <button class="btn btn-sm btn-light border-0"><i class="fas fa-eye text-muted"></i></button>
+                  <button class="btn btn-sm btn-light border-0" [routerLink]="['/chef/production']">
+                    <i class="fas fa-eye text-muted"></i>
+                  </button>
                 </td>
               </tr>
               <tr *ngIf="ordresRecents.length === 0">
