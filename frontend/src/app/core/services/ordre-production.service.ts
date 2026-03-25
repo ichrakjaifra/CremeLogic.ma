@@ -60,12 +60,23 @@ export class OrdreProductionService {
     );
   }
 
-  demarrer(id: number, request: any): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${id}/demarrer`, request);
+  demarrer(id: number, request: any): Observable<OrdreProduction> {
+    return this.http.post<ApiResponse<OrdreProduction>>(`${this.baseUrl}/${id}/demarrer`, request).pipe(
+      map(response => response.data)
+    );
   }
 
-  terminer(id: number, request: any): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${id}/terminer`, request);
+  terminer(id: number, request: any): Observable<OrdreProduction> {
+    return this.http.post<ApiResponse<OrdreProduction>>(`${this.baseUrl}/${id}/terminer`, request).pipe(
+      map(response => response.data)
+    );
+  }
+
+  updateStatutEtape(id: number, suiviEtapeId: number, statut: string): Observable<OrdreProduction> {
+    let params = new HttpParams().set('statut', statut);
+    return this.http.patch<ApiResponse<OrdreProduction>>(`${this.baseUrl}/${id}/etapes/${suiviEtapeId}`, {}, { params }).pipe(
+      map(response => response.data)
+    );
   }
 
   annuler(id: number, raison: string): Observable<void> {

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import ma.cremelogic.CremeLogic.ma.dto.request.ExecutionProductionRequest;
 import ma.cremelogic.CremeLogic.ma.dto.request.OrdreProductionRequest;
 import ma.cremelogic.CremeLogic.ma.dto.response.OrdreProductionResponse;
+import ma.cremelogic.CremeLogic.ma.dto.response.SuiviEtapeResponse;
 import ma.cremelogic.CremeLogic.ma.entity.*;
 import ma.cremelogic.CremeLogic.ma.enums.StatutProduction;
 import ma.cremelogic.CremeLogic.ma.exception.ResourceNotFoundException;
@@ -39,6 +40,7 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
     private final MouvementStockService mouvementStockService;
     private final AlerteService alerteService;
     private final HistoriqueService historiqueService;
+    private final SuiviEtapeRepository suiviEtapeRepository;
 
     @Override
     @Transactional
@@ -191,8 +193,45 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
             ordre.setNotes(ordre.getNotes() + "\n" + request.getNotes());
 
         OrdreProduction updated = ordreProductionRepository.save(ordre);
+        
+        // Initialize steps
+        if (ordre.getProduit().getRecette() != null) {
+            ordre.getProduit().getRecette().getEtapes().forEach(etape -> {
+                SuiviEtape suivi = SuiviEtape.builder()
+                    .ordreProduction(updated)
+                    .etapeRecette(etape)
+                    .statut(SuiviEtape.StatutSuivi.A_FAIRE)
+                    .build();
+                suiviEtapeRepository.save(suivi);
+            });
+        }
+
         historiqueService.enregistrerModification("ORDRE_PRODUCTION", id, "Démarrage de la production");
         return mapToResponse(updated);
+    }
+
+    @Override
+    @Transactional
+    public OrdreProductionResponse updateStatutEtape(Long id, Long suiviEtapeId, String statut) {
+        SuiviEtape suivi = suiviEtapeRepository.findById(suiviEtapeId)
+            .orElseThrow(() -> new ResourceNotFoundException("Suivi Etape", "id", suiviEtapeId));
+        
+        try {
+            SuiviEtape.StatutSuivi nouveauStatut = SuiviEtape.StatutSuivi.valueOf(statut.toUpperCase());
+            suivi.setStatut(nouveauStatut);
+            if (nouveauStatut == SuiviEtape.StatutSuivi.EN_COURS) {
+                suivi.setDateDebut(LocalDateTime.now());
+            } else if (nouveauStatut == SuiviEtape.StatutSuivi.TERMINEE) {
+                suivi.setDateFin(LocalDateTime.now());
+            }
+            suiviEtapeRepository.save(suivi);
+            
+            OrdreProduction ordre = ordreProductionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ordre de production", "id", id));
+            return mapToResponse(ordre);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Statut suivi invalide: " + statut);
+        }
     }
 
     @Override
@@ -323,14 +362,31 @@ public class OrdreProductionServiceImpl implements OrdreProductionService {
     private OrdreProductionResponse mapToResponse(OrdreProduction ordre) {
         return OrdreProductionResponse.builder()
                 .id(ordre.getId()).numeroOrdre(ordre.getNumeroOrdre()).produitId(ordre.getProduit().getId())
-                .produitNom(ordre.getProduit().getNom()).quantite(ordre.getQuantite())
+                .produitNom(ordre.getProduit().getNom())
+                .recetteId(ordre.getProduit().getRecette() != null ? ordre.getProduit().getRecette().getId() : null)
+                .quantite(ordre.getQuantite())
                 .dateDebutPrevue(ordre.getDateDebutPrevue()).dateFinPrevue(ordre.getDateFinPrevue())
                 .dateDebutReelle(ordre.getDateDebutReelle()).dateFinReelle(ordre.getDateFinReelle())
                 .statut(ordre.getStatut()).coutTotal(ordre.getCoutTotal()).coutUnitaire(ordre.getCoutUnitaire())
-                .notes(ordre.getNotes()).createurId(ordre.getCreateur() != null ? ordre.getCreateur().getId() : null)
+                .notes(ordre.getNotes())
+                .instructionsRecette(ordre.getProduit().getRecette() != null ? ordre.getProduit().getRecette().getInstructions() : null)
+                .createurId(ordre.getCreateur() != null ? ordre.getCreateur().getId() : null)
                 .createurNom(ordre.getCreateur() != null ? ordre.getCreateur().getNom() : null)
                 .responsableId(ordre.getResponsable() != null ? ordre.getResponsable().getId() : null)
                 .responsableNom(ordre.getResponsable() != null ? ordre.getResponsable().getNom() : null)
+                .suivisEtapes(ordre.getSuivisEtapes().stream()
+                    .map(s -> SuiviEtapeResponse.builder()
+                        .id(s.getId())
+                        .etapeRecetteId(s.getEtapeRecette().getId())
+                        .descriptionEtape(s.getEtapeRecette().getDescription())
+                        .ordreEtape(s.getEtapeRecette().getOrdre())
+                        .tempsEstimeEtape(s.getEtapeRecette().getTempsEstime())
+                        .statut(s.getStatut().name())
+                        .dateDebut(s.getDateDebut())
+                        .dateFin(s.getDateFin())
+                        .build())
+                    .sorted(java.util.Comparator.comparing(SuiviEtapeResponse::getOrdreEtape))
+                    .toList())
                 .dateCreation(ordre.getDateCreation()).dateModification(ordre.getDateModification())
                 .enRetard(ordre.estEnRetard()).build();
     }

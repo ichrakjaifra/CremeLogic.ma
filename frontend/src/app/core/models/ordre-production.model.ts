@@ -3,6 +3,7 @@ export interface OrdreProduction {
   numeroOrdre: string;
   produitId: number;
   produitNom: string;
+  recetteId?: number;
   quantite: number;
   quantiteProduite?: number; // Optional, might be in some versions
   dateDebutPrevue: string | Date;
@@ -15,6 +16,19 @@ export interface OrdreProduction {
   notes?: string;
   createurNom?: string;
   responsableNom?: string;
+  suivisEtapes?: SuiviEtape[];
+  instructionsRecette?: string;
   enRetard: boolean;
   dateCreation?: string | Date;
+}
+
+export interface SuiviEtape {
+  id: number;
+  etapeRecetteId: number;
+  descriptionEtape: string;
+  ordreEtape: number;
+  tempsEstimeEtape?: number;
+  statut: 'A_FAIRE' | 'EN_COURS' | 'TERMINEE';
+  dateDebut?: string | Date;
+  dateFin?: string | Date;
 }

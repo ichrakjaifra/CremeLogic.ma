@@ -46,6 +46,7 @@
 .extra-small { font-size: 0.75rem; }
 .color-dore { color: #d4af37; }
 .color-marron { color: #5d4037; }
+.bg-gold-light { background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.1) 100%); }
 
 /* Custom Pagination Styling */
 ::ng-deep .ngx-pagination .current {

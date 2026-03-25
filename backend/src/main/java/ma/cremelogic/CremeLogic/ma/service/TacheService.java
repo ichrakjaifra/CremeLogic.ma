@@ -2,6 +2,7 @@ package ma.cremelogic.CremeLogic.ma.service;
 
 import lombok.RequiredArgsConstructor;
 import ma.cremelogic.CremeLogic.ma.entity.Tache;
+import ma.cremelogic.CremeLogic.ma.repository.UtilisateurRepository;
 import ma.cremelogic.CremeLogic.ma.repository.TacheRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.List;
 public class TacheService {
 
     private final TacheRepository tacheRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
     public List<Tache> getAll() {
         return tacheRepository.findAll();
@@ -23,6 +25,10 @@ public class TacheService {
     }
 
     public Tache create(Tache tache) {
+        if (tache.getTransientAssigneAId() != null) {
+            utilisateurRepository.findById(tache.getTransientAssigneAId())
+                    .ifPresent(tache::setAssigneA);
+        }
         return tacheRepository.save(tache);
     }
 

@@ -3,6 +3,7 @@ package ma.cremelogic.CremeLogic.ma.service.impl;
 import ma.cremelogic.CremeLogic.ma.dto.request.RecetteRequest;
 import ma.cremelogic.CremeLogic.ma.dto.response.LigneRecetteResponse;
 import ma.cremelogic.CremeLogic.ma.dto.response.RecetteResponse;
+import ma.cremelogic.CremeLogic.ma.dto.response.EtapeRecetteResponse;
 import ma.cremelogic.CremeLogic.ma.entity.Recette;
 import ma.cremelogic.CremeLogic.ma.entity.LigneRecette;
 import ma.cremelogic.CremeLogic.ma.entity.Ingredient;
@@ -315,6 +316,14 @@ public class RecetteServiceImpl implements RecetteService {
                                 .dateCreation(recette.getDateCreation())
                                 .dateModification(recette.getDateModification())
                                 .lignesRecette(lignes)
+                                .etapes(recette.getEtapes() != null ? recette.getEtapes().stream()
+                                                .map(e -> EtapeRecetteResponse.builder()
+                                                                .id(e.getId())
+                                                                .description(e.getDescription())
+                                                                .ordre(e.getOrdre())
+                                                                .tempsEstime(e.getTempsEstime())
+                                                                .build())
+                                                .toList() : new ArrayList<>())
                                 .build();
         }
 

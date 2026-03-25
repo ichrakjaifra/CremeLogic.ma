@@ -82,7 +82,7 @@
           <div class="col-md-2 text-center">
             <span class="badge status-badge px-3 py-2 rounded-pill fw-bold w-100"
                   [ngClass]="{
-                    'bg-secondary bg-opacity-10 text-secondary': ordre.statut === 'PLANIFIE' || ordre.statut === 'PLANIFIEE',
+                    'bg-gold-light color-marron': ordre.statut === 'PLANIFIE' || ordre.statut === 'PLANIFIEE',
                     'bg-warning bg-opacity-10 text-warning': ordre.statut === 'EN_COURS',
                     'bg-success bg-opacity-10 text-success': ordre.statut === 'TERMINEE',
                     'bg-danger bg-opacity-10 text-danger': ordre.statut === 'ANNULEE'

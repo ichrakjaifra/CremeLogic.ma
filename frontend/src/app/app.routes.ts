@@ -79,7 +79,8 @@ export const routes: Routes = [
         data: { roles: ['ADMIN', 'EMPLOYE'] },
         loadChildren: () => [
           { path: 'dashboard', loadComponent: () => import('./features/employe/dashboard/dashboard.component').then(m => m.EmployeDashboardComponent) },
-          { path: 'ventes', loadComponent: () => import('./features/employe/ventes/ventes.component').then(m => m.VentesComponent) }
+          { path: 'ventes', loadComponent: () => import('./features/employe/ventes/ventes.component').then(m => m.VentesComponent) },
+          { path: 'production-execution/:id', loadComponent: () => import('./features/employe/production-execution/production-execution.component').then(m => m.ProductionExecutionComponent) }
         ]
       },
       {

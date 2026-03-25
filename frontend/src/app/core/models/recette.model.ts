@@ -8,10 +8,18 @@ export interface Recette {
   nombrePortions: number;
   coutTotal: number;
   lignesRecette: LigneRecette[];
+  etapes?: EtapeRecette[];
   createurId?: number;
   dateCreation?: Date;
   dateModification?: Date;
-  photoUrl?: string; // Optional for frontend display
+  photoUrl?: string;
+}
+
+export interface EtapeRecette {
+  id: number;
+  description: string;
+  ordre: number;
+  tempsEstime?: number;
 }
 
 export interface LigneRecette {

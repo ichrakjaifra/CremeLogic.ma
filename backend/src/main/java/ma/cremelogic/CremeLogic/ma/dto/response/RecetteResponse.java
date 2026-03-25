@@ -25,4 +25,5 @@ public class RecetteResponse {
     private LocalDateTime dateModification;
 
     private List<LigneRecetteResponse> lignesRecette;
+    private List<EtapeRecetteResponse> etapes;
 }

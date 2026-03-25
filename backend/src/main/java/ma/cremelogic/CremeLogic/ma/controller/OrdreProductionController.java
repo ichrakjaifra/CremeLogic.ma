@@ -170,7 +170,7 @@ public class OrdreProductionController {
     }
 
     @PostMapping("/{id}/demarrer")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'EMPLOYE')")
     @Operation(summary = "Démarrer une production")
     public ResponseEntity<ApiResponse<OrdreProductionResponse>> demarrerProduction(
             @PathVariable Long id,
@@ -189,7 +189,7 @@ public class OrdreProductionController {
     }
 
     @PostMapping("/{id}/terminer")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'EMPLOYE')")
     @Operation(summary = "Terminer une production")
     public ResponseEntity<ApiResponse<OrdreProductionResponse>> terminerProduction(
             @PathVariable Long id,
@@ -202,6 +202,26 @@ public class OrdreProductionController {
                         .timestamp(LocalDateTime.now())
                         .status(HttpStatus.OK.value())
                         .message("Production terminée avec succès")
+                        .data(response)
+                        .build()
+        );
+    }
+
+    @PatchMapping("/{id}/etapes/{suiviEtapeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'EMPLOYE')")
+    @Operation(summary = "Mettre à jour le statut d'une étape de production")
+    public ResponseEntity<ApiResponse<OrdreProductionResponse>> updateStatutEtape(
+            @PathVariable Long id,
+            @PathVariable Long suiviEtapeId,
+            @RequestParam String statut) {
+
+        OrdreProductionResponse response = ordreProductionService.updateStatutEtape(id, suiviEtapeId, statut);
+
+        return ResponseEntity.ok(
+                ApiResponse.<OrdreProductionResponse>builder()
+                        .timestamp(LocalDateTime.now())
+                        .status(HttpStatus.OK.value())
+                        .message("Statut de l'étape mis à jour avec succès")
                         .data(response)
                         .build()
         );

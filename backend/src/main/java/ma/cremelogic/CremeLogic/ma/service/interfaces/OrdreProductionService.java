@@ -23,6 +23,7 @@ public interface OrdreProductionService {
     OrdreProductionResponse demarrerProduction(Long id, ExecutionProductionRequest request);
     OrdreProductionResponse terminerProduction(Long id, ExecutionProductionRequest request);
     OrdreProductionResponse annulerProduction(Long id, String raison);
+    OrdreProductionResponse updateStatutEtape(Long id, Long suiviEtapeId, String statut);
 
     // Business Logic
     List<OrdreProductionResponse> getOrdresEnRetard();

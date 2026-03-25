@@ -8,6 +8,8 @@ import { Vente } from '../../../core/models/vente.model';
 import { FormatPricePipe } from '../../../shared/pipes/format-price.pipe';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { OrdreProductionService } from '../../../core/services/ordre-production.service';
+import { OrdreProduction } from '../../../core/models/ordre-production.model';
 
 @Component({
   selector: 'app-employe-dashboard',
@@ -21,9 +23,11 @@ export class EmployeDashboardComponent implements OnInit {
   private venteService = inject(VenteService);
   private authService = inject(AuthService);
   private notification = inject(NotificationService);
+  private productionService = inject(OrdreProductionService);
 
   stats?: EmployeStats;
   derniereVente?: Vente;
+  productionTasks: OrdreProduction[] = [];
   today = new Date();
   employeeName: string = 'Employé';
   heureArrivee: string = '--:--';
@@ -40,6 +44,16 @@ export class EmployeDashboardComponent implements OnInit {
       if (ventes && Array.isArray(ventes) && ventes.length > 0) {
         this.derniereVente = ventes[0];
       }
+    });
+
+    this.productionService.getAll().subscribe(tasks => {
+        // Filter for today's tasks and for this employee (if assigned)
+        const user = this.authService.getCurrentUser();
+        this.productionTasks = tasks.filter(t => {
+            const isToday = new Date(t.dateDebutPrevue).toDateString() === new Date().toDateString();
+            const isAssigned = !t.responsableNom || t.responsableNom === user?.nom; 
+            return isToday && isAssigned && t.statut !== 'TERMINEE' && t.statut !== 'ANNULEE';
+        });
     });
   }
 

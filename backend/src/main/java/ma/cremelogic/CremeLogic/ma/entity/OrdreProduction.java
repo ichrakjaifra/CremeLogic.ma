@@ -67,6 +67,10 @@ public class OrdreProduction {
     @OneToMany(mappedBy = "ordreProduction", cascade = CascadeType.ALL)
     private List<MouvementStock> mouvements = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "ordreProduction", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SuiviEtape> suivisEtapes = new ArrayList<>();
+
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
 

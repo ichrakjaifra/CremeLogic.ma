@@ -41,6 +41,10 @@ public class Tache {
     @JoinColumn(name = "cree_par_id")
     private Utilisateur creePar;
 
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("assigneAId")
+    private Long transientAssigneAId;
+
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
 

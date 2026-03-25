@@ -65,3 +65,26 @@
 .extra-small { font-size: 0.7rem; }
 .uppercase { text-transform: uppercase; }
 .italic { font-style: italic; }
+
+.prod-icon {
+  width: 45px;
+  height: 45px;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-gold-light {
+  background: #d4af37;
+  color: white;
+  border: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-gold-light:hover {
+  background: #b8962e;
+  transform: scale(1.05);
+}
