@@ -32,6 +32,14 @@ export class VentesComponent implements OnInit {
   searchProduct: string = '';
   cart: LigneVente[] = [];
   paymentMode: 'ESPECES' | 'CARTE' | 'AUTRE' = 'ESPECES';
+  
+  // Client & Notes
+  clientNom: string = '';
+  clientTelephone: string = '';
+  clientEmail: string = '';
+  notes: string = '';
+  showClientInfo: boolean = false;
+
   loading = false;
 
   ngOnInit() {
@@ -112,6 +120,11 @@ export class VentesComponent implements OnInit {
   newVente() {
     this.cart = [];
     this.paymentMode = 'ESPECES';
+    this.clientNom = '';
+    this.clientTelephone = '';
+    this.clientEmail = '';
+    this.notes = '';
+    this.showClientInfo = false;
   }
 
   validVente() {
@@ -119,8 +132,13 @@ export class VentesComponent implements OnInit {
     
     const vente: Partial<Vente> = {
       montantTotal: this.totalCart,
+      montantPaye: this.totalCart, // Assume full payment for now
       modePaiement: this.paymentMode,
       lignesVente: this.cart,
+      nomClient: this.clientNom || undefined,
+      telephoneClient: this.clientTelephone || undefined,
+      emailClient: this.clientEmail || undefined,
+      notes: this.notes || undefined,
       dateVente: new Date()
     };
 
