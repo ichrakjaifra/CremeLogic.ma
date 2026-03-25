@@ -26,6 +26,7 @@ export class VenteHistoryComponent implements OnInit {
   dateFin: string = '';
   p: number = 1;
   loading = false;
+  selectedVente: Vente | null = null;
 
   ngOnInit() {
     this.loadVentes();
@@ -91,17 +92,50 @@ export class VenteHistoryComponent implements OnInit {
   }
 
   viewDetails(v: Vente) {
-    this.notification.info(`Détails de la vente ${v.numeroVente} : ${v.lignesVente.length} articles.`, 'Info');
+    this.selectedVente = v;
   }
 
   printInvoice(id: number) {
-     this.notification.info('Génération de la facture...', 'Patientez');
-     this.venteService.getFacture(id).subscribe({
-       next: (data: any) => {
-          this.notification.success('Facture prête pour l\'impression', 'Facture');
-          console.log('Facture data:', data);
-       },
-       error: () => this.notification.error('Erreur facture', 'Erreur')
-     });
+    // If we're printing from the modal, we already have the vente
+    if (this.selectedVente && this.selectedVente.id === id) {
+      this.doPrint();
+    } else {
+      const vente = this.ventes.find(v => v.id === id);
+      if (vente) {
+        this.selectedVente = vente;
+        setTimeout(() => this.doPrint(), 100);
+      }
+    }
+  }
+
+  private doPrint() {
+    const printContent = document.getElementById('print-section');
+    if (!printContent) return;
+
+    const windowPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+    if (windowPrint) {
+      windowPrint.document.write(`
+        <html>
+          <head>
+            <title>Facture - ${this.selectedVente?.numeroVente}</title>
+            <style>
+              body { font-family: sans-serif; }
+              @media print {
+                .no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            ${printContent.innerHTML}
+          </body>
+        </html>
+      `);
+      windowPrint.document.close();
+      windowPrint.focus();
+      setTimeout(() => {
+        windowPrint.print();
+        windowPrint.close();
+      }, 500);
+    }
   }
 }

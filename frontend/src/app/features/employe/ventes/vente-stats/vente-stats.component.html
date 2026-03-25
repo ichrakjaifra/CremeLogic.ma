@@ -39,7 +39,7 @@
           <i class="fas fa-star text-warning"></i>
         </div>
         <div class="extra-small text-muted fw-bold text-uppercase mb-1">Top Catégorie</div>
-        <div class="h3 fw-bold text-warning mb-0">Viennoiserie</div>
+        <div class="h3 fw-bold text-warning mb-0">{{ stats.topCategory }}</div>
         <div class="mt-2 text-muted extra-small">La plus vendue</div>
       </div>
     </div>
@@ -68,11 +68,36 @@
     </div>
   </div>
 
-  <!-- Popular Timing or other stat... -->
+  <!-- Recent Sales -->
   <div class="glass-card p-4 border-0 shadow-sm mb-4">
      <h5 class="fw-bold color-marron mb-4">Ventes récentes</h5>
-     <div class="text-center py-4 text-muted small">
-       <i class="fas fa-info-circle me-2"></i> Consultez l'historique pour les détails complets par transaction.
+     <div class="table-responsive" *ngIf="recentVentes.length > 0">
+       <table class="table table-hover align-middle mb-0">
+         <thead class="bg-light bg-opacity-50">
+           <tr>
+             <th class="ps-3 extra-small fw-bold text-muted border-0">N° VENTE</th>
+             <th class="extra-small fw-bold text-muted border-0">CLIENT</th>
+             <th class="extra-small fw-bold text-muted border-0 text-end">MONTANT</th>
+             <th class="pe-3 extra-small fw-bold text-muted border-0 text-center">PAIEMENT</th>
+           </tr>
+         </thead>
+         <tbody>
+           <tr *ngFor="let v of recentVentes">
+             <td class="ps-3 small fw-bold color-marron">{{ v.numeroVente }}</td>
+             <td class="small text-muted">{{ v.nomClient || 'Comptoir' }}</td>
+             <td class="small fw-bold text-end">{{ v.montantTotal | formatPrice }}</td>
+             <td class="pe-3 text-center">
+               <span class="badge extra-small px-2 py-1 rounded-pill" 
+                     [ngClass]="v.modePaiement === 'ESPECES' ? 'bg-success bg-opacity-10 text-success' : 'bg-primary bg-opacity-10 text-primary'">
+                 {{ v.modePaiement }}
+               </span>
+             </td>
+           </tr>
+         </tbody>
+       </table>
+     </div>
+     <div class="text-center py-4 text-muted small" *ngIf="recentVentes.length === 0">
+       <i class="fas fa-info-circle me-2"></i> Aucune vente récente trouvée.
      </div>
   </div>
 </div>

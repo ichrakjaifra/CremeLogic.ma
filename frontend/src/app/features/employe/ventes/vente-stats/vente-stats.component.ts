@@ -23,8 +23,11 @@ export class VenteStatsComponent implements OnInit, AfterViewInit {
     revenueToday: 0,
     salesCount: 0,
     avgBasket: 0,
-    growth: 12.5
+    growth: 12.5,
+    topCategory: 'Chargement...'
   };
+
+  recentVentes: any[] = [];
 
   loading = true;
 
@@ -47,6 +50,10 @@ export class VenteStatsComponent implements OnInit, AfterViewInit {
         this.stats.avgBasket = this.stats.salesCount > 0 ? this.stats.revenueToday / this.stats.salesCount : 0;
     });
 
+    this.venteService.getRecentes(5).subscribe((data: any[]) => {
+      this.recentVentes = data;
+    });
+
     this.loadChartsData();
   }
 
@@ -61,6 +68,13 @@ export class VenteStatsComponent implements OnInit, AfterViewInit {
     });
 
     this.venteService.getParCategorie(startStr, endStr).subscribe((data: any) => {
+      const categories = Object.keys(data);
+      if (categories.length > 0) {
+        // Find top category
+        this.stats.topCategory = categories.reduce((a, b) => data[a] > data[b] ? a : b);
+      } else {
+        this.stats.topCategory = '-';
+      }
       this.initCategoriesChart(data);
       this.loading = false;
     });
