@@ -1,4 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -24,8 +26,19 @@ export class NavbarComponent implements OnInit {
   private toastService = inject(NotificationService);
 
   currentUser: User | null = null;
-  alertes$ = this.alerteService.alertes$;
-  unreadCount$ = this.alerteService.unreadCount$;
+  alertes$: Observable<Alerte[]> = combineLatest([
+    this.alerteService.alertes$,
+    this.authService.currentUser$
+  ]).pipe(
+    map(([alertes, user]) => {
+      if (!user) return [];
+      return alertes.filter(a => this.shouldShowNotificationForUser(a, user));
+    })
+  );
+
+  unreadCount$: Observable<number> = this.alertes$.pipe(
+    map(alertes => alertes.length)
+  );
 
   ngOnInit() {
     this.authService.currentUser$.subscribe(user => {
@@ -42,31 +55,31 @@ export class NavbarComponent implements OnInit {
     
     // S'abonner aux notifications générales
     this.wsService.subscribe('/topic/notifications', (alerte: Alerte) => {
-      if (this.shouldShowNotification(alerte)) {
+      if (this.shouldShowNotificationForUser(alerte, this.currentUser)) {
         this.alerteService.addAlerte(alerte);
         this.toastService.info(alerte.description, alerte.titre);
       }
     });
   }
 
-  shouldShowNotification(alerte: Alerte): boolean {
-    if (!this.currentUser) return false;
-    const role = this.currentUser.role;
+  shouldShowNotificationForUser(alerte: Alerte, user: User | null): boolean {
+    if (!user) return false;
+    const role = user.role;
     
     // Logique de filtrage par rôle
     switch (alerte.type) {
       case TypeAlerte.STOCK_FAIBLE:
-        return role === 'MAGASINIER' || role === 'ADMIN';
+        return role === 'MAGASINIER';
       case TypeAlerte.COMMANDE_RETARD:
         return role === 'ADMIN' || role === 'MAGASINIER';
       case TypeAlerte.PRODUCTION_TERMINEE:
         return role === 'CHEF' || role === 'EMPLOYE';
       case TypeAlerte.PROBLEME_SIGNALE:
-        return role === 'CHEF' || role === 'ADMIN';
+        return role === 'CHEF';
       case TypeAlerte.NOUVELLE_COMMANDE:
-        return role === 'CHEF' || role === 'ADMIN';
+        return role === 'CHEF';
       default:
-        return true; // Par défaut on montre tout (ou à affiner)
+        return false; // Les autres types de notification ne s'affichent pas sauf s'ils sont explicites pour un rôle
     }
   }
 

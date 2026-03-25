@@ -48,7 +48,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // Create magasinier user if not exists
-        if (utilisateurRepository.findByEmail("magasinier@patisserie.com").isEmpty()) {
+        if (utilisateurRepository.findByEmail("g").isEmpty()) {
             Utilisateur magasinier = Utilisateur.builder()
                     .nom("Magasinier")
                     .prenom("Stock")

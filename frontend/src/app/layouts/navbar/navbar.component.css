@@ -89,12 +89,15 @@
   flex-shrink: 0;
 }
 
-.dropdown-menu::-webkit-scrollbar {
-  width: 4px;
+.notification-scroll-container::-webkit-scrollbar {
+  width: 5px;
 }
 
-.dropdown-menu::-webkit-scrollbar-thumb {
-  background: rgba(139, 69, 19, 0.1);
+.notification-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(139, 69, 19, 0.2);
   border-radius: 10px;
 }
 
+.notification-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}

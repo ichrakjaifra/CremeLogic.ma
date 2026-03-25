@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Client, IMessage, Stomp } from '@stomp/stompjs';
-import * as SockJS from 'sockjs-client';
+import SockJS from 'sockjs-client';
 import { BehaviorSubject, Observable, filter, take } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -18,7 +18,7 @@ export class WebsocketService implements OnDestroy {
       return;
     }
 
-    const socket = new (SockJS as any)(`${environment.apiUrl}/ws-notifications`);
+    const socket = new SockJS(`${environment.apiUrl}/ws-notifications`);
     this.stompClient = Stomp.over(socket);
 
     this.stompClient.onConnect = (frame) => {
