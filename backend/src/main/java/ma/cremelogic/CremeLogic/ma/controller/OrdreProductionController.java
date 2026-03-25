@@ -84,7 +84,7 @@ public class OrdreProductionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'MAGASINIER', 'EMPLOYE')")
     @Operation(summary = "Lister tous les ordres de production")
     public ResponseEntity<ApiResponse<List<OrdreProductionResponse>>> getAllOrdres() {
         List<OrdreProductionResponse> response = ordreProductionService.getAllOrdres();
@@ -100,7 +100,7 @@ public class OrdreProductionController {
     }
 
     @GetMapping("/produit/{produitId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'MAGASINIER', 'EMPLOYE')")
     @Operation(summary = "Lister les ordres par produit")
     public ResponseEntity<ApiResponse<List<OrdreProductionResponse>>> getOrdresByProduit(
             @PathVariable Long produitId) {
@@ -118,7 +118,7 @@ public class OrdreProductionController {
     }
 
     @GetMapping("/statut/{statut}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'MAGASINIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'MAGASINIER', 'EMPLOYE')")
     @Operation(summary = "Lister les ordres par statut")
     public ResponseEntity<ApiResponse<List<OrdreProductionResponse>>> getOrdresByStatut(
             @PathVariable String statut) {
@@ -243,7 +243,7 @@ public class OrdreProductionController {
     }
 
     @GetMapping("/cout-periode")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF', 'EMPLOYE')")
     @Operation(summary = "Coût total de production sur une période")
     public ResponseEntity<ApiResponse<BigDecimal>> getCoutTotalProductionPeriode(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate debut,

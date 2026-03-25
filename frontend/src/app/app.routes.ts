@@ -32,13 +32,33 @@ export const routes: Routes = [
       {
         path: 'chef',
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'CHEF'] },
+        data: { roles: ['ADMIN', 'CHEF', 'EMPLOYE'] },
         loadChildren: () => [
-          { path: 'dashboard', loadComponent: () => import('./features/chef/dashboard/dashboard.component').then(m => m.ChefDashboardComponent) },
-          { path: 'recettes', loadComponent: () => import('./features/chef/recettes/recettes.component').then(m => m.RecettesComponent) },
-          { path: 'produits', loadComponent: () => import('./features/chef/produits/produits.component').then(m => m.ProduitsComponent) },
+          { 
+            path: 'dashboard', 
+            canActivate: [roleGuard],
+            data: { roles: ['ADMIN', 'CHEF'] },
+            loadComponent: () => import('./features/chef/dashboard/dashboard.component').then(m => m.ChefDashboardComponent) 
+          },
+          { 
+            path: 'recettes', 
+            canActivate: [roleGuard],
+            data: { roles: ['ADMIN', 'CHEF'] },
+            loadComponent: () => import('./features/chef/recettes/recettes.component').then(m => m.RecettesComponent) 
+          },
+          { 
+            path: 'produits', 
+            canActivate: [roleGuard],
+            data: { roles: ['ADMIN', 'CHEF'] },
+            loadComponent: () => import('./features/chef/produits/produits.component').then(m => m.ProduitsComponent) 
+          },
           { path: 'production', loadComponent: () => import('./features/chef/production/production.component').then(m => m.ProductionComponent) },
-          { path: 'ingredients', loadComponent: () => import('./features/magasinier/ingredients/ingredients.component').then(m => m.IngredientsComponent) }
+          { 
+            path: 'ingredients', 
+            canActivate: [roleGuard],
+            data: { roles: ['ADMIN', 'CHEF'] },
+            loadComponent: () => import('./features/magasinier/ingredients/ingredients.component').then(m => m.IngredientsComponent) 
+          }
         ]
       },
       {

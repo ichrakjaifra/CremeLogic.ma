@@ -14,7 +14,7 @@
       <div class="badge bg-chocolate-light color-marron p-3 rounded-4 shadow-sm border">
         <i class="fas fa-fire-alt me-2"></i> {{ ordres.length }} Ordres Actifs
       </div>
-      <button class="btn btn-primary-custom px-4 py-3 rounded-pill shadow-sm fw-bold" (click)="openModal()">
+      <button *ngIf="canEdit()" class="btn btn-primary-custom px-4 py-3 rounded-pill shadow-sm fw-bold" (click)="openModal()">
         <i class="fas fa-plus me-2"></i> NOUVEL ORDRE
       </button>
     </div>
