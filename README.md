@@ -98,7 +98,6 @@ docker-compose up -d --build
 ### Accès aux services
 - 🌍 **Frontend** : [http://localhost:4200](http://localhost:4200)
 - ⚙️ **Backend API** : [http://localhost:8081/api](http://localhost:8081/api)
-- 📖 **Swagger UI** : [http://localhost:8081/api/shadow-ui/index.html](http://localhost:8081/api/swagger-ui/index.html)
 
 ---
 
@@ -130,24 +129,6 @@ docker-compose up -d --build
 - **Backend** : Tests JUnit 5 et Mockito (`mvn test`).
 - **Frontend** : Tests Jasmine et Karma (`npm test`).
 - **CI/CD** : Pipeline GitHub Actions automatique validant chaque Push/PR.
-
----
-
-## 📸 Captures d'écran (Aperçu)
-
-<p align="center">
-  <em>[Placeholder: Image de la page de Connexion]</em><br>
-  <em>[Placeholder: Image du Dashboard Admin]</em><br>
-  <em>[Placeholder: Image de la Gestion des Ventes]</em>
-</p>
-
----
-
-## 📊 Modélisation des Données
-
-<p align="center">
-  <em>[Placeholder: Diagramme de Classes / MCD]</em>
-</p>
 
 ---
 
