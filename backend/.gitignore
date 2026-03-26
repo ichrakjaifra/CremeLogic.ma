@@ -3,6 +3,9 @@
 
 HELP.md
 target/
+*.log
+*.txt
+hs_err_pid*
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
