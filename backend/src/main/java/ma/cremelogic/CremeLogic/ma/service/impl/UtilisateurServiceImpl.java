@@ -58,7 +58,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 .nom(request.getNom())
                 .prenom(request.getPrenom())
                 .email(request.getEmail())
-                .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
+                .motDePasse(passwordEncoder.encode(request.getPassword()))
                 .telephone(request.getTelephone())
                 .role(request.getRole())
                 .actif(true)

@@ -36,7 +36,7 @@ public class Utilisateur implements UserDetails {
     @Column(nullable = false)
     private String motDePasse;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String telephone;
 
     @Enumerated(EnumType.STRING)

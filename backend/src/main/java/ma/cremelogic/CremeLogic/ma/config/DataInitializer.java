@@ -17,7 +17,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Create admin user if not exists
+        // Créer un utilisateur administrateur s'il n'existe pas
         if (utilisateurRepository.findByEmail("admin@patisserie.com").isEmpty()) {
             Utilisateur admin = Utilisateur.builder()
                     .nom("Admin")
@@ -32,7 +32,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Admin user created: admin@patisserie.com / admin123");
         }
 
-        // Create chef user if not exists
+        // Créer un utilisateur chef s'il n'existe pas
         if (utilisateurRepository.findByEmail("chef@patisserie.com").isEmpty()) {
             Utilisateur chef = Utilisateur.builder()
                     .nom("Chef")
@@ -47,7 +47,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Chef user created: chef@patisserie.com / chef123");
         }
 
-        // Create magasinier user if not exists
+        // Créer un utilisateur magasinier s'il n'existe pas
         if (utilisateurRepository.findByEmail("magasinier@patisserie.com").isEmpty()) {
             Utilisateur magasinier = Utilisateur.builder()
                     .nom("Magasinier")
@@ -62,7 +62,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Magasinier user created: magasinier@patisserie.com / mag123");
         }
 
-        // Create employé user if not exists
+        // Créer un utilisateur employé s'il n'existe pas
         if (utilisateurRepository.findByEmail("employe@patisserie.com").isEmpty()) {
             Utilisateur employe = Utilisateur.builder()
                     .nom("Employé")
