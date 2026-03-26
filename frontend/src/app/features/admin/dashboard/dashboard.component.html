@@ -97,7 +97,7 @@
             <div class="alert-item d-flex justify-content-between align-items-center mb-3" *ngFor="let alerte of stats?.alertesRecent">
               <div class="d-flex align-items-center">
                 <div class="dot me-3" [ngClass]="alerte.priorite === 'HAUTE' ? 'bg-danger' : 'bg-warning'"></div>
-                <div class="small fw-600 text-dark text-truncate" style="max-width: 150px;">{{ alerte.message }}</div>
+                <div class="small fw-600 text-dark text-truncate" style="max-width: 150px;">{{ alerte.titre }}</div>
               </div>
               <span class="extra-small text-muted">{{ alerte.dateCreation | date:'dd/MM' }}</span>
             </div>
