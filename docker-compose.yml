@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: cremelogic-db
+    environment:
+      POSTGRES_DB: cremelogic_dev
+      POSTGRES_USER: creme_user
+      POSTGRES_PASSWORD: creme123
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - cremelogic-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U creme_user -d cremelogic_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cremelogic-backend
+    image: cremelogic-backend:latest
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./backend/.env.dev
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cremelogic-network
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cremelogic-frontend
+    image: cremelogic-frontend:latest
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - cremelogic-network
+
+networks:
+  cremelogic-network:
+    driver: bridge
+
+volumes:
+  db_data:
+    # On spécifie le nom exact du volume créé par le docker-compose du backend
+    # pour garantir la persistance des données entre les modes.
+    name: backend_db_data
