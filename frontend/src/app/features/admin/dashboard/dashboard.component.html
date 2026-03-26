@@ -1,7 +1,7 @@
 <div class="admin-dashboard p-2 animate-fade-in">
   <!-- KPI Cards -->
   <div class="row g-4 mb-4">
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="kpi-card p-4 rounded-4 shadow-sm bg-white border-0 h-100">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="kpi-icon bg-beige-light color-marron">
@@ -17,7 +17,7 @@
         </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
       <div class="glass-card kpi-card p-4">
         <div class="d-flex align-items-center mb-3">
           <div class="kpi-icon bg-pink-light me-3">
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
       <div class="glass-card kpi-card p-4">
         <div class="d-flex align-items-center mb-3">
           <div class="kpi-icon bg-chocolate-light me-3">
@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
       <div class="glass-card kpi-card p-4">
         <div class="d-flex align-items-center mb-3">
           <div class="kpi-icon bg-gold-light me-3">
@@ -209,7 +209,7 @@
           <div class="glass-card p-4">
             <h5 class="fw-bold color-marron mb-4 font-montserrat">Ordres de Production Récents</h5>
             <div class="row g-3">
-                <div class="col-md-4" *ngFor="let prod of stats?.productionsRecent">
+                <div class="col-12 col-md-4" *ngFor="let prod of stats?.productionsRecent">
                     <div class="p-3 border rounded-4 bg-light bg-opacity-30 d-flex justify-content-between align-items-center">
                         <div>
                             <div class="fw-bold text-dark small">{{ prod.produitNom }}</div>

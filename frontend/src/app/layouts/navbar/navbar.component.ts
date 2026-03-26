@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Output, EventEmitter } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,7 @@ import { WebsocketService } from '../../core/services/websocket.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { Alerte } from '../../core/models/alerte.model';
 import { TypeAlerte } from '../../core/enums/type-alerte.enum';
+import { SidebarService } from '../../core/services/sidebar.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,6 +25,9 @@ export class NavbarComponent implements OnInit {
   private alerteService = inject(AlerteService);
   private wsService = inject(WebsocketService);
   private toastService = inject(NotificationService);
+  public sidebarService = inject(SidebarService);
+
+  @Output() toggleSidebar = new EventEmitter<void>();
 
   currentUser: User | null = null;
   alertes$: Observable<Alerte[]> = combineLatest([
@@ -79,8 +83,13 @@ export class NavbarComponent implements OnInit {
       case TypeAlerte.NOUVELLE_COMMANDE:
         return role === 'CHEF';
       default:
-        return false; // Les autres types de notification ne s'affichent pas sauf s'ils sont explicites pour un rôle
+        return false;
     }
+  }
+
+  onToggleSidebar() {
+    this.sidebarService.toggle();
+    this.toggleSidebar.emit();
   }
 
   markAsRead(id: number, event: Event) {

@@ -23,11 +23,28 @@ import { FooterComponent } from '../footer/footer.component';
       height: 100vh;
       overflow-y: auto;
       background: transparent;
+      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .main-content {
       flex: 1;
       padding: 30px 40px !important;
       animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Tablet & Mobile: no sidebar margin */
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        margin-left: 0;
+      }
+      .main-content {
+        padding: 20px !important;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .main-content {
+        padding: 12px !important;
+      }
     }
   `]
 })

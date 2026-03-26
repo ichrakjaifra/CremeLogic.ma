@@ -1,8 +1,12 @@
-<div class="sidebar d-flex flex-column flex-shrink-0 animate-fade-in">
-  <div class="sidebar-header p-4 text-center">
+<div class="sidebar-backdrop" *ngIf="sidebarService.isOpen$ | async" (click)="closeSidebar()"></div>
+<div class="sidebar d-flex flex-column flex-shrink-0 animate-fade-in" [class.open]="sidebarService.isOpen$ | async">
+  <div class="sidebar-header p-4 d-flex align-items-center justify-content-between">
     <a routerLink="/" class="text-decoration-none">
       <img src="assets/images/logo2.png" alt="CrèmeLogic" class="sidebar-logo mb-2">
     </a>
+    <button class="sidebar-close-btn" (click)="closeSidebar()" aria-label="Close">
+      <i class="fas fa-times"></i>
+    </button>
   </div>
 
   <ul class="nav nav-pills flex-column mb-auto mt-2">

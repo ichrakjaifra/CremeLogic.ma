@@ -1,19 +1,27 @@
 <nav class="navbar navbar-expand-lg border-bottom animate-fade-in">
   <div class="container-fluid px-4">
     <div class="d-flex align-items-center">
-      <h4 class="welcome-text mb-0" *ngIf="currentUser">
+      <!-- Hamburger Menu Button (Mobile/Tablet only) -->
+      <button class="hamburger-btn me-3" (click)="onToggleSidebar()" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h4 class="welcome-text mb-0 d-none d-md-block" *ngIf="currentUser">
         Bienvenue, <span class="role-text">{{ currentUser.prenom }}!</span>
       </h4>
+      <!-- Mobile: show only first name -->
+      <span class="welcome-text-mobile d-md-none fw-bold color-marron" *ngIf="currentUser">
+        {{ currentUser.prenom }}
+      </span>
     </div>
 
-    <div class="ms-auto d-flex align-items-center gap-3">
+    <div class="ms-auto d-flex align-items-center gap-2 gap-md-3">
       <!-- Notifications -->
       <div class="dropdown">
         <button class="nav-icon-btn d-flex align-items-center justify-content-center" id="notifDropdown" data-bs-toggle="dropdown">
           <i class="fas fa-bell"></i>
           <span class="notification-badge" *ngIf="(unreadCount$ | async) || 0 > 0">{{ unreadCount$ | async }}</span>
         </button>
-        <div class="dropdown-menu dropdown-menu-end glass-card border-0 mt-3 p-0 shadow-lg" aria-labelledby="notifDropdown" style="width: 320px; overflow: hidden;">
+        <div class="dropdown-menu dropdown-menu-end glass-card border-0 mt-3 p-0 shadow-lg notif-dropdown" aria-labelledby="notifDropdown">
           <!-- Header -->
           <div class="p-2 border-bottom bg-white" style="border-radius: 10px 10px 0 0;">
             <div class="d-flex justify-content-between align-items-center px-3 py-2">
@@ -64,7 +72,7 @@
 
       <!-- User Profile -->
       <div class="dropdown" *ngIf="currentUser">
-        <button class="user-profile-btn d-flex align-items-center gap-3 border-0 text-decoration-none dropdown-toggle no-caret" id="userMenu" data-bs-toggle="dropdown">
+        <button class="user-profile-btn d-flex align-items-center gap-2 gap-md-3 border-0 text-decoration-none dropdown-toggle no-caret" id="userMenu" data-bs-toggle="dropdown">
           <div class="text-end d-none d-md-block">
             <div class="small fw-bold text-dark mb-0">{{ currentUser.prenom }} {{ currentUser.nom }}</div>
             <div class="text-muted" style="font-size: 0.75rem;">{{ currentUser.role | roleLabel }}</div>

@@ -149,3 +149,144 @@ h1, h2, h3, h4, h5, h6 {
 .ngx-pagination li {
   margin-right: 5px;
 }
+
+/* ===================================================
+   RESPONSIVE DESIGN - Global Media Queries
+   =================================================== */
+
+/* ========== TABLET (max-width: 1024px) ========== */
+@media (max-width: 1024px) {
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.15rem; }
+  h4 { font-size: 1rem; }
+
+  .glass-card:hover {
+    transform: none; /* Disable hover lift on touch devices */
+  }
+
+  /* Tables */
+  .table th, .table td {
+    font-size: 0.85rem;
+    padding: 10px 8px;
+  }
+
+  /* Modals */
+  .modal-dialog {
+    margin: 10px;
+    max-width: calc(100vw - 20px);
+  }
+  .modal-content {
+    border-radius: 16px;
+  }
+}
+
+/* ========== MOBILE (max-width: 430px) ========== */
+@media (max-width: 430px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  h1 { font-size: 1.3rem; }
+  h2 { font-size: 1.15rem; }
+  h3 { font-size: 1.05rem; }
+  h4 { font-size: 0.95rem; }
+  h5 { font-size: 0.9rem; }
+
+  .glass-card {
+    border-radius: 14px;
+  }
+  .glass-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-main);
+  }
+
+  /* Buttons */
+  .btn-primary-custom,
+  .btn-secondary-custom {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  /* Tables */
+  .table {
+    font-size: 0.8rem;
+  }
+  .table th, .table td {
+    padding: 8px 6px;
+    white-space: nowrap;
+  }
+
+  /* Forms */
+  .form-control, .form-select {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+  .input-group-text {
+    padding: 10px 12px;
+  }
+
+  /* Modals */
+  .modal-dialog {
+    margin: 8px;
+    max-width: calc(100vw - 16px);
+  }
+  .modal-body {
+    padding: 16px;
+  }
+  .modal-header, .modal-footer {
+    padding: 12px 16px;
+  }
+
+  /* Charts */
+  .chart-container, .chart-box {
+    min-height: auto;
+  }
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Page headers */
+  .d-flex.justify-content-between.align-items-center {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* KPI Cards */
+  .kpi-card {
+    padding: 14px !important;
+  }
+  .kpi-card .h3 {
+    font-size: 1.2rem;
+  }
+  .kpi-card .h4 {
+    font-size: 1.1rem;
+  }
+
+  /* Pagination */
+  .ngx-pagination {
+    font-size: 0.8rem;
+  }
+  .ngx-pagination .current {
+    padding: 4px 10px;
+  }
+
+  /* Alert items */
+  .alert-item {
+    padding: 8px 0;
+  }
+
+  /* Filter sections */
+  .btn-group .btn {
+    font-size: 0.7rem;
+    padding: 6px 8px;
+  }
+
+  /* Action buttons in tables */
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+}

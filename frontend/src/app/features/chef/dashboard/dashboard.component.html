@@ -1,7 +1,7 @@
-<div class="chef-dashboard p-4 animate-fade-in">
+<div class="chef-dashboard p-2 p-md-4 animate-fade-in">
   <!-- KPI Cards -->
   <div class="row g-4 mb-4">
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
       <div class="glass-card kpi-card p-4">
         <div class="d-flex align-items-center mb-2">
           <div class="kpi-icon bg-gold-light me-3">
@@ -16,7 +16,7 @@
       </div>
     </div>
     
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
       <div class="glass-card kpi-card p-4" style="border-left-color: #28a745;">
         <div class="d-flex align-items-center mb-2">
           <div class="kpi-icon bg-success-soft me-3">
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
       <div class="glass-card kpi-card p-4">
         <div class="d-flex align-items-center mb-2">
           <div class="kpi-icon bg-chocolate-light me-3">
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
       <div class="glass-card kpi-card p-4" [class.border-danger]="(stats?.ingredientsStockFaible || 0) > 0">
         <div class="d-flex align-items-center mb-2">
           <div class="kpi-icon bg-danger-soft me-3">
@@ -154,7 +154,7 @@
       <div class="glass-card p-4">
         <h5 class="fw-bold color-marron mb-4">Recettes les plus utilisées</h5>
         <div class="row g-3">
-          <div class="col-md-6" *ngFor="let r of stats?.recettesPopulaires">
+          <div class="col-12 col-md-6" *ngFor="let r of stats?.recettesPopulaires">
             <div class="p-3 bg-light bg-opacity-50 rounded-4 d-flex align-items-center border border-white">
               <div class="p-2 bg-white rounded-3 me-3"><i class="fas fa-utensils color-marron"></i></div>
               <div>
@@ -172,7 +172,7 @@
       <div class="glass-card p-4">
         <h5 class="fw-bold text-danger mb-4">Stock Critique</h5>
         <div class="row g-3">
-          <div class="col-md-6" *ngFor="let ing of stats?.ingredientsCritiques">
+          <div class="col-12 col-md-6" *ngFor="let ing of stats?.ingredientsCritiques">
             <div class="p-3 bg-white shadow-sm rounded-4 border-start border-danger border-4">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="fw-bold small text-dark">{{ ing.nom }}</span>
