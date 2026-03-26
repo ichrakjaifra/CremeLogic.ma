@@ -63,6 +63,10 @@ export class AuthService {
     return this.currentUserValue?.role === role;
   }
 
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
   getRole(): string | null {
     return this.currentUserValue?.role || null;
   }

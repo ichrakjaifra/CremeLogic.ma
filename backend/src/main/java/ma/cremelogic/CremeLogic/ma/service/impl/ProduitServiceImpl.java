@@ -176,7 +176,13 @@ public class ProduitServiceImpl implements ProduitService {
             throw new ValidationException("Impossible de supprimer un produit avec des productions associées");
         }
 
-        produitRepository.delete(produit);
+        try {
+            produitRepository.delete(produit);
+            produitRepository.flush();
+        } catch (Exception e) {
+            throw new ValidationException("Impossible de supprimer ce produit car il est lié à d'autres informations (ventes, mouvements de stock, alertes, etc.)");
+        }
+
         historiqueService.enregistrerSuppression("PRODUIT", id, "Suppression du produit: " + produit.getNom());
         log.info("Produit supprimé: {}", produit.getCodeProduit());
     }

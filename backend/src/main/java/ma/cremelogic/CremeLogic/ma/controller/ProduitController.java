@@ -134,7 +134,7 @@ public class ProduitController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF')")
     @Operation(summary = "Supprimer un produit")
     public ResponseEntity<ApiResponse<Void>> deleteProduit(@PathVariable Long id) {
         produitService.deleteProduit(id);

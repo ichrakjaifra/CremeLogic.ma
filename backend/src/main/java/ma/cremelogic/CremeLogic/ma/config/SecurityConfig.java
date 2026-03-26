@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/ws-notifications/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
