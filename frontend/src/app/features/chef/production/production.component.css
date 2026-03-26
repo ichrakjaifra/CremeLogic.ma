@@ -48,23 +48,6 @@
 .color-marron { color: #5d4037; }
 .bg-gold-light { background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.1) 100%); }
 
-/* Custom Pagination Styling */
-::ng-deep .ngx-pagination .current {
-  background: #5d4037 !important;
-  border-radius: 6px;
-  padding: 5px 12px;
-}
-
-::ng-deep .ngx-pagination a:hover, 
-::ng-deep .ngx-pagination .current:hover {
-  background: #8b4513 !important;
-  color: white !important;
-}
-
-::ng-deep .ngx-pagination .disabled {
-  padding: 5px 12px;
-}
-
 /* Status Badge Overrides */
 .status-badge {
   text-transform: uppercase;

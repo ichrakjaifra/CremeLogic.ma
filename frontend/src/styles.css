@@ -125,3 +125,27 @@ h1, h2, h3, h4, h5, h6 {
 .animate-fade-in {
   animation: fadeIn 0.5s ease forwards;
 }
+
+/* Global Pagination Styling (ngx-pagination) */
+.ngx-pagination .current {
+  background: var(--marron-chocolat) !important;
+  border-radius: 8px;
+  padding: 5px 12px;
+}
+
+.ngx-pagination a:hover, 
+.ngx-pagination .current:hover {
+  background: var(--marron-fonce) !important;
+  color: white !important;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.ngx-pagination .disabled {
+  padding: 5px 12px;
+  opacity: 0.5;
+}
+
+.ngx-pagination li {
+  margin-right: 5px;
+}
