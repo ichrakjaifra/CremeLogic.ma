@@ -314,6 +314,13 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         private VenteResponse mapVenteToResponse(Vente v) {
-                return VenteResponse.builder().id(v.getId()).numeroVente(v.getNumeroVente()).build();
+                return VenteResponse.builder()
+                        .id(v.getId())
+                        .numeroVente(v.getNumeroVente())
+                        .nomClient(v.getNomClient() != null ? v.getNomClient() : "Client Occasionnel")
+                        .montantTotal(v.getMontantTotal())
+                        .estPayee(v.estPayee())
+                        .dateVente(v.getDateVente())
+                        .build();
         }
 }
