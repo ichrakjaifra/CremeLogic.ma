@@ -1,0 +1,138 @@
+<div class="execution-container" *ngIf="ordre && !loading">
+  <!-- Top Bar / Navigation -->
+  <nav class="top-nav glass animate-fade-in">
+    <div class="nav-left">
+      <button class="btn-back" routerLink="/employe/dashboard">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="brand-badge">
+        <span class="dot"></span>
+        <span class="status-label">Session de Production Active</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="timer-card">
+        <i class="far fa-clock"></i>
+        <span class="timer-timer">{{ formatTime(elapsedTime) }}</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-layout mt-4">
+    <!-- Left Column: Primary Content -->
+    <div class="content-primary animate-slide-up">
+      <!-- Recipe Info Header -->
+      <header class="recipe-header glass-premium p-4 mb-4">
+        <div class="recipe-meta">
+          <span class="badge-accent">Détails de la Fabrication</span>
+          <h1 class="recipe-title">{{ ordre.produitNom }}</h1>
+          <div class="recipe-stats">
+            <span class="stat-item"><i class="fas fa-tag"></i> {{ ordre.numeroOrdre }}</span>
+            <span class="stat-item"><i class="fas fa-layer-group"></i> Quantité: {{ ordre.quantite }}</span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-info">
+            <span class="progress-label">Progression Globale</span>
+            <span class="progress-value">{{ progress }}%</span>
+          </div>
+          <div class="progress-bar-outer">
+            <div class="progress-bar-inner" [style.width.%]="progress"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Steps / Instructions Section -->
+      <div class="steps-section glass-premium p-4">
+        <div class="section-header mb-4">
+          <h2 class="section-title"><i class="fas fa-list-check"></i> Étapes de Fabrication</h2>
+        </div>
+
+        <!-- Structured Steps -->
+        <div class="steps-list" *ngIf="ordre.suivisEtapes && ordre.suivisEtapes.length > 0; else legacyInstructions">
+          <div 
+            *ngFor="let step of ordre.suivisEtapes; let i = index" 
+            class="step-card"
+            [class.active]="step.statut === 'EN_COURS'"
+            [class.completed]="step.statut === 'TERMINEE'"
+            (click)="toggleStep(step)"
+          >
+            <div class="step-index">{{ i + 1 }}</div>
+            <div class="step-details">
+              <p class="step-text">{{ step.descriptionEtape }}</p>
+              <div class="step-meta">
+                <span class="time-est" *ngIf="step.tempsEstimeEtape"><i class="far fa-hourglass"></i> {{ step.tempsEstimeEtape }} min</span>
+                <span class="status-pill status-{{ step.statut.toLowerCase() }}">{{ step.statut | titlecase }}</span>
+              </div>
+            </div>
+            <div class="step-action-icon">
+              <i class="fas" [ngClass]="step.statut === 'TERMINEE' ? 'fa-check-circle' : 'fa-circle'"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legacy Instructions Fallback -->
+        <ng-template #legacyInstructions>
+          <div class="legacy-instructions-box" *ngIf="ordre.instructionsRecette; else emptySteps">
+            <div class="instruction-content">
+              <p class="instruction-text pre-wrap">{{ ordre.instructionsRecette }}</p>
+            </div>
+            <div class="legacy-badge"><i class="fas fa-info-circle"></i> Instructions standards du chef</div>
+          </div>
+        </ng-template>
+
+        <ng-template #emptySteps>
+          <div class="empty-steps">
+            <i class="fas fa-clipboard-list"></i>
+            <p>Aucune instruction détaillée disponible pour cette recette.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Action Footer -->
+      <footer class="execution-actions mt-4">
+        <button *ngIf="ordre.statut === 'PLANIFIEE'" class="btn-start-production" (click)="startProduction()">
+          <i class="fas fa-play me-2"></i> DÉMARRER LA PRODUCTION
+        </button>
+        
+        <button *ngIf="ordre.statut === 'EN_COURS'" [disabled]="ordre.suivisEtapes && ordre.suivisEtapes.length > 0 && progress < 100" class="btn-finish-production" (click)="finishProduction()">
+          <i class="fas fa-check-double me-2"></i> FINALISER LA PRODUCTION
+        </button>
+        
+        <button class="btn-report-issue" (click)="reportProblem()">
+          <i class="fas fa-exclamation-triangle me-2"></i> SIGNALER UN PROBLÈME
+        </button>
+      </footer>
+    </div>
+
+    <!-- Right Column: Sidebar -->
+    <aside class="content-secondary animate-slide-left">
+      <!-- Ingredients Card -->
+      <div class="ingredients-card glass-premium p-4 mb-4" *ngIf="recette">
+        <h3 class="sidebar-title"><i class="fas fa-mortar-pestle"></i> Ingrédients</h3>
+        <ul class="ingredient-list">
+          <li *ngFor="let item of recette.lignesRecette">
+            <div class="ing-info">
+              <span class="ing-name">{{ item.nomIngredient }}</span>
+            </div>
+            <span class="ing-amount">{{ item.quantite }} {{ item.uniteMesure }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Chef's Notes -->
+      <div class="notes-card glass-premium p-4" *ngIf="ordre.notes">
+        <h3 class="sidebar-title"><i class="fas fa-pen-nib"></i> Notes du Chef</h3>
+        <div class="note-bubble">
+          {{ ordre.notes }}
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-full" *ngIf="loading">
+  <div class="spinner-premium"></div>
+  <p>Préparation de votre atelier...</p>
+</div>

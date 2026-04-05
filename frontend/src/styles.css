@@ -1,0 +1,292 @@
+/* CrèmeLogic - Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Poppins:wght@400;600;700&family=Roboto:wght@400;500&display=swap');
+
+:root {
+  /* Couleurs principales */
+  --beige-creme: #F5E5C0;
+  --marron-chocolat: #8B4513;
+  --marron-fonce: #6E3510;
+  --dore-clair: #D4AF37;
+  --dore-sombre: #b8962e;
+  
+  /* Textes */
+  --texte-principal: #1E1E1E;
+  --texte-secondaire: #3C3C3C;
+  --texte-sur-fonce: #FFFFFF;
+  
+  /* Backgrounds */
+  --bg-global: #FDF4E3; /* Lighter beige for better contrast */
+  --bg-cards: rgba(255, 255, 255, 0.9);
+  --bg-sidebar: #8B4513;
+  --bg-sidebar-hover: #6E3510;
+  
+  /* Alertes */
+  --success: #4CAF50;
+  --warning: #FFA500;
+  --error: #E74C3C;
+  --info: #3498DB;
+
+  /* Shadows & Radius */
+  --shadow-main: 0 10px 30px rgba(139, 69, 19, 0.08);
+  --shadow-hover: 0 15px 45px rgba(139, 69, 19, 0.15);
+  --radius-main: 20px;
+  --radius-sm: 12px;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #FDF4E3 0%, #F5E5C0 100%);
+  color: var(--texte-principal);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: var(--marron-chocolat);
+}
+
+.glass-card {
+  background: var(--bg-cards);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-main);
+  border-radius: var(--radius-main);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible !important;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Custom Buttons */
+.btn-primary-custom {
+  background: linear-gradient(135deg, var(--dore-clair) 0%, var(--dore-sombre) 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+  filter: brightness(1.05);
+  color: white;
+}
+
+.btn-secondary-custom {
+  background: linear-gradient(135deg, var(--marron-chocolat) 0%, var(--marron-fonce) 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.2);
+}
+
+.btn-secondary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 69, 19, 0.3);
+  filter: brightness(1.1);
+  color: white;
+}
+
+/* Utility Classes */
+.extra-small { font-size: 0.75rem; }
+.uppercase { text-transform: uppercase; }
+.color-marron { color: var(--marron-chocolat); }
+.color-dore { color: var(--dore-clair); }
+
+.bg-chocolate-light { background-color: #FDF4E3; }
+.bg-success-light { background-color: #E8F5E9; }
+.bg-danger-light { background-color: #FFEBEE; }
+.bg-warning-light { background-color: #FFF3E0; }
+.bg-info-light { background-color: #E3F2FD; }
+
+.bg-success-subtle { background-color: rgba(76, 175, 80, 0.1); }
+.bg-danger-subtle { background-color: rgba(231, 76, 60, 0.1); }
+.bg-info-subtle { background-color: rgba(52, 152, 219, 0.1); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Global Pagination Styling (ngx-pagination) */
+.ngx-pagination .current {
+  background: var(--marron-chocolat) !important;
+  border-radius: 8px;
+  padding: 5px 12px;
+}
+
+.ngx-pagination a:hover, 
+.ngx-pagination .current:hover {
+  background: var(--marron-fonce) !important;
+  color: white !important;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.ngx-pagination .disabled {
+  padding: 5px 12px;
+  opacity: 0.5;
+}
+
+.ngx-pagination li {
+  margin-right: 5px;
+}
+
+/* ===================================================
+   RESPONSIVE DESIGN - Global Media Queries
+   =================================================== */
+
+/* ========== TABLET (max-width: 1024px) ========== */
+@media (max-width: 1024px) {
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.15rem; }
+  h4 { font-size: 1rem; }
+
+  .glass-card:hover {
+    transform: none; /* Disable hover lift on touch devices */
+  }
+
+  /* Tables */
+  .table th, .table td {
+    font-size: 0.85rem;
+    padding: 10px 8px;
+  }
+
+  /* Modals */
+  .modal-dialog {
+    margin: 10px;
+    max-width: calc(100vw - 20px);
+  }
+  .modal-content {
+    border-radius: 16px;
+  }
+}
+
+/* ========== MOBILE (max-width: 430px) ========== */
+@media (max-width: 430px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  h1 { font-size: 1.3rem; }
+  h2 { font-size: 1.15rem; }
+  h3 { font-size: 1.05rem; }
+  h4 { font-size: 0.95rem; }
+  h5 { font-size: 0.9rem; }
+
+  .glass-card {
+    border-radius: 14px;
+  }
+  .glass-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-main);
+  }
+
+  /* Buttons */
+  .btn-primary-custom,
+  .btn-secondary-custom {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  /* Tables */
+  .table {
+    font-size: 0.8rem;
+  }
+  .table th, .table td {
+    padding: 8px 6px;
+    white-space: nowrap;
+  }
+
+  /* Forms */
+  .form-control, .form-select {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+  .input-group-text {
+    padding: 10px 12px;
+  }
+
+  /* Modals */
+  .modal-dialog {
+    margin: 8px;
+    max-width: calc(100vw - 16px);
+  }
+  .modal-body {
+    padding: 16px;
+  }
+  .modal-header, .modal-footer {
+    padding: 12px 16px;
+  }
+
+  /* Charts */
+  .chart-container, .chart-box {
+    min-height: auto;
+  }
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Page headers */
+  .d-flex.justify-content-between.align-items-center {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* KPI Cards */
+  .kpi-card {
+    padding: 14px !important;
+  }
+  .kpi-card .h3 {
+    font-size: 1.2rem;
+  }
+  .kpi-card .h4 {
+    font-size: 1.1rem;
+  }
+
+  /* Pagination */
+  .ngx-pagination {
+    font-size: 0.8rem;
+  }
+  .ngx-pagination .current {
+    padding: 4px 10px;
+  }
+
+  /* Alert items */
+  .alert-item {
+    padding: 8px 0;
+  }
+
+  /* Filter sections */
+  .btn-group .btn {
+    font-size: 0.7rem;
+    padding: 6px 8px;
+  }
+
+  /* Action buttons in tables */
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+}

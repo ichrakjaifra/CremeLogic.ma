@@ -1,0 +1,161 @@
+<div class="employe-dashboard p-2 p-md-4 animate-fade-in">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="fw-bold color-marron mb-0">Tableau de Bord Employé</h4>
+          <p class="text-muted small mb-0">{{ today | date:'EEEE dd MMMM yyyy' }} | Session active pour <strong>{{ employeeName }}</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unified KPI Cards Row -->
+  <div class="row g-4 mb-5">
+    <!-- Ventes -->
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-personal p-4 text-center">
+        <div class="kpi-icon bg-success-soft mx-auto mb-3">
+          <i class="fas fa-shopping-basket text-success"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Ventes Réalisées</div>
+        <div class="h3 fw-bold mb-0 color-marron">{{ stats?.totalVentesJour || 0 }}</div>
+        <div class="extra-small text-success mt-1"><i class="fas fa-arrow-up"></i> Aujourd'hui</div>
+      </div>
+    </div>
+
+    <!-- CA -->
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-personal p-4 text-center">
+        <div class="kpi-icon bg-gold-light mx-auto mb-3">
+          <i class="fas fa-cash-register color-marron"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Chiffre d'Affaires</div>
+        <div class="h3 fw-bold mb-0 color-marron">{{ stats?.chiffreAffairesJour || 0 | formatPrice }}</div>
+        <div class="extra-small text-muted mt-1">Total encaissé</div>
+      </div>
+    </div>
+
+    <!-- Tâches -->
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-personal p-4 text-center">
+        <div class="kpi-icon bg-info-soft mx-auto mb-3">
+          <i class="fas fa-list-check text-info"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Progression Tâches</div>
+        <div class="h3 fw-bold mb-0 color-marron">{{ stats?.tachesACompleter || 0 }} / {{ stats?.tachesDuJour?.length || 0 }}</div>
+        <div class="extra-small text-muted mt-1">Objectifs complétés</div>
+      </div>
+    </div>
+
+    <!-- Arrivée -->
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-personal p-4 text-center" style="border-bottom: 4px solid #d4af37 !important;">
+        <div class="kpi-icon bg-chocolate-light mx-auto mb-3">
+          <i class="far fa-clock color-marron"></i>
+        </div>
+        <div class="extra-small text-muted fw-bold text-uppercase mb-1">Heure d'Arrivée</div>
+        <div class="h3 fw-bold mb-0 color-marron">{{ heureArrivee }}</div>
+        <div class="extra-small text-muted mt-1">Enregistré ce matin</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Tasks of the Day -->
+    <div class="col-lg-8">
+      <!-- <div class="glass-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0">Mes Tâches du Jour</h5>
+          <span class="badge bg-gold-light color-marron px-3 py-2 rounded-pill extra-small">Planning Quotidien</span>
+        </div>
+
+        <div class="task-list">
+          <div *ngFor="let t of stats?.tachesDuJour" class="task-row p-3 rounded-4 mb-3 border border-white transition-all shadow-sm bg-white bg-opacity-50">
+            <div class="d-flex align-items-center">
+              <div class="priority-indicator me-3" [ngClass]="{
+                'bg-danger': t.priorite === 'HAUTE',
+                'bg-warning': t.priorite === 'MOYENNE',
+                'bg-info': t.priorite === 'BASSE'
+              }"></div>
+              <div class="flex-grow-1">
+                <div class="fw-bold small text-dark">{{ t.titre }}</div>
+                <div class="extra-small text-muted">Prévu pour : {{ t.dateEcheance | date:'HH:mm' }} • {{ t.description }}</div>
+              </div>
+              <div class="statut-badge px-3 py-1 rounded-pill extra-small fw-bold" [ngClass]="{
+                'bg-success-subtle text-success': t.statut === 'TERMINEE',
+                'bg-warning-subtle text-warning': t.statut === 'EN_COURS'
+              }">
+                {{ t.statut }}
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!stats?.tachesDuJour?.length" class="text-center py-5">
+            <div class="opacity-25 mb-3"><i class="fas fa-calendar-check fa-3x"></i></div>
+            <p class="text-muted small">Aucune tâche assignée pour le moment.</p>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Production Tasks -->
+      <div class="glass-card p-4 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0">🍵 Productions à Réaliser</h5>
+          <span class="badge bg-gold-light color-marron px-3 py-2 rounded-pill extra-small">Atelier Cuisine</span>
+        </div>
+
+        <div class="task-list">
+          <div *ngFor="let p of productionTasks" class="task-row p-3 rounded-4 mb-3 border border-white transition-all shadow-sm bg-white bg-opacity-50">
+            <div class="d-flex align-items-center">
+              <div class="prod-icon me-3">
+                <i class="fas fa-cookie-bite fa-lg text-warning"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="fw-bold small text-dark">{{ p.produitNom }}</div>
+                <div class="extra-small text-muted">Quantité: {{ p.quantite }} | {{ p.notes || 'Aucune instruction' }}</div>
+              </div>
+              <button class="btn btn-sm btn-outline-warning rounded-pill px-3" [routerLink]="['../production-execution', p.id]">
+                DÉMARRER
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="!productionTasks.length" class="text-center py-4">
+            <p class="text-muted small">Aucune production planifiée pour aujourd'hui.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions & Last Vente -->
+    <div class="col-lg-4">
+      <div class="glass-card p-4 mb-4 text-center bg-chocolate-light border-0">
+        <h5 class="fw-bold color-marron mb-4">Service Client</h5>
+        <button class="btn btn-primary-custom w-100 py-3 rounded-4 fw-bold shadow-lg shadow-chocolate-light mb-3" routerLink="../ventes">
+          <i class="fas fa-cart-plus me-2"></i> NOUVELLE VENTE
+        </button>
+        <p class="extra-small text-muted">Accès direct à la caisse POS</p>
+      </div>
+
+      <div class="glass-card p-4">
+        <h6 class="fw-bold text-muted text-uppercase extra-small mb-3">Dernière Opération</h6>
+        <div *ngIf="derniereVente; else noVente" class="animate-fade-in">
+          <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-4 border">
+            <div>
+              <div class="fw-bold color-marron small">#{{ getVenteDisplayId(derniereVente) || derniereVente.id }}</div>
+              <div class="extra-small text-muted">{{ derniereVente.dateVente | date:'HH:mm' }} • {{ derniereVente.modePaiement }}</div>
+            </div>
+            <div class="fw-bold text-dark">{{ derniereVente.montantTotal | formatPrice }}</div>
+          </div>
+        </div>
+        <ng-template #noVente>
+          <div class="text-center py-3">
+             <p class="extra-small text-muted mb-0">Pas encore de vente aujourd'hui.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

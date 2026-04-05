@@ -1,0 +1,55 @@
+<div class="modal fade show" *ngIf="isOpen" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header bg-chocolate-light border-0 py-4 px-4">
+        <h5 class="modal-title color-marron fw-bold font-montserrat">
+          <i class="fas fa-star me-2 dore-text text-warning"></i>
+          Évaluer le Fournisseur
+        </h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
+      </div>
+
+      <div class="modal-body p-4 text-center">
+        <p class="text-muted mb-4 small">Notez la performance de <strong>{{ supplier?.nom }}</strong> pour aider au suivi qualité.</p>
+
+        <!-- Star Rating -->
+        <div class="d-flex justify-content-center gap-2 mb-4">
+          <i *ngFor="let n of [1, 2, 3, 4, 5]" 
+             class="fas fa-star star-rating"
+             [class.selected]="n <= (hoveredNote || note)"
+             (mouseenter)="hoveredNote = n"
+             (mouseleave)="hoveredNote = 0"
+             (click)="setNote(n)">
+          </i>
+        </div>
+        <div class="fw-bold color-marron mb-4">
+          {{ note === 1 ? 'Très Médiocre' : 
+             note === 2 ? 'Insuffisant' : 
+             note === 3 ? 'Correct' : 
+             note === 4 ? 'Très Bien' : 
+             note === 5 ? 'Excellent' : 'Sélectionnez une note' }}
+        </div>
+
+        <div class="text-start">
+          <label class="form-label fw-bold small mb-2">Commentaire libre</label>
+          <textarea [(ngModel)]="commentaire" 
+                    class="form-control rounded-4 p-3" 
+                    rows="3" 
+                    placeholder="Pourquoi cette note ? (Ponctualité, qualité, prix...)"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0 p-4 pt-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" (click)="close()">Plus tard</button>
+        <button type="button" 
+                class="btn btn-primary-custom px-5 rounded-pill shadow-sm" 
+                (click)="onSubmit()" 
+                [disabled]="loading || note === 0">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          Valider l'Évaluation
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="isOpen"></div>

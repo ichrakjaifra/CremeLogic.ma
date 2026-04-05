@@ -1,0 +1,58 @@
+<div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true" [ngClass]="{'show d-block': isOpen}">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content glass-card shadow-2xl border-0 rounded-5 overflow-hidden">
+      <div class="modal-header border-0 bg-chocolate-light p-4">
+        <h5 class="modal-title fw-bold color-marron font-montserrat">
+          <i class="fas fa-history"></i>
+          <span class="ms-3">Historique : {{ ingredient?.nom }}</span>
+        </h5>
+        <button type="button" class="btn-close opacity-50" (click)="close()"></button>
+      </div>
+      
+      <div class="modal-body p-4">
+        <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border text-chocolate" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+        </div>
+
+        <div *ngIf="!loading && mouvements.length === 0" class="text-center py-5">
+            <i class="fas fa-info-circle fa-3x mb-3 text-muted opacity-25"></i>
+            <p class="text-muted">Aucun mouvement enregistré pour cet ingrédient.</p>
+        </div>
+
+        <div class="table-responsive" *ngIf="!loading && mouvements.length > 0">
+          <table class="table table-hover table-history align-middle">
+            <thead class="bg-light">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th class="text-end">Quantité</th>
+                <th>Raison</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of mouvements">
+                <td>{{ m.dateMouvement | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span class="badge border-0 px-3 py-2 rounded-pill fw-bold" [ngClass]="'badge-' + m.type">
+                    {{ m.type }}
+                  </span>
+                </td>
+                <td class="text-end fw-bold" [ngClass]="m.type === 'ENTREE' ? 'text-success' : 'text-danger'">
+                  {{ m.type === 'ENTREE' ? '+' : '-' }}{{ m.quantite }} {{ ingredient?.uniteMesure }}
+                </td>
+                <td class="small italic text-muted">{{ m.raison || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0 p-4">
+        <button type="button" class="btn btn-outline-custom px-4" (click)="close()">FERMER</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [ngClass]="{'show d-block': isOpen}" *ngIf="isOpen"></div>

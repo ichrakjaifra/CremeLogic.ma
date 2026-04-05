@@ -1,0 +1,42 @@
+.commandes-page { min-height: 100vh; animation: fadeIn 0.5s ease-out; }
+.commande-card { 
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-left: 4px solid transparent;
+  border-radius: 15px;
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}
+.commande-card:hover { transform: translateX(5px); z-index: 10; }
+.statut-en_attente { border-left-color: #f1c40f; }
+.statut-validee { border-left-color: #3498db; }
+.statut-en_cours { border-left-color: #3498db; }
+.statut-livree { border-left-color: #2ecc71; }
+.statut-annulee { border-left-color: #e74c3c; }
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: all 0.2s ease;
+  background: white;
+  color: #5d4037;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+.btn-action.duplicate:hover { color: #f1c40f; }
+.btn-action.edit:hover { color: #3498db; }
+.btn-action.trash:hover { color: #e74c3c; }
+.btn-action.cancel:hover { color: #95a5a6; }
+
+.bg-chocolate-light { background: #FDF4E3; }
+.color-dore { color: #D4AF37; }
+.extra-small { font-size: 0.7rem; }

@@ -1,0 +1,85 @@
+<div class="modal fade show" *ngIf="isOpen" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-chocolate-light border-0 py-4 px-4">
+        <h5 class="modal-title color-marron fw-bold font-montserrat">
+          <i class="fas fa-handshake me-2 dore-text"></i>
+          {{ isEditMode ? 'Éditer le Partenaire' : 'Nouveau Partenaire' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
+      </div>
+
+      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body p-4">
+          <div class="row g-3">
+            <!-- Nom -->
+            <div class="col-md-6">
+              <label class="form-label fw-bold small">Nom du Partenaire *</label>
+              <input type="text" formControlName="nom" class="form-control" [ngClass]="{'is-invalid': submitted && f['nom'].errors}">
+              <div *ngIf="submitted && f['nom'].errors" class="invalid-feedback">Le nom est requis.</div>
+            </div>
+
+            <!-- Téléphone -->
+            <div class="col-md-6">
+              <label class="form-label fw-bold small">Téléphone *</label>
+              <input type="text" formControlName="telephone" class="form-control" [ngClass]="{'is-invalid': submitted && f['telephone'].errors}">
+              <div *ngIf="submitted && f['telephone'].errors" class="invalid-feedback">Un numéro valide est requis.</div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+              <label class="form-label fw-bold small">Email</label>
+              <input type="email" formControlName="email" class="form-control" [ngClass]="{'is-invalid': submitted && f['email'].errors}">
+            </div>
+
+            <!-- Ville -->
+            <div class="col-md-6">
+              <label class="form-label fw-bold small">Ville *</label>
+              <input type="text" formControlName="ville" class="form-control" [ngClass]="{'is-invalid': submitted && f['ville'].errors}">
+              <div *ngIf="submitted && f['ville'].errors" class="invalid-feedback">La ville est requise.</div>
+            </div>
+
+            <!-- Adresse -->
+            <div class="col-12">
+              <label class="form-label fw-bold small">Adresse Complète *</label>
+              <textarea formControlName="adresse" class="form-control" rows="2" [ngClass]="{'is-invalid': submitted && f['adresse'].errors}"></textarea>
+            </div>
+
+            <!-- Code Postal & Pays -->
+            <div class="col-md-6">
+              <label class="form-label fw-bold small">Code Postal</label>
+              <input type="text" formControlName="codePostal" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold small">Pays</label>
+              <input type="text" formControlName="pays" class="form-control">
+            </div>
+
+            <!-- Notes -->
+            <div class="col-12">
+              <label class="form-label fw-bold small">Notes & Commentaires</label>
+              <textarea formControlName="notes" class="form-control" rows="3" placeholder="Informations complémentaires, spécialités..."></textarea>
+            </div>
+
+            <!-- Statut -->
+            <div class="col-12">
+              <div class="form-check form-switch p-0 ms-4 mt-2">
+                <input class="form-check-input custom-switch" type="checkbox" formControlName="actif">
+                <label class="form-check-label ms-2 fw-bold small mt-1">Fournisseur Actif</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 p-4 pt-0">
+          <button type="button" class="btn btn-light rounded-pill px-4" (click)="close()">Annuler</button>
+          <button type="submit" class="btn btn-primary-custom px-5 rounded-pill shadow-sm" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isEditMode ? 'Enregistrer les modifications' : 'Créer le Partenaire' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="isOpen"></div>

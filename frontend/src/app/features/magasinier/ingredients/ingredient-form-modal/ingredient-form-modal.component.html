@@ -1,0 +1,103 @@
+<div class="modal fade" id="ingredientFormModal" tabindex="-1" aria-hidden="true" [ngClass]="{'show d-block': isOpen}">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content glass-card shadow-2xl border-0 rounded-5 overflow-hidden">
+      <div class="modal-header border-0 bg-chocolate-light p-4">
+        <h5 class="modal-title fw-bold color-marron font-montserrat">
+          <i class="fas" [ngClass]="isEditMode ? 'fa-edit' : 'fa-plus-circle'"></i>
+          <span class="ms-3">{{ isEditMode ? 'Modifier Ingrédient' : 'Nouvelle Matière Première' }}</span>
+        </h5>
+        <button type="button" class="btn-close opacity-50" (click)="close()"></button>
+      </div>
+      
+      <div class="modal-body p-4 pt-5">
+        <form [formGroup]="ingredientForm" (ngSubmit)="onSubmit()">
+          <div class="row g-4">
+            <!-- Basic Info -->
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <input type="text" formControlName="nom" class="form-control bg-light border-0" id="floatNom" placeholder="Nom"
+                       [ngClass]="{'is-invalid': (submitted || f['nom'].touched) && f['nom'].errors}">
+                <label for="floatNom" class="text-muted small fw-bold">NOM DE L'INGRÉDIENT</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <input type="text" formControlName="codeIngredient" class="form-control bg-light border-0" id="floatCode" placeholder="Code">
+                <label for="floatCode" class="text-muted small fw-bold">CODE (Optionnel)</label>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-floating mb-1">
+                <textarea formControlName="description" class="form-control bg-light border-0" id="floatDesc" placeholder="Description" style="height: 100px"></textarea>
+                <label for="floatDesc" class="text-muted small fw-bold">DESCRIPTION</label>
+              </div>
+            </div>
+
+            <!-- Unit and Price -->
+            <div class="col-md-4">
+              <div class="form-floating mb-1">
+                <select formControlName="uniteMesure" class="form-select bg-light border-0" id="floatUnite">
+                  <option *ngFor="let u of unites" [value]="u">{{ u }}</option>
+                </select>
+                <label for="floatUnite" class="text-muted small fw-bold">UNITÉ DE MESURE</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-floating mb-1">
+                <input type="number" formControlName="prixUnitaire" class="form-control bg-light border-0" id="floatPrix" placeholder="Prix" step="0.01">
+                <label for="floatPrix" class="text-muted small fw-bold">PRIX UNITAIRE (MAD)</label>
+              </div>
+            </div>
+             <div class="col-md-4">
+              <div class="form-floating mb-1">
+                <select formControlName="fournisseurPrincipalId" class="form-select bg-light border-0" id="floatFournisseur">
+                  <option [ngValue]="null">Sélectionner...</option>
+                  <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+                </select>
+                <label for="floatFournisseur" class="text-muted small fw-bold">FOURNISSEUR PRINCIPAL</label>
+              </div>
+            </div>
+
+            <!-- Stock Levels -->
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <input type="number" formControlName="quantiteMinimum" class="form-control bg-light border-0" id="floatMin" placeholder="Min">
+                <label for="floatMin" class="text-muted small fw-bold">STOCK MINIMUM (Alerte)</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-1">
+                <input type="number" formControlName="quantiteMaximum" class="form-control bg-light border-0" id="floatMax" placeholder="Max">
+                <label for="floatMax" class="text-muted small fw-bold">STOCK MAXIMUM (Optionnel)</label>
+              </div>
+            </div>
+
+            <!-- Perishable -->
+            <div class="col-md-6 d-flex align-items-center">
+              <div class="form-check form-switch ms-2 bg-light p-3 rounded-4 w-100 d-flex justify-content-between align-items-center">
+                <label class="form-check-label small fw-bold" for="checkPerissable">PÉRISSABLE</label>
+                <input class="form-check-input custom-switch ms-0" type="checkbox" formControlName="perissable" id="checkPerissable">
+              </div>
+            </div>
+            <div class="col-md-6" *ngIf="ingredientForm.get('perissable')?.value">
+              <div class="form-floating mb-1">
+                <input type="date" formControlName="dateExpiration" class="form-control bg-light border-0" id="floatExp">
+                <label for="floatExp" class="text-muted small fw-bold">DATE D'EXPIRATION</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 justify-content-end mt-5 pt-4 border-top">
+            <button type="button" class="btn btn-link text-decoration-none color-marron opacity-75 fw-bold" (click)="close()">ANNULER</button>
+            <button type="submit" class="btn btn-primary-custom px-5 py-3 rounded-4 fw-bold shadow-lg" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isEditMode ? 'METTRE À JOUR' : 'ENREGISTRER' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [ngClass]="{'show d-block': isOpen}" *ngIf="isOpen"></div>

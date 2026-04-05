@@ -1,0 +1,80 @@
+<div class="login-page">
+  <div class="split-container">
+    <!-- Left Side: Brand/Marketing -->
+    <div class="left-side d-none d-lg-flex">
+      <div class="brand-content text-center">
+        <img src="assets/images/logo2.png" alt="CrèmeLogic" class="mb-4 brand-logo animate-fade-in">
+        <!-- <h1 class="display-3 fw-bold text-white mb-3" style="font-family: 'Poppins', sans-serif; letter-spacing: 4px;">CrèmeLogic</h1> -->
+        <p class="lead text-white px-5 opacity-75">Gérez votre pâtisserie avec élégance et précision.</p>
+
+        <!-- <div class="mt-5 d-flex gap-3 justify-content-center">
+          <div class="glass-card p-3 px-4 text-white small">
+            <i class="fas fa-magic me-2"></i> Artisanat
+          </div>
+          <div class="glass-card p-3 px-4 text-white small">
+            <i class="fas fa-award me-2"></i> Qualité
+          </div>
+        </div> -->
+      </div>
+    </div>
+
+    <!-- Right Side: Login Form -->
+    <div class="right-side animate-fade-in">
+      <div class="login-card">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold color-marron mb-2">Heureux de vous revoir!</h2>
+          <p class="text-muted">Connectez-vous à <span class="fw-bold color-marron">votre compte</span>.</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="mb-4">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-envelope opacity-50"></i>
+              </span>
+              <input type="email" formControlName="email" class="form-control"
+                     placeholder="Adresse e-mail"
+                     [ngClass]="{'is-invalid': submitted && f['email'].errors}">
+            </div>
+            <div *ngIf="submitted && f['email'].errors" class="invalid-feedback d-block ps-2 mt-1">
+              <small *ngIf="f['email'].errors['required']">L'email est requis</small>
+              <small *ngIf="f['email'].errors['email']">Format d'email invalide</small>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-lock opacity-50"></i>
+              </span>
+              <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                     class="form-control"
+                     placeholder="Mot de passe"
+                     [ngClass]="{'is-invalid': submitted && f['password'].errors}">
+              <span class="input-group-text pe-3 cursor-pointer" (click)="togglePassword()">
+                <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+              </span>
+            </div>
+            <div *ngIf="submitted && f['password'].errors" class="invalid-feedback d-block ps-2 mt-1">
+              <small *ngIf="f['password'].errors['required']">Le mot de passe est requis</small>
+            </div>
+            <!--<div class="text-end mt-2">
+              <a href="#" class="small text-decoration-none color-marron opacity-75">Mot de passe oublié ?</a>
+            </div>-->
+          </div>
+
+          <div class="d-grid gap-2 mt-5">
+            <button type="submit" class="btn-primary-custom py-3 animate-fade-in" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              Se connecter
+            </button>
+          </div>
+        </form>
+
+        <div class="text-center mt-5 pt-4 border-top">
+          <a href="#" class="small text-decoration-none color-marron opacity-50">Récupérer mes accès</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

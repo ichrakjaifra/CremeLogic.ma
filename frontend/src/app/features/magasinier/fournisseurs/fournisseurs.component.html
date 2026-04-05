@@ -1,0 +1,141 @@
+<div class="suppliers-page p-2 animate-fade-in">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 px-3 gap-3">
+    <div>
+      <h2 class="fw-bold color-marron mb-0 font-montserrat">Partenaires & Fournisseurs</h2>
+      <p class="text-muted small mb-0">Gérez vos relations avec vos fournisseurs de confiance.</p>
+    </div>
+    <button class="btn btn-primary-custom px-4 py-2 shadow-sm" (click)="openSupplierModal()">
+      <i class="fas fa-plus me-2"></i> Ajouter un Partenaire
+    </button>
+  </div>
+
+  <!-- Search & Stats -->
+  <div class="glass-card mb-5 p-4">
+    <div class="row align-items-center">
+      <div class="col-md-5">
+        <div class="input-group search-box shadow-none border">
+          <span class="input-group-text bg-white border-0 ps-3 text-muted"><i class="fas fa-search"></i></span>
+          <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applySearch()" 
+                 class="form-control border-0 py-2 shadow-none" placeholder="Rechercher par nom, email...">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select border shadow-none py-2 rounded-3" [(ngModel)]="selectedCity" (change)="applySearch()">
+          <option value="">Toutes les Villes</option>
+          <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex justify-content-end gap-3 mt-3 mt-md-0">
+          <div class="text-center">
+            <div class="h4 fw-bold color-marron mb-0">{{ fournisseurs.length }}</div>
+            <div class="extra-small text-muted fw-bold text-uppercase">Total</div>
+          </div>
+          <div class="text-center">
+            <div class="h4 fw-bold text-success mb-0">{{ activeCount }}</div>
+            <div class="extra-small text-muted fw-bold text-uppercase">Actifs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Supplier Grid -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-6 col-lg-4" *ngFor="let s of filteredFournisseurs | paginate: { itemsPerPage: 6, currentPage: p }">
+        <div class="glass-card supplier-card h-100 p-4 shadow-sm border-0 position-relative" [ngClass]="{'opacity-75': !s.actif}">
+          
+          <!-- Delete Button (Top Right) -->
+          <button class="btn btn-link text-danger position-absolute top-0 end-0 m-3 p-1 opacity-50 hover-opacity-100" 
+                  [appConfirm]="'Êtes-vous sûr de vouloir supprimer ' + s.nom + ' ?'"
+                  (confirmed)="deleteSupplier(s.id)">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+
+          <div class="d-flex align-items-start mb-4">
+            <div class="supplier-icon bg-chocolate-light me-3">
+              <i class="fas fa-building color-marron"></i>
+            </div>
+            <div class="flex-grow-1 pe-4">
+              <div class="d-flex justify-content-between">
+                <h5 class="fw-bold text-dark mb-1 font-montserrat">{{ s.nom }}</h5>
+              </div>
+              <div class="extra-small text-muted text-uppercase fw-bold"><i class="fas fa-map-marker-alt me-1"></i> {{ s.ville || 'Maroc' }}</div>
+              
+              <!-- Stars Rating -->
+              <div class="mt-1">
+                <i *ngFor="let star of [1,2,3,4,5]" class="fas fa-star extra-small" 
+                   [class.text-warning]="star <= (s.noteEvaluation || 0)"
+                   [class.text-light-gray]="star > (s.noteEvaluation || 0)"></i>
+                <span class="ms-1 extra-small text-muted" *ngIf="s.noteEvaluation">({{ s.noteEvaluation | number:'1.1-1' }})</span>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Stats Grid -->
+          <div class="row g-2 mb-4">
+            <div class="col-6">
+              <div class="p-2 border rounded-3 bg-light bg-opacity-50 text-center">
+                <div class="extra-small text-muted text-uppercase fw-bold mb-1">Commandes</div>
+                <div class="fw-bold text-dark">{{ s.nombreCommandes || 0 }}</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 border rounded-3 bg-light bg-opacity-50 text-center">
+                <div class="extra-small text-muted text-uppercase fw-bold mb-1">Total (DH)</div>
+                <div class="fw-bold text-dark">{{ (s.montantTotalCommandes || 0) | number:'1.0-0' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex align-items-center mb-2 small text-secondary">
+              <i class="fas fa-phone-alt me-2 opacity-50 width-15"></i> {{ s.telephone || 'Non renseigné' }}
+            </div>
+            <div class="d-flex align-items-center small text-secondary">
+              <i class="fas fa-envelope me-2 opacity-50 width-15"></i> {{ s.email || 'Pas d\'email' }}
+            </div>
+          </div>
+  
+          <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+            <div class="d-flex gap-2">
+              <button class="btn btn-icon-only rounded-circle bg-light" title="Évaluer" (click)="openEvaluationModal(s)">
+                <i class="fas fa-star text-warning"></i>
+              </button>
+              <button class="btn btn-icon-only rounded-circle bg-light" title="Modifier" (click)="editSupplier(s)">
+                <i class="fas fa-pen color-marron"></i>
+              </button>
+            </div>
+            
+            <div class="d-flex align-items-center">
+              <span class="extra-small fw-bold text-uppercase me-2" [ngClass]="s.actif ? 'text-success' : 'text-danger'">
+                {{ s.actif ? 'Actif' : 'Inactif' }}
+              </span>
+              <div class="form-check form-switch py-0">
+                <input class="form-check-input custom-switch" type="checkbox" [checked]="s.actif" 
+                       (change)="toggleStatus(s)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Empty State -->
+      <div class="col-12" *ngIf="filteredFournisseurs.length === 0">
+        <div class="py-5">
+          <app-empty-state title="Aucun fournisseur trouvé" 
+                          description="Élargissez vos recherches ou créez une nouvelle fiche fournisseur."
+                          icon="fas fa-truck-loading">
+          </app-empty-state>
+        </div>
+      </div>
+    </div>
+  
+    <div class="d-flex justify-content-center pt-2" *ngIf="filteredFournisseurs.length > 0">
+      <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""></pagination-controls>
+    </div>
+  </div>
+  
+  <!-- Modals -->
+  <app-fournisseur-form-modal #supplierModal (supplierSaved)="loadFournisseurs()"></app-fournisseur-form-modal>
+  <app-fournisseur-evaluation-modal #evaluationModal (evaluationSaved)="loadFournisseurs()"></app-fournisseur-evaluation-modal>

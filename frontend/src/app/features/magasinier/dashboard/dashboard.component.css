@@ -1,0 +1,113 @@
+.magasinier-dashboard {
+  background: var(--bg-global);
+  min-height: 100vh;
+}
+
+.title-section h2 {
+  color: var(--marron-chocolat);
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.kpi-card {
+  background: white;
+  border-radius: var(--radius-main);
+  border: 1px solid rgba(139, 69, 19, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-main);
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.kpi-icon-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.bg-error-light { background-color: #FFEBEE; color: var(--error); }
+.bg-warning-light { background-color: #FFF3E0; color: var(--warning); }
+.bg-info-light { background-color: #E3F2FD; color: var(--info); }
+.bg-success-light { background-color: #E8F5E9; color: var(--success); }
+
+.card-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--texte-secondaire);
+  letter-spacing: 1px;
+}
+
+.card-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--marron-chocolat);
+}
+
+.stock-table thead th {
+  background: #fdfdfd;
+  color: var(--marron-chocolat);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1rem;
+  border-bottom: 2px solid var(--beige-creme);
+}
+
+.stock-table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.badge-status {
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.cat-item {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(139, 69, 19, 0.05);
+  transition: all 0.2s ease;
+}
+
+.cat-item:hover {
+  border-color: var(--dore-clair);
+  background: #fafafa;
+}
+
+.progress-custom {
+  height: 6px;
+  border-radius: 3px;
+  background: #eee;
+}
+
+.delivery-item {
+  border-left: 4px solid var(--marron-chocolat);
+  background: #fff;
+  border-radius: 0 12px 12px 0;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.animate-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

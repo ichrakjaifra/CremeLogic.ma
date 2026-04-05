@@ -1,0 +1,193 @@
+<div class="chef-dashboard p-2 p-md-4 animate-fade-in">
+  <!-- KPI Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-card p-4">
+        <div class="d-flex align-items-center mb-2">
+          <div class="kpi-icon bg-gold-light me-3">
+            <i class="fas fa-spinner color-marron" [class.fa-spin]="(stats?.totalProductionsJour || 0) > 0"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">En Production</div>
+            <div class="h3 fw-bold mb-0 color-marron">{{ stats?.totalProductionsJour || 0 }}</div>
+          </div>
+        </div>
+        <p class="extra-small text-muted mb-0">Ordres actifs à l'atelier</p>
+      </div>
+    </div>
+    
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-card p-4" style="border-left-color: #28a745;">
+        <div class="d-flex align-items-center mb-2">
+          <div class="kpi-icon bg-success-soft me-3">
+            <i class="fas fa-check-double text-success"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">Terminés</div>
+            <div class="h3 fw-bold mb-0 text-success">{{ stats?.totalProductionsTermineesJour || 0 }}</div>
+          </div>
+        </div>
+        <p class="extra-small text-muted mb-0">Productions bouclées aujourd'hui</p>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-card p-4">
+        <div class="d-flex align-items-center mb-2">
+          <div class="kpi-icon bg-chocolate-light me-3">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">Recettes</div>
+            <div class="h3 fw-bold mb-0 color-marron">{{ stats?.totalRecettesActives || 0 }}</div>
+          </div>
+        </div>
+        <p class="extra-small text-muted mb-0">Références dans le catalogue</p>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="glass-card kpi-card p-4" [class.border-danger]="(stats?.ingredientsStockFaible || 0) > 0">
+        <div class="d-flex align-items-center mb-2">
+          <div class="kpi-icon bg-danger-soft me-3">
+            <i class="fas fa-boxes text-danger"></i>
+          </div>
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">Stock Faible</div>
+            <div class="h3 fw-bold mb-0 text-danger">{{ stats?.ingredientsStockFaible || 0 }}</div>
+          </div>
+        </div>
+        <p class="extra-small text-muted mb-0">Ingrédients nécessitant réappro</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <!-- Left column: Production Orders -->
+    <div class="col-lg-8">
+      <div class="glass-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0">Ordres de Production de la Journée</h5>
+          <button class="btn btn-sm btn-outline-secondary px-3" [routerLink]="['/chef/production']">Tout gérer</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="text-muted extra-small text-uppercase border-bottom">
+              <tr>
+                <th class="ps-0 py-3">Désignation</th>
+                <th class="py-3">Quantité</th>
+                <th class="py-3 text-center">Statut</th>
+                <th class="py-3 text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ordre of ordresRecents" class="border-light">
+                <td class="ps-0 py-3">
+                  <div class="fw-bold color-marron">{{ ordre.produitNom }}</div>
+                  <div class="extra-small text-muted">Lot #{{ ordre.numeroOrdre }}</div>
+                </td>
+                <td class="py-3">
+                  <span class="fw-bold">{{ ordre.quantite }}</span> <small class="text-muted">unités</small>
+                </td>
+                <td class="py-3 text-center">
+                  <span class="badge rounded-pill px-3 py-2" [ngClass]="{
+                    'bg-warning bg-opacity-10 text-warning': ordre.statut === 'EN_COURS',
+                    'bg-gold-light color-marron': ordre.statut === 'PLANIFIEE' || ordre.statut === 'PLANIFIE',
+                    'bg-success bg-opacity-10 text-success': ordre.statut === 'TERMINEE'
+                  }">{{ ordre.statut }}</span>
+                </td>
+                <td class="text-end py-3">
+                  <button class="btn btn-sm btn-light border-0" [routerLink]="['/chef/production']">
+                    <i class="fas fa-eye text-muted"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="ordresRecents.length === 0">
+                <td colspan="4" class="text-center py-5 text-muted small">Aucun ordre de production prévu</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: Roadmap / Tasks -->
+    <div class="col-lg-4">
+      <div class="glass-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold color-marron mb-0">Ma Roadmap</h5>
+          <button class="btn btn-sm bg-gold-light color-marron border-0 rounded-pill px-3" (click)="openTaskModal()">
+            <i class="fas fa-plus me-1"></i> Add
+          </button>
+        </div>
+        
+        <div class="task-list">
+          <div *ngFor="let tache of stats?.tachesDuJour" class="task-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="d-flex align-items-start">
+                <div class="priority-dot mt-1" [ngClass]="{
+                  'bg-danger': tache.priorite === 'HAUTE',
+                  'bg-warning': tache.priorite === 'MOYENNE',
+                  'bg-secondary': tache.priorite === 'BASSE'
+                }"></div>
+                <div>
+                  <div class="fw-bold small text-dark">{{ tache.titre }}</div>
+                  <div class="extra-small text-muted">{{ tache.dateEcheance | date:'HH:mm' }} • {{ tache.assigneANom }}</div>
+                </div>
+              </div>
+              <button class="btn btn-sm border-0 p-0" (click)="updateTaskStatut(tache.id, 'TERMINEE')">
+                <i class="far" [ngClass]="tache.statut === 'TERMINEE' ? 'fa-check-circle text-success' : 'fa-circle text-muted'"></i>
+              </button>
+            </div>
+          </div>
+          <div class="text-center py-4 text-muted small" *ngIf="!stats?.tachesDuJour?.length">
+            Pas de tâches pour aujourd'hui
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Star Recipes -->
+    <div class="col-lg-6">
+      <div class="glass-card p-4">
+        <h5 class="fw-bold color-marron mb-4">Recettes les plus utilisées</h5>
+        <div class="row g-3">
+          <div class="col-12 col-md-6" *ngFor="let r of stats?.recettesPopulaires">
+            <div class="p-3 bg-light bg-opacity-50 rounded-4 d-flex align-items-center border border-white">
+              <div class="p-2 bg-white rounded-3 me-3"><i class="fas fa-utensils color-marron"></i></div>
+              <div>
+                <div class="fw-bold small text-dark">{{ r.nom }}</div>
+                <div class="extra-small text-muted">{{ r.coutTotal | number:'1.2-2' }} DH</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Alerts -->
+    <div class="col-lg-6">
+      <div class="glass-card p-4">
+        <h5 class="fw-bold text-danger mb-4">Stock Critique</h5>
+        <div class="row g-3">
+          <div class="col-12 col-md-6" *ngFor="let ing of stats?.ingredientsCritiques">
+            <div class="p-3 bg-white shadow-sm rounded-4 border-start border-danger border-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">{{ ing.nom }}</span>
+                <span class="text-danger fw-bold small">{{ ing.quantiteStock }} {{ ing.uniteMesure }}</span>
+              </div>
+              <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-danger" [style.width]="(ing.quantiteStock / ing.quantiteMinimum * 100) + '%'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center py-4 text-success small" *ngIf="!stats?.ingredientsCritiques?.length">
+          Tout est en stock !
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

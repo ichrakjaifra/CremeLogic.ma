@@ -1,0 +1,24 @@
+package ma.cremelogic.CremeLogic.ma.dto.request;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+
+@Data
+public class UpdateProfileRequest {
+
+    @NotBlank(message = "Le nom est obligatoire")
+    private String nom;
+
+    @NotBlank(message = "Le prénom est obligatoire")
+    private String prenom;
+
+    @NotBlank(message = "L'email est obligatoire")
+    @Email(message = "Format d'email invalide")
+    private String email;
+
+    @Pattern(regexp = "^0[5-7][0-9]{8}$",
+            message = "Numéro de téléphone marocain invalide (ex: 0612345678)")
+    private String telephone;
+}
