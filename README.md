@@ -132,6 +132,14 @@ docker-compose up -d --build
 
 ---
 
+## diagramme de cas d'utilisation
+![logo](diagramme/diagramme_cas_d'utilisation.png)
+
+## diagramme de classe
+![logo](diagramme/diagramme_de_classe_CremeLogic.png)
+
+---
+
 <div align="center">
   Développé avec ❤️ pour l'excellence pâtissière.
 </div>
