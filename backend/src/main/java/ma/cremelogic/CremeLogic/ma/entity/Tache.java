@@ -33,10 +33,12 @@ public class Tache {
 
     private LocalDateTime dateEcheance;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "assigne_a_id")
     private Utilisateur assigneA;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne
     @JoinColumn(name = "cree_par_id")
     private Utilisateur creePar;

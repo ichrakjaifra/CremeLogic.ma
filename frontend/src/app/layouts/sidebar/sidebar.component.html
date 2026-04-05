@@ -53,12 +53,12 @@
         <span>Ingrédients</span>
       </a>
     </li>
-    <li *ngIf="['ADMIN'].includes(userRole!)">
+    <!--<li *ngIf="['ADMIN'].includes(userRole!)">
       <a routerLink="/magasinier/dashboard" routerLinkActive="active" class="nav-link">
         <i class="fas fa-boxes me-3"></i>
         <span>Stock / Dashboard</span>
       </a>
-    </li>
+    </li> -->
     <li *ngIf="['ADMIN', 'MAGASINIER'].includes(userRole!)">
       <a routerLink="/magasinier/commandes-achat" routerLinkActive="active" class="nav-link">
         <i class="fas fa-file-invoice-dollar me-3"></i>
